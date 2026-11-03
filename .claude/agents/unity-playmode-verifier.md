@@ -14,7 +14,7 @@ CLI: `unity` (albo pełna ścieżka `C:\Users\RhAnjiE\AppData\Local\unity\bin\un
 Kroki (przerwij i zaraportuj przy pierwszym twardym błędzie):
 1. `unity status` → stan `ready`. Jeśli jest Safe Mode albo brak połączenia, zgłoś to i zakończ.
 2. Kompilacja: `unity command console status` oraz `console get --level error`. Muszą być zero błędów kompilacji. Ostrzeżenia z nowych plików wypisz.
-3. `unity command test run --mode editor`, a potem `--mode playmode` (timeout dopasuj do liczby testów). Zbierz liczbę testów: passed/failed/skipped oraz komunikat i stack trace każdego błędu.
+3. `unity command test run --mode editor`, a potem `unity command test run --mode playmode --async-tests true` i odpytuj `unity command test status` co kilka sekund, aż `status: completed`. PlayMode nie działa synchronicznie, bo przeładowanie domeny zrywa żądanie. Zbierz liczbę testów: passed/failed/skipped oraz komunikat i stack trace każdego błędu.
 4. Smoke test w Play Mode dla funkcjonalności z opisu zadania:
    - `console clear`, potem `editor.playmode start`, odczekaj aż gra ruszy;
    - przez `script eval` próbkuj kilka razy w odstępach stan istotny dla funkcji (pozycje, prędkości, liczniki, aktywne obiekty). **Sprawdź, że `Time.frameCount` rośnie między próbkami.** Jeśli nie rośnie, gra jest zamrożona (np. edytor bez fokusu) i wyniki są niewiarygodne. Napisz to w raporcie;

@@ -13,7 +13,8 @@ Edytor jest zwykle otwarty i użytkownik pracuje w nim **równolegle z agentem**
 - Jeśli edytor jest nieosiągalny albo w Safe Mode, sprawdź `unity status`. Przy Safe Mode napraw błędy kompilacji. W innych przypadkach powiedz to użytkownikowi, nie obchodź problemu.
 - Przydatne komendy:
   - `console get --level warn`, `console status`: konsola i błędy kompilacji;
-  - `test run --mode editor|playmode [--filter X]`: testy w otwartym edytorze. Samodzielne `unity test` nie zadziała, gdy projekt jest otwarty;
+  - `test run --mode editor [--filter X]`: testy EditMode w otwartym edytorze. Samodzielne `unity test` nie zadziała, gdy projekt jest otwarty;
+  - `test run --mode playmode --async-tests true`, potem odpytuj `test status` aż do `status: completed`. PlayMode nie działa synchronicznie, bo wejście w Play Mode przeładowuje domenę i zrywa żądanie;
   - `editor.playmode start|stop`: Play Mode;
   - `capture`: zrzuty widoku.
 
@@ -45,7 +46,7 @@ Gałęzie:
 
 Przed rozpoczęciem pracy **napisz w jednym zdaniu klasyfikację i jej powód**, np. „Klasyfikacja: DUŻE, bo nowy system + nowe prefaby”. Użytkownik może ją zmienić.
 
-**DUŻE** (osobna gałąź + pełny proces agentów). Wystarczy jedno z kryteriów:
+**DUŻE** (osobna gałąź + PR + pełny proces agentów). Wystarczy jedno z kryteriów:
 - nowy system lub mechanika rozgrywki (ruch, strzelanie, AI, UI ekranu, zapis gry…);
 - zmiana w więcej niż ~3 plikach `.cs` albo nowy publiczny interfejs używany przez inne systemy;
 - zmiany w scenie lub prefabach razem z nowym kodem;
@@ -53,7 +54,7 @@ Przed rozpoczęciem pracy **napisz w jednym zdaniu klasyfikację i jej powód**,
 - naprawa błędu, którego przyczyna nie jest oczywista;
 - użytkownik użył słów „funkcjonalność”, „feature”, „system” albo poprosił o pełny proces.
 
-**MAŁE** (bez osobnej gałęzi i bez agentów, na bieżącej gałęzi, bez commita bez prośby):
+**MAŁE** (bez agentów, na bieżącej gałęzi, bez commita bez prośby; jeśli bieżąca gałąź to `development` i trzeba commitować, zrób krótką gałąź `fix/…` i PR, bo `development` jest chroniony):
 - poprawka w 1–2 plikach o oczywistej przyczynie, zmiana wartości lub tuning, rename, literówka;
 - pojedyncza operacja na scenie, o którą użytkownik prosi wprost;
 - pytania, analizy, eksperymenty.
@@ -70,15 +71,23 @@ W razie wątpliwości wybierz DUŻE.
 4. **Poprawki** znalezisk reviewera, które się potwierdziły. Fałszywe alarmy odrzuć z uzasadnieniem.
 5. **`unity-playmode-verifier`**, sekwencyjnie, bo używa edytora: kompilacja, uruchomienie wszystkich testów, smoke test w Play Mode. Jeśli coś pada, wracasz do 4.
 6. **`docs-writer`**, tylko jeśli zmieniło się coś, czego nie widać z kodu (nowy system, konfiguracja, decyzja architektoniczna).
-7. **STOP: weryfikacja manualna.** Wypisz użytkownikowi:
-   - nazwę gałęzi i listę commitów;
-   - wyniki testów i review;
-   - **konkretną checklistę do ręcznego sprawdzenia w edytorze** (co otworzyć, co kliknąć, czego się spodziewać);
-   - znane ograniczenia.
+7. **Pull request.** `git push -u origin feature/<nazwa>`, potem `gh pr create --base development` z tytułem w stylu commita i opisem w sekcjach:
+   - **Summary**: co i po co (2–4 zdania);
+   - **Verification**: wyniki review, testów lokalnych i smoke testu;
+   - **Manual test checklist**: konkretne kroki do sprawdzenia w edytorze (co otworzyć, co kliknąć, czego się spodziewać), jako checkboxy `- [ ]`;
+   - **Known limitations**.
 
-   Potem **czekaj**. Nie merguj bez wyraźnego „ok, merguj” od użytkownika.
-8. **Merge po akceptacji:** `git switch development && git merge --no-ff feature/<nazwa>`, z opisem merge'a podsumowującym funkcjonalność. Jeśli `development` uciekł do przodu, najpierw `git merge development` na gałęzi feature, rozwiąż konflikty, ponownie uruchom testy, i dopiero potem merge. Bez rebase gałęzi, które już zostały wypchnięte. Usuń lokalną gałąź feature po merge'u.
-9. **Push** (`git push`) tylko na prośbę użytkownika.
+   Odczekaj na CI: `gh pr checks <nr> --watch`. Jeśli CI pada, przeczytaj logi (`gh run view <id> --log-failed`), napraw, wypchnij i powtórz.
+8. **STOP: weryfikacja manualna.** Podaj użytkownikowi link do PR, wynik CI i checklistę. Potem **czekaj**. Merge robi użytkownik przyciskiem na GitHubie albo agent (`gh pr merge <nr> --merge --delete-branch`) **tylko** po wyraźnym „ok, merguj”.
+9. **Po merge'u:** `git switch development && git pull` i usuń lokalną gałąź feature. Jeśli `development` uciekł do przodu w trakcie prac, najpierw `git merge origin/development` na gałęzi feature, rozwiąż konflikty, uruchom testy i wypchnij. Nie rób rebase gałęzi, które już zostały wypchnięte.
+
+### Wydania i CI (GitHub Actions)
+
+- **PR → `development`**: wszystkie testy EditMode i PlayMode (wymagany check).
+- **PR → `master`**: testy + kontrola, że wersja jest nowa + build Windows.
+- **Push na `master`**: testy, build, tag `vX.Y.Z` i GitHub Release. Wersja pochodzi z `bundleVersion` w Player Settings, a PR do `master` musi ją podbić.
+- **Weekly playtest**: w piątki z `development`, pre-release `playtest-RRRR-Www`, tylko jeśli były zmiany.
+- Wydanie przygotowuje się PR-em `development` → `master`, tylko na prośbę użytkownika. Agent nigdy nie pushuje bezpośrednio na `master` ani na `development`.
 
 ### Commity
 
@@ -87,7 +96,8 @@ W razie wątpliwości wybierz DUŻE.
 - Przykłady dobre: `Add test bouncing ball to test CLI integration`, `Fix tank sliding after collision with walls`, `Move turret rotation logic to TurretAimer`.
 - Przykłady złe: `fixes`, `update files`, `WIP`, `Dodano piłkę`, `Changed PlayerController.cs`.
 - Jeśli zmiana wymaga wyjaśnienia, dodaj po pustej linii krótkie uzasadnienie „dlaczego” (2–4 linie).
-- Commit merge do `development`: `Merge feature/<nazwa>: <jedno zdanie o funkcjonalności>`.
+- Commit merge z PR tworzy GitHub, a jego tytuł to tytuł PR. Tytuł PR pisz więc tak jak commit.
+- **Nie dodawaj** trailera `Co-Authored-By: Claude …` ani żadnej innej atrybucji AI do commitów i opisów PR. To wyraźne życzenie właściciela repo i ma pierwszeństwo przed domyślną atrybucją.
 
 Uwagi:
 - Nigdy nie używaj `--force`, `reset --hard` ani `clean -fd` bez wyraźnej zgody.
