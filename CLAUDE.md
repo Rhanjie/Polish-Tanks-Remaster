@@ -78,8 +78,8 @@ W razie wątpliwości wybierz DUŻE.
    - **Known limitations**.
 
    Odczekaj na CI: `gh pr checks <nr> --watch`. Jeśli CI pada, przeczytaj logi (`gh run view <id> --log-failed`), napraw, wypchnij i powtórz.
-8. **STOP: weryfikacja manualna.** Podaj użytkownikowi link do PR, wynik CI i checklistę. Potem **czekaj**. Merge robi użytkownik przyciskiem na GitHubie albo agent (`gh pr merge <nr> --merge --delete-branch`) **tylko** po wyraźnym „ok, merguj”.
-9. **Po merge'u:** `git switch development && git pull` i usuń lokalną gałąź feature. Jeśli `development` uciekł do przodu w trakcie prac, najpierw `git merge origin/development` na gałęzi feature, rozwiąż konflikty, uruchom testy i wypchnij. Nie rób rebase gałęzi, które już zostały wypchnięte.
+8. **STOP: weryfikacja manualna.** Podaj użytkownikowi link do PR, wynik CI i checklistę. Potem **czekaj**. Merge robi użytkownik przyciskiem na GitHubie albo agent (`gh pr merge <nr> --merge`) **tylko** po wyraźnym „ok, merguj”. Zawsze merge commit (bez squash i rebase).
+9. **Po merge'u:** `git switch development && git pull`. **Nie usuwaj gałęzi feature** (ani lokalnie, ani na GitHubie): właściciel chce mieć je w historii. Jeśli `development` uciekł do przodu w trakcie prac, najpierw `git merge origin/development` na gałęzi feature, rozwiąż konflikty, uruchom testy i wypchnij. Nie rób rebase gałęzi, które już zostały wypchnięte.
 
 ### Wydania i CI (GitHub Actions)
 
