@@ -11,21 +11,26 @@ namespace PolishTanks.Tests.PlayMode
     {
         private const int FramesToRun = 60;
 
-        private static IEnumerable<int> BuildSceneIndices() =>
-            Enumerable.Range(0, SceneManager.sceneCountInBuildSettings);
+        // In batch mode the Test Framework adds its own temporary "InitTestScene..." to the build scenes,
+        // so scenes are listed by path and that one is skipped.
+        private static IEnumerable<string> BuildScenePaths() =>
+            Enumerable.Range(0, SceneManager.sceneCountInBuildSettings)
+                .Select(SceneUtility.GetScenePathByBuildIndex)
+                .Where(path => !string.IsNullOrEmpty(path) && !path.Contains("InitTestScene"));
 
         // Any error or exception logged while the scene runs fails the test (Unity Test Framework default).
         [UnityTest]
-        public IEnumerator BuildScene_LoadsAndRunsWithoutErrors([ValueSource(nameof(BuildSceneIndices))] int buildIndex)
+        public IEnumerator BuildScene_LoadsAndRunsWithoutErrors([ValueSource(nameof(BuildScenePaths))] string scenePath)
         {
-            var load = SceneManager.LoadSceneAsync(buildIndex, LoadSceneMode.Single);
+            var load = SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Single);
+            Assert.That(load, Is.Not.Null, $"Scene {scenePath} could not be loaded");
             while (!load.isDone)
                 yield return null;
 
             for (var i = 0; i < FramesToRun; i++)
                 yield return null;
 
-            Assert.That(SceneManager.GetActiveScene().buildIndex, Is.EqualTo(buildIndex));
+            Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(scenePath));
         }
     }
 }
