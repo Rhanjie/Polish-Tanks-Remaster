@@ -1,0 +1,50 @@
+# PR -> development: all tests.
+# PR -> master:      all tests + version bump check + Windows build.
+name: Pull request
+
+on:
+  pull_request:
+    branches: [development, master]
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  tests:
+    name: Tests
+    uses: ./.github/workflows/_tests.yml
+    secrets: inherit
+
+  version:
+    name: Version check
+    if: github.base_ref == 'master'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: version
+        run: |
+          version=$(bash .github/scripts/project-version.sh)
+          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            echo "::error::Version $version is already released (tag v$version). Bump bundleVersion in Player Settings."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build
+    if: github.base_ref == 'master'
+    needs: [tests, version]
+    uses: ./.github/workflows/_build.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      artifact-name: PolishTanksRemaster-${{ needs.version.outputs.version }}-pr${{ github.event.pull_request.number }}-win64
+    secrets: inherit

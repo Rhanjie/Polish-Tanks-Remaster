@@ -1,0 +1,98 @@
+# Every Friday evening: build development as a playtest pre-release, if it changed since the last one.
+# Note: GitHub runs scheduled workflows only from the default branch (master), in UTC.
+name: Weekly playtest
+
+on:
+  schedule:
+    - cron: '0 16 * * 5' # Friday 16:00 UTC = 17:00 CET / 18:00 CEST
+  workflow_dispatch:
+
+concurrency:
+  group: weekly-playtest
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  checks: write
+
+jobs:
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+      sha: ${{ steps.check.outputs.sha }}
+      tag: ${{ steps.check.outputs.tag }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: development
+          fetch-depth: 0
+      - id: check
+        run: |
+          last=$(git tag -l 'playtest-*' --sort=-creatordate | head -n1)
+          if [ -n "$last" ] && [ "$(git rev-list --count "$last"..HEAD)" = 0 ]; then
+            echo "::notice::No changes on development since $last, skipping."
+            echo "build=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          week=$(date -u +%G-W%V)
+          tag="playtest-$week"
+          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then tag="$tag-${{ github.run_number }}"; fi
+          base=$(bash .github/scripts/project-version.sh)
+          echo "build=true" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$base-playtest.$(date -u +%G%V)" >> "$GITHUB_OUTPUT"
+
+  tests:
+    name: Tests
+    needs: changes
+    if: needs.changes.outputs.build == 'true'
+    uses: ./.github/workflows/_tests.yml
+    with:
+      ref: ${{ needs.changes.outputs.sha }}
+    secrets: inherit
+
+  build:
+    name: Build
+    needs: [changes, tests]
+    uses: ./.github/workflows/_build.yml
+    with:
+      ref: ${{ needs.changes.outputs.sha }}
+      version: ${{ needs.changes.outputs.version }}
+      artifact-name: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-win64
+    secrets: inherit
+
+  publish:
+    name: Publish playtest
+    needs: [changes, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.changes.outputs.sha }}
+          fetch-depth: 0
+      - name: Write changelog
+        run: |
+          last=$(git tag -l 'playtest-*' --sort=-creatordate | head -n1)
+          {
+            echo "Automatic weekly playtest build from \`development\` (${{ needs.changes.outputs.sha }})."
+            echo
+            echo "## Changes"
+            if [ -n "$last" ]; then range="$last..HEAD"; else range="HEAD"; fi
+            git log --first-parent --no-merges --format='- %s' $range | head -n 100
+            git log --first-parent --merges --format='- %s' $range | head -n 100
+          } > notes.md
+      - uses: actions/download-artifact@v7
+        with:
+          name: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-win64
+      - uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.changes.outputs.tag }}
+          target_commitish: ${{ needs.changes.outputs.sha }}
+          name: Playtest ${{ needs.changes.outputs.tag }}
+          prerelease: true
+          body_path: notes.md
+          files: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-win64.zip
