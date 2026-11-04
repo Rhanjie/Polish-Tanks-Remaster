@@ -1,0 +1,69 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:hud="PolishTanks.UI">
+    <ui:Style src="BounceHud.uss" />
+    <ui:VisualElement name="hudRoot" class="hud-root" picking-mode="Ignore">
+        <ui:VisualElement name="panel" class="hud-panel" picking-mode="Ignore">
+            <ui:VisualElement class="hud-corner hud-corner--tl" picking-mode="Ignore" />
+            <ui:VisualElement class="hud-corner hud-corner--tr" picking-mode="Ignore" />
+            <ui:VisualElement class="hud-corner hud-corner--bl" picking-mode="Ignore" />
+            <ui:VisualElement class="hud-corner hud-corner--br" picking-mode="Ignore" />
+
+            <ui:VisualElement class="hud-header" picking-mode="Ignore">
+                <ui:VisualElement name="statusDot" class="hud-status-dot" picking-mode="Ignore" />
+                <ui:Label text="BOUNCE TELEMETRY" class="hud-title" picking-mode="Ignore" />
+                <ui:Label text="CH-01 · LIVE" class="hud-tag" picking-mode="Ignore" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="hud-counter" picking-mode="Ignore">
+                <ui:Label name="digit0" text="0" class="hud-digit hud-digit--lead" picking-mode="Ignore" />
+                <ui:Label name="digit1" text="0" class="hud-digit hud-digit--lead" picking-mode="Ignore" />
+                <ui:Label name="digit2" text="0" class="hud-digit hud-digit--lead" picking-mode="Ignore" />
+                <ui:Label name="digit3" text="0" class="hud-digit hud-digit--lead" picking-mode="Ignore" />
+                <ui:Label name="digit4" text="0" class="hud-digit" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label text="TOTAL IMPACTS REGISTERED" class="hud-caption" picking-mode="Ignore" />
+
+            <ui:VisualElement class="hud-divider" picking-mode="Ignore" />
+
+            <ui:VisualElement class="hud-row" picking-mode="Ignore">
+                <hud:RadialGauge name="speedGauge" class="hud-gauge" picking-mode="Ignore">
+                    <ui:Label name="speedValue" text="0.00" class="hud-gauge-value" picking-mode="Ignore" />
+                    <ui:Label text="M/S IMPACT" class="hud-gauge-unit" picking-mode="Ignore" />
+                </hud:RadialGauge>
+                <ui:VisualElement class="hud-stats" picking-mode="Ignore">
+                    <ui:VisualElement class="hud-stat" picking-mode="Ignore">
+                        <ui:Label text="PEAK" class="hud-stat-key" picking-mode="Ignore" />
+                        <ui:Label name="peakValue" text="0.00" class="hud-stat-value" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hud-stat" picking-mode="Ignore">
+                        <ui:Label text="RATE /MIN" class="hud-stat-key" picking-mode="Ignore" />
+                        <ui:Label name="rateValue" text="0.0" class="hud-stat-value" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hud-stat" picking-mode="Ignore">
+                        <ui:Label text="INTERVAL S" class="hud-stat-key" picking-mode="Ignore" />
+                        <ui:Label name="intervalValue" text="0.000" class="hud-stat-value" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hud-stat hud-stat--last" picking-mode="Ignore">
+                        <ui:Label text="UPTIME" class="hud-stat-key" picking-mode="Ignore" />
+                        <ui:Label name="uptimeValue" text="00:00.0" class="hud-stat-value" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="hud-divider" picking-mode="Ignore" />
+
+            <ui:VisualElement class="hud-section-header" picking-mode="Ignore">
+                <ui:Label text="IMPACT VELOCITY" class="hud-section-title" picking-mode="Ignore" />
+                <ui:Label text="LAST 32" class="hud-tag hud-tag--muted" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <hud:Sparkline name="impactGraph" class="hud-graph" picking-mode="Ignore" />
+
+            <ui:VisualElement class="hud-divider" picking-mode="Ignore" />
+
+            <ui:VisualElement class="hud-section-header" picking-mode="Ignore">
+                <ui:Label text="CHROMA LOG" class="hud-section-title" picking-mode="Ignore" />
+                <ui:Label name="hexValue" text="#FF4D33" class="hud-tag" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <hud:ColorHistoryStrip name="colorStrip" class="hud-swatches" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
