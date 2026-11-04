@@ -71,14 +71,15 @@ W razie wątpliwości wybierz DUŻE.
 4. **Poprawki** znalezisk reviewera, które się potwierdziły. Fałszywe alarmy odrzuć z uzasadnieniem.
 5. **`unity-playmode-verifier`**, sekwencyjnie, bo używa edytora: kompilacja, uruchomienie wszystkich testów, smoke test w Play Mode. Jeśli coś pada, wracasz do 4.
 6. **`docs-writer`**, tylko jeśli zmieniło się coś, czego nie widać z kodu (nowy system, konfiguracja, decyzja architektoniczna).
-7. **Pull request.** `git push -u origin feature/<nazwa>`, potem `gh pr create --base development` z tytułem w stylu commita i opisem w sekcjach:
-   - **Summary**: co i po co (2–4 zdania);
-   - **Verification**: wyniki review, testów lokalnych i smoke testu;
-   - **Manual test checklist**: konkretne kroki do sprawdzenia w edytorze (co otworzyć, co kliknąć, czego się spodziewać), jako checkboxy `- [ ]`;
-   - **Known limitations**.
+7. **Pull request.** `git push -u origin feature/<nazwa>`, potem `gh pr create --base development` z tytułem w stylu commita. Opis ma być krótki, rzeczowy i pisany jak przez człowieka: bez rozbudowanych list, pogrubionych podpunktów i wyliczania każdej liczby. Sekcje:
+   - **Summary**: co i po co (2–3 zdania);
+   - **Verification**: 1–2 linie (wynik review, liczby testów, smoke test);
+   - **Known limitations**: tylko realne ograniczenia, po jednej linii (pomiń sekcję, jeśli ich nie ma).
+
+   Nie dodawaj checklisty testów manualnych do opisu PR.
 
    Odczekaj na CI: `gh pr checks <nr> --watch`. Jeśli CI pada, przeczytaj logi (`gh run view <id> --log-failed`), napraw, wypchnij i powtórz.
-8. **STOP: weryfikacja manualna.** Podaj użytkownikowi link do PR, wynik CI i checklistę. Potem **czekaj**. Merge robi użytkownik przyciskiem na GitHubie albo agent (`gh pr merge <nr> --merge`) **tylko** po wyraźnym „ok, merguj”. Zawsze merge commit (bez squash i rebase).
+8. **STOP: weryfikacja manualna.** Podaj użytkownikowi link do PR, wynik CI i krótką listę rzeczy do sprawdzenia w edytorze (w czacie, nie w PR). Potem **czekaj**. Merge robi użytkownik przyciskiem na GitHubie albo agent (`gh pr merge <nr> --merge`) **tylko** po wyraźnym „ok, merguj”. Zawsze merge commit (bez squash i rebase).
 9. **Po merge'u:** `git switch development && git pull`. **Nie usuwaj gałęzi feature** (ani lokalnie, ani na GitHubie): właściciel chce mieć je w historii. Jeśli `development` uciekł do przodu w trakcie prac, najpierw `git merge origin/development` na gałęzi feature, rozwiąż konflikty, uruchom testy i wypchnij. Nie rób rebase gałęzi, które już zostały wypchnięte.
 
 ### Wydania i CI (GitHub Actions)
