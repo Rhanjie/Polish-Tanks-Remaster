@@ -2,6 +2,7 @@
     "name": "PolishTanks.Tests.PlayMode",
     "rootNamespace": "PolishTanks.Tests.PlayMode",
     "references": [
+        "PolishTanks.Runtime",
         "UnityEngine.TestRunner"
     ],
     "includePlatforms": [],

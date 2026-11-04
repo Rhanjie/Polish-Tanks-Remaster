@@ -2,6 +2,7 @@
     "name": "PolishTanks.Tests.EditMode",
     "rootNamespace": "PolishTanks.Tests.EditMode",
     "references": [
+        "PolishTanks.Runtime",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
