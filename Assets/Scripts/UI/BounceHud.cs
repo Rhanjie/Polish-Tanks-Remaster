@@ -80,16 +80,16 @@ namespace PolishTanks.UI
             if (colorChanger != null)
                 colorChanger.ColorChanged -= OnColorChanged;
 
-            _blink?.Pause();
-            _uptime?.Pause();
-            _clearTicks?.Pause();
-            _clearFlash?.Pause();
-            // UIDocument rebuilds its tree when re-enabled, so every reference has to be queried again.
-            _bound = false;
+            Unbind();
         }
 
         private void Update()
         {
+            // UIDocument can rebuild its tree on its own (component toggled, UXML live reload);
+            // a panel-less element means the references point at the old, detached tree.
+            if (_bound && _panel.panel == null)
+                Unbind();
+
             if (!_bound && !TryBind())
                 return;
 
@@ -98,6 +98,18 @@ namespace PolishTanks.UI
 
             _pulse = Mathf.Max(0f, _pulse - pulseDecayPerSecond * Time.deltaTime);
             _gauge.Pulse = _pulse;
+        }
+
+        private void Unbind()
+        {
+            _blink?.Pause();
+            _uptime?.Pause();
+            _clearTicks?.Pause();
+            _clearFlash?.Pause();
+            // The paused callbacks would have removed these; without that the panel stays flashed.
+            _panel?.RemoveFromClassList(PanelFlashClass);
+            ClearDigitTicks();
+            _bound = false;
         }
 
         private bool TryBind()

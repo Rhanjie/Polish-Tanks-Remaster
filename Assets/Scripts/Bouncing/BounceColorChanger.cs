@@ -24,13 +24,26 @@ namespace PolishTanks.Bouncing
         private Color _targetColor;
         private float _blend = 1f;
 
-        /// <summary>The colour the ball is heading to (or already has).</summary>
-        public Color TargetColor => _targetColor;
+        /// <summary>The colour the ball is heading to (or already has). Valid even before this component's Awake.</summary>
+        public Color TargetColor
+        {
+            get
+            {
+                EnsureInitialized();
+                return _targetColor;
+            }
+        }
 
         public event Action<Color> ColorChanged;
 
-        private void Awake()
+        private void Awake() => EnsureInitialized();
+
+        // Listeners on other objects (the HUD) may ask for TargetColor before this object's Awake has run.
+        private void EnsureInitialized()
         {
+            if (_sequence != null)
+                return;
+
             _renderer = GetComponent<SpriteRenderer>();
             if (counter == null)
                 counter = GetComponent<BounceCounter>();
