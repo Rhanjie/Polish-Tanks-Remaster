@@ -43,7 +43,7 @@ namespace PolishTanks.Tests.PlayMode
         public SpriteRenderer CreateRoof(Vector3 position)
         {
             var texture = Track(new Texture2D(1, 1));
-            var sprite = Track(Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f)));
+            var sprite = Track(Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f));
             var go = Track(new GameObject("Roof"));
             go.transform.position = position;
             var renderer = go.AddComponent<SpriteRenderer>();
