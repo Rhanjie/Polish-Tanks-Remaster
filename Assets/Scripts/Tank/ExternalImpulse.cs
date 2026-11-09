@@ -43,6 +43,23 @@ namespace PolishTanks.Tank
                 AngularVelocity = 0f;
         }
 
+        /// <summary>
+        /// Lets a collision eat into the shove. <paramref name="velocityLost"/> is how much velocity
+        /// physics took away compared with what was requested; the part along the shove cancels it,
+        /// so a tank recoiling into a wall doesn't spring back off it.
+        /// </summary>
+        public void AbsorbLoss(Vector2 velocityLost)
+        {
+            var speed = Velocity.magnitude;
+            if (speed <= 0f)
+                return;
+            var direction = Velocity / speed;
+            var loss = Vector2.Dot(velocityLost, direction);
+            if (loss <= 0f)
+                return;
+            Velocity = direction * Mathf.Max(0f, speed - loss);
+        }
+
         public void Reset()
         {
             Velocity = Vector2.zero;

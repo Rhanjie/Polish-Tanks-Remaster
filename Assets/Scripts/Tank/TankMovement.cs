@@ -19,6 +19,7 @@ namespace PolishTanks.Tank
         private Rigidbody2D body;
         private TrackedDriveModel model;
         private readonly ExternalImpulse kick = new ExternalImpulse();
+        private Vector2 requestedVelocity;
         private float throttle;
         private float steer;
 
@@ -73,6 +74,7 @@ namespace PolishTanks.Tank
             steer = 0f;
             model?.Reset();
             kick.Reset();
+            requestedVelocity = Vector2.zero;
             if (body != null)
             {
                 body.linearVelocity = Vector2.zero;
@@ -94,11 +96,15 @@ namespace PolishTanks.Tank
             // Read back what physics did last step, so collisions slow the hull down.
             // The recoil part was added by us, so it doesn't count as track speed.
             var dt = Time.fixedDeltaTime;
+            // What a collision took away is charged to the recoil first, so a blocked shove
+            // doesn't later read as forward track speed.
+            kick.AbsorbLoss(requestedVelocity - body.linearVelocity);
             model.SyncSpeed(Vector2.Dot(body.linearVelocity - kick.Velocity, forward));
             model.Step(throttle, steer, dt);
             kick.Step(dt, impulseLinearDecay, impulseAngularDecay);
 
-            body.linearVelocity = forward * model.Speed + kick.Velocity;
+            requestedVelocity = forward * model.Speed + kick.Velocity;
+            body.linearVelocity = requestedVelocity;
             body.angularVelocity = model.AngularSpeed + kick.AngularVelocity;
         }
     }

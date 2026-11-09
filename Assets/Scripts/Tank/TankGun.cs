@@ -24,7 +24,10 @@ namespace PolishTanks.Tank
         [SerializeField] private ParticleSystem muzzleSmoke;
         [SerializeField, Min(0)] private int smokeParticles = 8;
 
+        private const int MaxShotsPerFrame = 8;
+
         private ReloadTimer reload;
+        private bool started;
         private Magazine magazine;
         private Rigidbody2D ownerBody;
         private float flashTimeLeft;
@@ -53,6 +56,8 @@ namespace PolishTanks.Tank
                     reload.ReloadTime = value.reloadTime;
                 if (magazine != null && feedChanged)
                     magazine.Configure(value.magazineSize, value.magazineReloadTime);
+                if (started)
+                    PrewarmPools(); // a loadout swap may bring a new projectile
             }
         }
 
@@ -103,13 +108,34 @@ namespace PolishTanks.Tank
                 reload.ReloadTime = settings.reloadTime;
         }
 
+        private void Start()
+        {
+            started = true;
+            PrewarmPools();
+        }
+
         private void Update()
         {
             reload.Tick(Time.deltaTime);
             magazine.Tick(Time.deltaTime);
-            if (triggerHeld)
-                TryFire();
+
+            // A fast gun at a low frame rate owes more than one shot per frame.
+            var shots = 0;
+            while (triggerHeld && shots < MaxShotsPerFrame && TryFire())
+                shots++;
+
             UpdateMuzzleFlash(Time.deltaTime);
+        }
+
+        /// <summary>Creates the projectile and impact pools up front, so the first shot doesn't stall.</summary>
+        private void PrewarmPools()
+        {
+            var definition = settings.projectile;
+            if (definition == null || definition.Prefab == null)
+                return;
+            PoolRegistry.For(definition.Prefab, definition.PrewarmCount);
+            if (definition.ImpactEffect != null)
+                PoolRegistry.For(definition.ImpactEffect, Mathf.Max(2, definition.PrewarmCount / 3));
         }
 
         private void SpawnProjectile(Vector2 direction)

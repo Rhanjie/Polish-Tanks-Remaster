@@ -52,6 +52,41 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
+        public void AbsorbLoss_AlongShove_CancelsIt()
+        {
+            var kick = new ExternalImpulse();
+            kick.Add(new Vector2(0f, -3f), Vector2.zero, 1f, 1f);
+
+            // A wall behind the tank took away the whole backward shove.
+            kick.AbsorbLoss(new Vector2(0f, -3f));
+
+            Assert.That(kick.Velocity, Is.EqualTo(Vector2.zero));
+        }
+
+        [Test]
+        public void AbsorbLoss_Partial_ShortensShove()
+        {
+            var kick = new ExternalImpulse();
+            kick.Add(new Vector2(4f, 0f), Vector2.zero, 1f, 1f);
+
+            kick.AbsorbLoss(new Vector2(1f, 5f));
+
+            Assert.That(kick.Velocity.x, Is.EqualTo(3f).Within(1e-5f));
+            Assert.That(kick.Velocity.y, Is.EqualTo(0f).Within(1e-5f));
+        }
+
+        [Test]
+        public void AbsorbLoss_AgainstShove_IsIgnored()
+        {
+            var kick = new ExternalImpulse();
+            kick.Add(new Vector2(2f, 0f), Vector2.zero, 1f, 1f);
+
+            kick.AbsorbLoss(new Vector2(-5f, 0f));
+
+            Assert.That(kick.Velocity.x, Is.EqualTo(2f));
+        }
+
+        [Test]
         public void Step_DecaysToZero()
         {
             var kick = new ExternalImpulse();

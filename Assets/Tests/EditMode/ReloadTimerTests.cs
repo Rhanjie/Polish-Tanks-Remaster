@@ -36,5 +36,36 @@ namespace PolishTanks.Tests.EditMode
             timer.Tick(0.6f);
             Assert.That(timer.IsReady, Is.True);
         }
+
+        [Test]
+        public void HeldTrigger_KeepsFireRateIndependentOfFrameRate()
+        {
+            // 900 rpm at 50 fps: firing once a frame whenever ready must still average 15 shots/s.
+            const float interval = 60f / 900f;
+            const float dt = 1f / 50f;
+            var timer = new ReloadTimer(interval);
+            var shots = 0;
+
+            for (var frame = 0; frame < 500; frame++) // 10 s
+            {
+                timer.Tick(dt);
+                while (timer.TryConsume())
+                    shots++;
+            }
+
+            Assert.That(shots, Is.InRange(149, 151));
+        }
+
+        [Test]
+        public void IdleTime_IsNotBanked()
+        {
+            var timer = new ReloadTimer(1f);
+            timer.TryConsume();
+            for (var i = 0; i < 100; i++)
+                timer.Tick(0.1f); // 10 s idle
+
+            Assert.That(timer.TryConsume(), Is.True);
+            Assert.That(timer.TryConsume(), Is.False);
+        }
     }
 }
