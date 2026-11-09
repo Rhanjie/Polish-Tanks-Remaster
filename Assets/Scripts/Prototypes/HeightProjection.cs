@@ -36,7 +36,7 @@ namespace PolishTanks.Prototypes
                 return;
             }
 
-            points.Sort((a, b) => a.x != b.x ? a.x.CompareTo(b.x) : a.y.CompareTo(b.y));
+            points.Sort(LexicographicOrder);
 
             for (var i = 0; i < points.Count; i++)
             {
@@ -60,6 +60,12 @@ namespace PolishTanks.Prototypes
             Vector2.Dot(outwardNormal, roofOffset) < -0.0001f;
 
         private static readonly List<Vector2> Corners = new List<Vector2>(8);
+        private static readonly IComparer<Vector2> LexicographicOrder = new XThenY();
+
+        private sealed class XThenY : IComparer<Vector2>
+        {
+            public int Compare(Vector2 a, Vector2 b) => a.x != b.x ? a.x.CompareTo(b.x) : a.y.CompareTo(b.y);
+        }
 
         private static float Cross(Vector2 o, Vector2 a, Vector2 b) =>
             (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);

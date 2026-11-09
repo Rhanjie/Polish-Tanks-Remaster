@@ -8,6 +8,7 @@ namespace PolishTanks.Prototypes
     /// camera center in proportion to height, walls are rebuilt every frame between footprint and
     /// roof, and the whole building fades when it hides the tracked target.
     /// </summary>
+    [DefaultExecutionOrder(200)]
     public class ExtrudedBuildingView : MonoBehaviour
     {
         private static readonly Vector2[] EdgeNormals = { Vector2.down, Vector2.right, Vector2.up, Vector2.left };
@@ -37,6 +38,7 @@ namespace PolishTanks.Prototypes
         private readonly List<Color> colors = new List<Color>(16);
         private readonly List<int> triangles = new List<int>(24);
         private readonly List<Vector2> hull = new List<Vector2>(8);
+        private readonly Vector2[] corners = new Vector2[4];
         private Mesh mesh;
         private Camera viewCamera;
         private float alpha = 1f;
@@ -114,13 +116,10 @@ namespace PolishTanks.Prototypes
             triangles.Clear();
 
             var half = building.Size * 0.5f;
-            Vector2[] corners =
-            {
-                new Vector2(-half.x, -half.y),
-                new Vector2(half.x, -half.y),
-                new Vector2(half.x, half.y),
-                new Vector2(-half.x, half.y),
-            };
+            corners[0] = new Vector2(-half.x, -half.y);
+            corners[1] = new Vector2(half.x, -half.y);
+            corners[2] = new Vector2(half.x, half.y);
+            corners[3] = new Vector2(-half.x, half.y);
 
             var light = lightDirection.normalized;
             for (var edge = 0; edge < 4; edge++)

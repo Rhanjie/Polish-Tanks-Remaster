@@ -22,6 +22,9 @@ namespace PolishTanks.Prototypes
         private Mesh mesh;
         private Vector2 builtSize;
         private float builtHeight = -1f;
+        private Vector2 builtSun;
+        private float builtLength = -1f;
+        private Color builtColor;
 
         private void OnEnable()
         {
@@ -41,8 +44,17 @@ namespace PolishTanks.Prototypes
 
         private void LateUpdate()
         {
-            if (building != null && (building.Size != builtSize || !Mathf.Approximately(building.Height, builtHeight)))
+            if (building != null && IsOutdated())
                 Rebuild();
+        }
+
+        private bool IsOutdated()
+        {
+            return building.Size != builtSize
+                || !Mathf.Approximately(building.Height, builtHeight)
+                || sunDirection != builtSun
+                || !Mathf.Approximately(shadowLength, builtLength)
+                || color != builtColor;
         }
 
         private void Rebuild()
@@ -77,6 +89,9 @@ namespace PolishTanks.Prototypes
 
             builtSize = building.Size;
             builtHeight = building.Height;
+            builtSun = sunDirection;
+            builtLength = shadowLength;
+            builtColor = color;
         }
     }
 }
