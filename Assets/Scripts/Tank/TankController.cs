@@ -22,12 +22,15 @@ namespace PolishTanks.Tank
         [SerializeField] private SpriteRenderer turretSprite;
         [SerializeField] private Transform muzzleFlash;
 
+        private bool initialized;
         private bool reapplyPending;
+        private Vector3? baseMuzzleFlashScale;
 
         /// <summary>Raised after a loadout is applied.</summary>
         public event Action<TankStats> StatsApplied;
 
-        public TankLoadout Loadout => loadout;
+        /// <summary>The loadout currently applied, or null. May differ from the Inspector field if that one was invalid.</summary>
+        public TankLoadout Loadout { get; private set; }
 
         /// <summary>Stats of the applied loadout, or null before one was applied.</summary>
         public TankStats Stats { get; private set; }
@@ -42,6 +45,7 @@ namespace PolishTanks.Tank
                 return false;
             }
 
+            Loadout = newLoadout;
             loadout = newLoadout;
             Stats = TankStatsCalculator.Calculate(newLoadout);
             ApplyStats(Stats);
@@ -52,6 +56,7 @@ namespace PolishTanks.Tank
 
         private void Awake()
         {
+            initialized = true;
             if (loadout != null)
                 Apply(loadout);
         }
@@ -59,7 +64,7 @@ namespace PolishTanks.Tank
         private void OnValidate()
         {
             // Sprite and transform changes aren't allowed inside OnValidate, so apply on the next frame.
-            if (Application.isPlaying && loadout != null && Stats != null)
+            if (Application.isPlaying && initialized && loadout != null)
                 reapplyPending = true;
         }
 
@@ -112,7 +117,11 @@ namespace PolishTanks.Tank
                 gun.Muzzle.localPosition = new Vector3(0f, turret.MuzzleDistance, 0f);
 
             if (muzzleFlash != null)
-                muzzleFlash.localScale = Vector3.one * source.MainGun.MuzzleFlashScale;
+            {
+                // Scale relative to the prefab's flash size, so 1 means "as authored".
+                baseMuzzleFlashScale ??= muzzleFlash.localScale;
+                muzzleFlash.localScale = baseMuzzleFlashScale.Value * source.MainGun.MuzzleFlashScale;
+            }
         }
     }
 }
