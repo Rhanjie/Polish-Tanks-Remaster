@@ -18,7 +18,7 @@ namespace PolishTanks.Tank.Modules
         public const float BaseBraking = 12f;
 
         /// <summary>Power-to-weight (hp/t) where the turn rate equals the tracks' rating.</summary>
-        public const float ReferencePowerToWeight = 12f;
+        public const float ReferencePowerToWeight = 16f;
 
         public const float DefaultViewRange = 9f;
         public const float MuzzleFlashDuration = 0.06f;
