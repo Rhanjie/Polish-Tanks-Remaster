@@ -2,23 +2,35 @@ using UnityEngine;
 
 namespace PolishTanks.Weapons
 {
-    /// <summary>A one-shot particle effect that plays when spawned and returns to its pool when finished.</summary>
+    /// <summary>
+    /// A one-shot particle effect that plays when spawned and returns to its pool once every
+    /// particle system in it (children included) has had time to finish.
+    /// </summary>
     [RequireComponent(typeof(ParticleSystem))]
     public class PooledEffect : PooledBehaviour
     {
         private ParticleSystem particles;
+        private float totalDuration;
+        private float timeLeft;
+
+        /// <summary>Seconds the effect stays out of the pool.</summary>
+        public float TotalDuration => totalDuration;
 
         private void Awake()
         {
             particles = GetComponent<ParticleSystem>();
-            var main = particles.main;
-            main.loop = false;
-            main.playOnAwake = false;
-            main.stopAction = ParticleSystemStopAction.Callback;
+            foreach (var system in GetComponentsInChildren<ParticleSystem>(true))
+            {
+                var main = system.main;
+                main.loop = false;
+                main.playOnAwake = false;
+                totalDuration = Mathf.Max(totalDuration, main.duration + main.startLifetime.constantMax);
+            }
         }
 
         protected internal override void OnSpawned()
         {
+            timeLeft = totalDuration;
             particles.Clear(true);
             particles.Play(true);
         }
@@ -29,6 +41,11 @@ namespace PolishTanks.Weapons
                 particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
 
-        private void OnParticleSystemStopped() => ReturnToPool();
+        private void Update()
+        {
+            timeLeft -= Time.deltaTime;
+            if (timeLeft <= 0f)
+                ReturnToPool();
+        }
     }
 }
