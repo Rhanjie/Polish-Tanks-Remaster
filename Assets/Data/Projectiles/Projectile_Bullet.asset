@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22d8e2125b8d17a4fb1e9dfe7007d81c, type: 3}
+  m_Name: Projectile_Bullet
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Weapons.ProjectileDefinition
+  prefab: {fileID: 3632388341983646451, guid: 1eab92488fea559409c72022d83db629, type: 3}
+  lifetime: 0.9
+  impactEffect: {fileID: 862695741835161345, guid: 06b332d49b1f59d43b6400b746fb3c92, type: 3}
+  prewarmCount: 30
