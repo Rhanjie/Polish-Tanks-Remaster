@@ -12,9 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/Scenes/Prototypes/ViewPrototype_TopDown.unity
-    guid: cf524ff2ab5165447b31d6009357dc9b
-  - enabled: 1
     path: Assets/Scenes/Prototypes/ViewPrototype_25D.unity
     guid: d54828b752fac84449f0b3828217cff5
   m_configObjects:
