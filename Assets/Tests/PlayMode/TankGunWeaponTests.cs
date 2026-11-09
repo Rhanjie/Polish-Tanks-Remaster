@@ -91,7 +91,7 @@ namespace PolishTanks.Tests.PlayMode
 
             rig.Gun.TryFire();
 
-            var projectile = Object.FindFirstObjectByType<Projectile>();
+            var projectile = Object.FindAnyObjectByType<Projectile>();
             Assert.That(projectile.Velocity.x, Is.EqualTo(0f).Within(1e-3f));
             Assert.That(projectile.Velocity.y, Is.EqualTo(12f).Within(1e-3f));
         }
@@ -104,7 +104,7 @@ namespace PolishTanks.Tests.PlayMode
 
             rig.Gun.TryFire();
 
-            Assert.That(Object.FindFirstObjectByType<Projectile>().Shooter, Is.SameAs(rig.Body));
+            Assert.That(Object.FindAnyObjectByType<Projectile>().Shooter, Is.SameAs(rig.Body));
         }
 
         [Test]
@@ -115,7 +115,7 @@ namespace PolishTanks.Tests.PlayMode
             var fired = rig.Gun.TryFire();
 
             Assert.That(fired, Is.True);
-            Assert.That(Object.FindFirstObjectByType<Projectile>(), Is.Null);
+            Assert.That(Object.FindAnyObjectByType<Projectile>(), Is.Null);
         }
 
         [Test]
