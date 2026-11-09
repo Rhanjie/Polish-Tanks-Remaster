@@ -26,3 +26,9 @@ MonoBehaviour:
   dispersion: 0.6
   ammoCapacity: 80
   muzzleFlashScale: 0.85
+  projectile: {fileID: 11400000, guid: 7044bf6006d36244585fc0a6b0c3df10, type: 2}
+  impactImpulse: 3
+  recoilImpulse: 10
+  shakeForce: 0.35
+  barrelKick: 0.25
+  barrelReturnTime: 0.25

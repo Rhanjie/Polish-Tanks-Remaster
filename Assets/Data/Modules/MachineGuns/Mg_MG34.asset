@@ -24,3 +24,7 @@ MonoBehaviour:
   damage: 8
   beltSize: 150
   beltChangeTime: 4
+  projectile: {fileID: 11400000, guid: edfc9befa49505442ae029074bb4332e, type: 2}
+  muzzleVelocity: 755
+  impactImpulse: 0.15
+  shakeForce: 0.02

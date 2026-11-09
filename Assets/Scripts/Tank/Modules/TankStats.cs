@@ -25,6 +25,7 @@ namespace PolishTanks.Tank.Modules
 
         // Coaxial machine gun (zeroes when none is fitted)
         public bool HasMachineGun;
+        public GunSettings MachineGun;
         public float MachineGunFireInterval;
         public float MachineGunDispersion;
         public float MachineGunDamage;

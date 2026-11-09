@@ -1,3 +1,4 @@
+using PolishTanks.Weapons;
 using UnityEngine;
 
 namespace PolishTanks.Tank.Modules
@@ -25,6 +26,20 @@ namespace PolishTanks.Tank.Modules
         [Tooltip("Muzzle flash size multiplier.")]
         [SerializeField, Min(0.1f)] private float muzzleFlashScale = 1f;
 
+        [Header("Projectile")]
+        [SerializeField] private ProjectileDefinition projectile;
+        [Tooltip("Shove given to what the shell hits (mass × velocity, tank mass is in tonnes).")]
+        [SerializeField, Min(0f)] private float impactImpulse = 5f;
+
+        [Header("Kick")]
+        [Tooltip("Shove on the tank per shot (mass × velocity, tank mass is in tonnes).")]
+        [SerializeField, Min(0f)] private float recoilImpulse = 20f;
+        [Tooltip("Camera shake strength per shot.")]
+        [SerializeField, Min(0f)] private float shakeForce = 0.6f;
+        [Tooltip("How far the turret slides back on a shot, world units.")]
+        [SerializeField, Min(0f)] private float barrelKick = 0.35f;
+        [SerializeField, Min(0.01f)] private float barrelReturnTime = 0.3f;
+
         public override ModuleSlot Slot => ModuleSlot.MainGun;
 
         public float Caliber => caliber;
@@ -35,5 +50,11 @@ namespace PolishTanks.Tank.Modules
         public float Dispersion => dispersion;
         public int AmmoCapacity => ammoCapacity;
         public float MuzzleFlashScale => muzzleFlashScale;
+        public ProjectileDefinition Projectile => projectile;
+        public float ImpactImpulse => impactImpulse;
+        public float RecoilImpulse => recoilImpulse;
+        public float ShakeForce => shakeForce;
+        public float BarrelKick => barrelKick;
+        public float BarrelReturnTime => barrelReturnTime;
     }
 }

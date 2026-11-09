@@ -2,8 +2,14 @@ using UnityEngine;
 
 namespace PolishTanks.Tank
 {
+    /// <summary>
+    /// Time between shots. Fast weapons keep the leftover time of the frame they fired in,
+    /// so their fire rate doesn't snap to whole frames; idle time is never banked.
+    /// </summary>
     public sealed class ReloadTimer
     {
+        // Positive: seconds until ready. Zero or negative: ready; a negative value is how far
+        // this frame overshot the reload, and is only kept if the gun fires this frame.
         private float remaining;
 
         public float ReloadTime { get; set; }
@@ -20,7 +26,9 @@ namespace PolishTanks.Tank
         public void Tick(float deltaTime)
         {
             if (remaining > 0f)
-                remaining = Mathf.Max(0f, remaining - deltaTime);
+                remaining -= deltaTime;
+            else
+                remaining = 0f; // ready and idle for a whole frame: drop any leftover
         }
 
         /// <summary>Starts a reload and returns true if the gun was ready.</summary>
@@ -28,7 +36,7 @@ namespace PolishTanks.Tank
         {
             if (!IsReady)
                 return false;
-            remaining = ReloadTime;
+            remaining += Mathf.Max(0.0001f, ReloadTime);
             return true;
         }
     }
