@@ -1,3 +1,4 @@
+using PolishTanks.Weapons;
 using UnityEngine;
 
 namespace PolishTanks.Tank.Modules
@@ -16,6 +17,14 @@ namespace PolishTanks.Tank.Modules
         [Tooltip("Seconds to change a belt.")]
         [SerializeField, Min(0f)] private float beltChangeTime = 4f;
 
+        [Header("Projectile")]
+        [SerializeField] private ProjectileDefinition projectile;
+        [Tooltip("Muzzle velocity in m/s. Projectiles scale it to world units.")]
+        [SerializeField, Min(1f)] private float muzzleVelocity = 750f;
+        [SerializeField, Min(0f)] private float impactImpulse = 0.15f;
+        [Tooltip("Camera shake per round. Keep it tiny, MGs fire fast.")]
+        [SerializeField, Min(0f)] private float shakeForce = 0.03f;
+
         public override ModuleSlot Slot => ModuleSlot.CoaxialMachineGun;
 
         public float Caliber => caliber;
@@ -25,5 +34,9 @@ namespace PolishTanks.Tank.Modules
         public float Damage => damage;
         public int BeltSize => beltSize;
         public float BeltChangeTime => beltChangeTime;
+        public ProjectileDefinition Projectile => projectile;
+        public float MuzzleVelocity => muzzleVelocity;
+        public float ImpactImpulse => impactImpulse;
+        public float ShakeForce => shakeForce;
     }
 }

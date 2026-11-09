@@ -12,15 +12,18 @@ namespace PolishTanks.Tank
         [SerializeField] private TankMovement movement;
         [SerializeField] private TurretAimer aimer;
         [SerializeField] private TankGun gun;
+        [SerializeField] private TankGun coaxialGun;
 
         [Header("Actions (project-wide Input Actions)")]
         [SerializeField] private string moveAction = "Player/Move";
         [SerializeField] private string aimAction = "Player/Aim";
         [SerializeField] private string fireAction = "Player/Attack";
+        [SerializeField] private string secondaryFireAction = "Player/FireSecondary";
 
         private InputAction move;
         private InputAction aim;
         private InputAction fire;
+        private InputAction secondaryFire;
         private Camera cachedCamera;
 
         private void OnEnable()
@@ -35,6 +38,7 @@ namespace PolishTanks.Tank
             move = actions.FindAction(moveAction);
             aim = actions.FindAction(aimAction);
             fire = actions.FindAction(fireAction);
+            secondaryFire = actions.FindAction(secondaryFireAction);
         }
 
         private void OnDisable()
@@ -43,6 +47,8 @@ namespace PolishTanks.Tank
                 movement.SetInput(0f, 0f);
             if (gun != null)
                 gun.SetTrigger(false);
+            if (coaxialGun != null)
+                coaxialGun.SetTrigger(false);
         }
 
         private void Update()
@@ -60,13 +66,18 @@ namespace PolishTanks.Tank
                 aimer.SetAimPoint(cam.ScreenToWorldPoint(screen));
             }
 
-            if (gun != null && fire != null)
-            {
-                gun.SetTrigger(fire.IsPressed());
-                // A click pressed and released within one frame never shows up in IsPressed.
-                if (fire.WasPressedThisFrame())
-                    gun.TryFire();
-            }
+            UpdateTrigger(gun, fire);
+            UpdateTrigger(coaxialGun, secondaryFire);
+        }
+
+        private static void UpdateTrigger(TankGun weapon, InputAction action)
+        {
+            if (weapon == null || action == null)
+                return;
+            weapon.SetTrigger(action.IsPressed());
+            // A click pressed and released within one frame never shows up in IsPressed.
+            if (action.WasPressedThisFrame())
+                weapon.TryFire();
         }
 
         private bool TryGetCamera(out Camera cam)

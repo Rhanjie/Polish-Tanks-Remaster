@@ -22,6 +22,10 @@ namespace PolishTanks.Tank.Modules
 
         public const float DefaultViewRange = 9f;
         public const float MuzzleFlashDuration = 0.06f;
+        public const float MachineGunFlashDuration = 0.03f;
+
+        /// <summary>World units per second for each m/s of muzzle velocity; real speeds would cross the screen in a frame.</summary>
+        public const float ProjectileSpeedPerMuzzleVelocity = 0.06f;
 
         /// <summary>Lists what's wrong with a loadout. Empty means it can be calculated.</summary>
         public static IReadOnlyList<string> Validate(TankLoadout loadout)
@@ -136,6 +140,15 @@ namespace PolishTanks.Tank.Modules
             {
                 reloadTime = gun.ReloadTime,
                 muzzleFlashDuration = MuzzleFlashDuration,
+                projectile = gun.Projectile,
+                projectileSpeed = gun.MuzzleVelocity * ProjectileSpeedPerMuzzleVelocity,
+                dispersion = gun.Dispersion * accuracy,
+                damage = gun.Damage,
+                impactImpulse = gun.ImpactImpulse,
+                recoilImpulse = gun.RecoilImpulse,
+                shakeForce = gun.ShakeForce,
+                barrelKick = gun.BarrelKick,
+                barrelReturnTime = gun.BarrelReturnTime,
             };
             stats.GunCaliber = gun.Caliber;
             stats.MuzzleVelocity = gun.MuzzleVelocity;
@@ -152,6 +165,20 @@ namespace PolishTanks.Tank.Modules
             stats.MachineGunDamage = mg.Damage;
             stats.MachineGunBeltSize = mg.BeltSize;
             stats.MachineGunBeltChangeTime = mg.BeltChangeTime;
+            stats.MachineGun = new GunSettings
+            {
+                reloadTime = mg.FireInterval,
+                muzzleFlashDuration = MachineGunFlashDuration,
+                projectile = mg.Projectile,
+                projectileSpeed = mg.MuzzleVelocity * ProjectileSpeedPerMuzzleVelocity,
+                dispersion = stats.MachineGunDispersion,
+                damage = mg.Damage,
+                impactImpulse = mg.ImpactImpulse,
+                shakeForce = mg.ShakeForce,
+                barrelReturnTime = 0.1f,
+                magazineSize = mg.BeltSize,
+                magazineReloadTime = mg.BeltChangeTime,
+            };
         }
     }
 }

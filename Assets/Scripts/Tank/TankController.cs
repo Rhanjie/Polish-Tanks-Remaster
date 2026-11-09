@@ -16,6 +16,7 @@ namespace PolishTanks.Tank
         [SerializeField] private TankMovement movement;
         [SerializeField] private TurretAimer aimer;
         [SerializeField] private TankGun gun;
+        [SerializeField] private TankGun coaxialGun;
         [SerializeField] private Rigidbody2D body;
         [SerializeField] private BoxCollider2D hullCollider;
         [SerializeField] private SpriteRenderer hullSprite;
@@ -84,6 +85,12 @@ namespace PolishTanks.Tank
                 aimer.Settings = stats.Turret;
             if (gun != null)
                 gun.Settings = stats.Gun;
+            if (coaxialGun != null)
+            {
+                coaxialGun.enabled = stats.HasMachineGun;
+                if (stats.HasMachineGun)
+                    coaxialGun.Settings = stats.MachineGun;
+            }
             if (body != null)
                 body.mass = stats.TotalMass / 1000f; // tonnes keep the physics numbers small
         }

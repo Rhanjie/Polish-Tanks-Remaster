@@ -11,8 +11,14 @@ namespace PolishTanks.Tank
     {
         [SerializeField] private TankDriveSettings settings = TankDriveSettings.Default;
 
+        [Header("Recoil and hits")]
+        [Tooltip("How fast a recoil shove fades, per second. Higher = tracks bite sooner.")]
+        [SerializeField, Min(0f)] private float impulseLinearDecay = 4f;
+        [SerializeField, Min(0f)] private float impulseAngularDecay = 6f;
+
         private Rigidbody2D body;
         private TrackedDriveModel model;
+        private readonly ExternalImpulse kick = new ExternalImpulse();
         private float throttle;
         private float steer;
 
@@ -29,6 +35,22 @@ namespace PolishTanks.Tank
 
         /// <summary>Signed speed along the hull's forward axis, units per second.</summary>
         public float CurrentSpeed => model?.Speed ?? 0f;
+
+        /// <summary>Velocity currently added on top of the drive by recoil and hits.</summary>
+        public Vector2 ImpulseVelocity => kick.Velocity;
+
+        /// <summary>
+        /// Shoves the hull (gun recoil, a hit). Setting the body's velocity directly would be
+        /// overwritten by the drive next step, so the shove is layered on and fades out.
+        /// </summary>
+        /// <param name="impulse">World impulse (mass × velocity).</param>
+        /// <param name="worldPoint">Where it acts; off-center points also turn the hull.</param>
+        public void AddImpulse(Vector2 impulse, Vector2 worldPoint)
+        {
+            if (body == null)
+                return;
+            kick.Add(impulse, worldPoint - body.worldCenterOfMass, body.mass, body.inertia);
+        }
 
         /// <param name="newThrottle">-1 (full reverse) to 1 (full forward).</param>
         /// <param name="newSteer">-1 (left) to 1 (right).</param>
@@ -50,6 +72,7 @@ namespace PolishTanks.Tank
             throttle = 0f;
             steer = 0f;
             model?.Reset();
+            kick.Reset();
             if (body != null)
             {
                 body.linearVelocity = Vector2.zero;
@@ -69,11 +92,14 @@ namespace PolishTanks.Tank
             var forward = body.GetRelativeVector(Vector2.up);
 
             // Read back what physics did last step, so collisions slow the hull down.
-            model.SyncSpeed(Vector2.Dot(body.linearVelocity, forward));
-            model.Step(throttle, steer, Time.fixedDeltaTime);
+            // The recoil part was added by us, so it doesn't count as track speed.
+            var dt = Time.fixedDeltaTime;
+            model.SyncSpeed(Vector2.Dot(body.linearVelocity - kick.Velocity, forward));
+            model.Step(throttle, steer, dt);
+            kick.Step(dt, impulseLinearDecay, impulseAngularDecay);
 
-            body.linearVelocity = forward * model.Speed;
-            body.angularVelocity = model.AngularSpeed;
+            body.linearVelocity = forward * model.Speed + kick.Velocity;
+            body.angularVelocity = model.AngularSpeed + kick.AngularVelocity;
         }
     }
 }
