@@ -61,7 +61,12 @@ namespace PolishTanks.Tank
             }
 
             if (gun != null && fire != null)
+            {
                 gun.SetTrigger(fire.IsPressed());
+                // A click pressed and released within one frame never shows up in IsPressed.
+                if (fire.WasPressedThisFrame())
+                    gun.TryFire();
+            }
         }
 
         private bool TryGetCamera(out Camera cam)

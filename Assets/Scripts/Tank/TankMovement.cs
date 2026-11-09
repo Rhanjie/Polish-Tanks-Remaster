@@ -65,7 +65,8 @@ namespace PolishTanks.Tank
 
         private void FixedUpdate()
         {
-            Vector2 forward = transform.up;
+            // Read the pose from the body: with interpolation on, the transform lags one physics step.
+            var forward = body.GetRelativeVector(Vector2.up);
 
             // Read back what physics did last step, so collisions slow the hull down.
             model.SyncSpeed(Vector2.Dot(body.linearVelocity, forward));
