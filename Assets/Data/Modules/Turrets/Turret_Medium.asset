@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e7a012a3cc0694d8a15b1d032a7ddc, type: 3}
+  m_Name: Turret_Medium
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.TurretModule
+  displayName: Medium Turret
+  description: Three-man turret with a commander's cupola.
+  icon: {fileID: 0}
+  mass: 6000
+  cost: 800
+  tier: 2
+  sprite: {fileID: 21300000, guid: 649c54ccb6cba214d993a454aea4c88a, type: 3}
+  visualScale: 1
+  muzzleDistance: 4
+  maxTraverseSpeed: 90
+  traverseAcceleration: 240
+  responseTime: 0.25
+  maxGunMass: 2500
+  frontArmor: 60
+  sideArmor: 40

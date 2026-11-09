@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5872befe97a010a44a534c90f88c485d, type: 3}
+  m_Name: Loadout_Heavy
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.TankLoadout
+  displayName: Heavy Breakthrough
+  hull: {fileID: 11400000, guid: 3f5c9fd7ab9a9dd498a97a8d858bd694, type: 2}
+  engine: {fileID: 11400000, guid: 6fd78d4cab306594ea92851f8eac3e73, type: 2}
+  transmission: {fileID: 11400000, guid: 4a96a7e83969e9241a6b54fa1e8d5b89, type: 2}
+  tracks: {fileID: 11400000, guid: 923c10aa4e6f402459034be0e9052162, type: 2}
+  turret: {fileID: 11400000, guid: 53b76ceae5ae79344a7254bceefc9274, type: 2}
+  mainGun: {fileID: 11400000, guid: 4e0f315331ef7dc4aae2f3841c84a8ab, type: 2}
+  coaxialMachineGun: {fileID: 11400000, guid: 3e85d7f65a76b4f4eb9f64e4288cc72b, type: 2}
+  optics: {fileID: 11400000, guid: 79995e17757101b4e800474f9d233ea2, type: 2}
+  equipment:
+  - {fileID: 11400000, guid: 370494248153bf7499255a5488aff256, type: 2}
+  - {fileID: 11400000, guid: bcc6fcc6d452478438e7be725c5c853e, type: 2}
+  - {fileID: 11400000, guid: 2cbdc953cb70f3b4f9b23b5897dad194, type: 2}
