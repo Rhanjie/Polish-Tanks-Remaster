@@ -484,6 +484,7 @@ GameObject:
   - component: {fileID: 599882999}
   - component: {fileID: 599882998}
   - component: {fileID: 599882997}
+  - component: {fileID: 599883000}
   m_Layer: 0
   m_Name: Tank Follow Camera
   m_TagString: Untagged
@@ -580,6 +581,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &599883000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599882996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a6f5ac63806e874bb1aba6edefc4cd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.OpticsCameraZoom
+  tank: {fileID: 1035006131232419062}
+  zoomTime: 0.5
 --- !u!1 &604919148
 GameObject:
   m_ObjectHideFlags: 0
@@ -965,6 +980,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
   m_PrefabInstance: {fileID: 1035006131232419060}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1035006131232419062 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2523336779600019954, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+  m_PrefabInstance: {fileID: 1035006131232419060}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aca3dc1d3280c5248b2d4e7ec4966d03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankController
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

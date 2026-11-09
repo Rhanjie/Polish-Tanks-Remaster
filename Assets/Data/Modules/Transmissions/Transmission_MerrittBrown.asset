@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75596a9c39812a540b67edaeeb32d43e, type: 3}
+  m_Name: Transmission_MerrittBrown
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.TransmissionModule
+  displayName: Merritt-Brown Triple Differential
+  description: 'Regenerative steering: turns sharply without losing speed.'
+  icon: {fileID: 0}
+  mass: 800
+  cost: 700
+  tier: 3
+  gearCount: 4
+  accelerationMultiplier: 1
+  reverseSpeedRatio: 0.4
+  efficiency: 0.9
+  turnRateMultiplier: 1.3

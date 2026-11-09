@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5872befe97a010a44a534c90f88c485d, type: 3}
+  m_Name: Loadout_Light
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.TankLoadout
+  displayName: Light Scout
+  hull: {fileID: 11400000, guid: 62d61b84acc4540459dd6fe83247bb3d, type: 2}
+  engine: {fileID: 11400000, guid: 2b31b12dd4462464f82f2858aceb7c89, type: 2}
+  transmission: {fileID: 11400000, guid: 5d0889c77bc08a2458ea34c8f0909aa6, type: 2}
+  tracks: {fileID: 11400000, guid: 4abee0aebd0fcc448bf4923f17ee5c9a, type: 2}
+  turret: {fileID: 11400000, guid: 286bee7c4d2e3a04b997eb5d5a2fbdb9, type: 2}
+  mainGun: {fileID: 11400000, guid: 00d45a33112a44b4fb682e0571ca6b7b, type: 2}
+  coaxialMachineGun: {fileID: 11400000, guid: 4fb5973447b35ea499b2c08086d6ec7b, type: 2}
+  optics: {fileID: 11400000, guid: 1a9f082e0ddef8d4e87e1b877e8929a7, type: 2}
+  equipment:
+  - {fileID: 11400000, guid: 2cbdc953cb70f3b4f9b23b5897dad194, type: 2}

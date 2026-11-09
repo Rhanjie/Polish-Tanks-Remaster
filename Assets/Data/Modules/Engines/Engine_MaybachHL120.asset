@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 579858a642ba0f54ab6549c68db58726, type: 3}
+  m_Name: Engine_MaybachHL120
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.EngineModule
+  displayName: Maybach HL120 TRM
+  description: Reliable petrol V12, 300 hp.
+  icon: {fileID: 0}
+  mass: 1000
+  cost: 300
+  tier: 1
+  horsePower: 300
+  traverseDriveMultiplier: 1
+  reliability: 0.85
+  fuelCapacity: 320

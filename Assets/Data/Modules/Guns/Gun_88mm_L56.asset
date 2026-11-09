@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 278f6ac87c365794d849a76a6d0b8b22, type: 3}
+  m_Name: Gun_88mm_L56
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.MainGunModule
+  displayName: 8.8 cm KwK 36 L/56
+  description: The famous eighty-eight. Hits like a train, reloads like one too.
+  icon: {fileID: 0}
+  mass: 2600
+  cost: 1600
+  tier: 3
+  caliber: 88
+  reloadTime: 3.8
+  muzzleVelocity: 810
+  damage: 220
+  penetration: 120
+  dispersion: 0.3
+  ammoCapacity: 90
+  muzzleFlashScale: 1.35

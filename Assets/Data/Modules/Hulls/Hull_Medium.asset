@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3616f728bcebdb14799f43e870570cd1, type: 3}
+  m_Name: Hull_Medium
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.HullModule
+  displayName: Medium Hull
+  description: Balanced protection and weight. The workhorse.
+  icon: {fileID: 0}
+  mass: 16000
+  cost: 900
+  tier: 2
+  sprite: {fileID: 21300000, guid: b43097f645835aa46bed422da00d672d, type: 3}
+  visualScale: 1
+  colliderSize: {x: 2.6, y: 4.1}
+  turretMount: {x: 0, y: 0.15}
+  frontArmor: 50
+  sideArmor: 30
+  rearArmor: 20
+  hitPoints: 500
+  equipmentSlots: 2

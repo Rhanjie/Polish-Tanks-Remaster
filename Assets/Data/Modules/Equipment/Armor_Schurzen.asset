@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d113a1183d40cdd43bfde3b672f20e47, type: 3}
+  m_Name: Armor_Schurzen
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.ArmorKitModule
+  displayName: "Sch\xFCrzen Side Skirts"
+  description: Spaced plates that stop light rounds on the flanks.
+  icon: {fileID: 0}
+  mass: 800
+  cost: 200
+  tier: 1
+  extraFrontArmor: 0
+  extraSideArmor: 8
+  extraHitPoints: 30
