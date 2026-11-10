@@ -6975,9 +6975,9 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 2a9f5788e0d780344936ccb3ffe32251, type: 3}
+  m_Resource: {fileID: 8300000, guid: 6ebe63526435bd4468c61b65f5b987b1, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.3
+  m_Volume: 0.28
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -7074,4 +7074,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Weapons.PooledEffect
   soundVariants:
-  - {fileID: 8300000, guid: 2a9f5788e0d780344936ccb3ffe32251, type: 3}
+  - {fileID: 8300000, guid: 6ebe63526435bd4468c61b65f5b987b1, type: 3}
+  - {fileID: 8300000, guid: 0f7c8bade9233344e93d9062a6c0f251, type: 3}
