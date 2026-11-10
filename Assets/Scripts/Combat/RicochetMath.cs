@@ -6,13 +6,20 @@ namespace PolishTanks.Combat
     /// Ricochet rules for a shell that failed to penetrate. Near-square hits never bounce: the shell stays in the
     /// plate, flattened or broken up. From <see cref="StartAngle"/> to <see cref="FullAngle"/> (degrees from the
     /// plate normal, so 50 to 20 degrees from the surface) the chance rises to certain. A shell at least
-    /// <see cref="OvermatchRatio"/> times the plate thickness digs in instead. The bounce mirrors off the plate,
-    /// skims flatter along it and scatters noticeably.
+    /// <see cref="OvermatchRatio"/> times the plate thickness digs in instead. A projectile much thinner than the
+    /// plate glances off sooner: from <see cref="ThinRatio"/> to <see cref="ThickRatio"/> times its caliber the
+    /// thresholds slide down to <see cref="ThickStartAngle"/> and <see cref="ThickFullAngle"/>, so rifle rounds
+    /// skip off tank plates that would stop a shell. The bounce mirrors off the plate, skims flatter along it
+    /// and scatters noticeably.
     /// </summary>
     public static class RicochetMath
     {
         public const float StartAngle = 40f;
         public const float FullAngle = 70f;
+        public const float ThickStartAngle = 20f;
+        public const float ThickFullAngle = 50f;
+        public const float ThinRatio = 1.5f;
+        public const float ThickRatio = 8f;
         public const float OvermatchRatio = 3f;
         public const float RetainedPower = 0.3f;
         public const float RetainedSpeed = 0.6f;
@@ -23,15 +30,21 @@ namespace PolishTanks.Combat
         public static bool IsOvermatch(float caliber, float plateThickness) =>
             plateThickness <= 0f || caliber >= plateThickness * OvermatchRatio;
 
-        public static float Chance(float impactAngle, bool overmatch)
+        public static float PlateToCaliber(float plateThickness, float caliber) =>
+            caliber > 0f ? plateThickness / caliber : 0f;
+
+        public static float Chance(float impactAngle, bool overmatch, float plateToCaliber = 0f)
         {
             if (overmatch)
                 return 0f;
-            return Mathf.InverseLerp(StartAngle, FullAngle, impactAngle);
+            var thick = Mathf.InverseLerp(ThinRatio, ThickRatio, plateToCaliber);
+            var start = Mathf.Lerp(StartAngle, ThickStartAngle, thick);
+            var full = Mathf.Lerp(FullAngle, ThickFullAngle, thick);
+            return Mathf.InverseLerp(start, full, impactAngle);
         }
 
-        public static bool Rolls(float impactAngle, bool overmatch, float random01) =>
-            Chance(impactAngle, overmatch) > Mathf.Clamp01(random01);
+        public static bool Rolls(float impactAngle, bool overmatch, float random01, float plateToCaliber = 0f) =>
+            Chance(impactAngle, overmatch, plateToCaliber) > Mathf.Clamp01(random01);
 
         public static Vector2 Deflect(Vector2 direction, Vector2 surfaceNormal, float random01)
         {

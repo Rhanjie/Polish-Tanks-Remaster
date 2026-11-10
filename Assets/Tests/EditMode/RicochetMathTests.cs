@@ -27,6 +27,23 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
+        public void Chance_RifleRoundOnThickPlate_GlancesAtShallowerAngle()
+        {
+            var ratio = RicochetMath.PlateToCaliber(88f, 7.92f);
+
+            Assert.That(RicochetMath.Chance(49f, false, ratio), Is.GreaterThan(0.9f));
+            Assert.That(RicochetMath.Chance(49f, false, 0f), Is.LessThan(0.35f));
+        }
+
+        [Test]
+        public void Chance_ShellNearPlateThickness_KeepsDefaultThresholds()
+        {
+            var ratio = RicochetMath.PlateToCaliber(88f, 75f);
+
+            Assert.That(RicochetMath.Chance(55f, false, ratio), Is.EqualTo(RicochetMath.Chance(55f, false)).Within(1e-5f));
+        }
+
+        [Test]
         public void IsOvermatch_SmallCaliberOnThickPlate_IsFalse()
         {
             Assert.That(RicochetMath.IsOvermatch(7.92f, 25f), Is.False);

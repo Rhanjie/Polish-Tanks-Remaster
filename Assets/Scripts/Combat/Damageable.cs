@@ -80,7 +80,8 @@ namespace PolishTanks.Combat
         private static bool GlancesOff(in ProjectileHit hit, Vector2 face, float plate)
         {
             var angle = ArmorMath.ImpactAngle(face, hit.Direction);
-            return RicochetMath.Rolls(angle, RicochetMath.IsOvermatch(hit.Caliber, plate), Random.value);
+            return RicochetMath.Rolls(angle, RicochetMath.IsOvermatch(hit.Caliber, plate), Random.value,
+                RicochetMath.PlateToCaliber(plate, hit.Caliber));
         }
 
         private HitResponse Respond(HitOutcome outcome, Vector2 face, float dealt)
