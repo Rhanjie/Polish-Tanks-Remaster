@@ -3,7 +3,7 @@
 Gra 2D w Unity 6 (`6000.6.7f1`), URP 2D, Input System, Unity Test Framework.
 Edytor jest zwykle otwarty i użytkownik pracuje w nim **równolegle z agentem**.
 
-Jeśli w katalogu projektu jest `custom-rules.md` (lokalny, w `.gitignore`), przeczytaj go na starcie i stosuj. Ma pierwszeństwo przed tym plikiem w sprawach stylu tekstu.
+Jeśli w katalogu projektu jest `custom-rules.md` (lokalny, w `.gitignore`), przeczytaj go na starcie i stosuj. Ma pierwszeństwo przed tym plikiem w sprawach tekstu, commitów, PR i dokumentacji.
 
 ## Sterowanie edytorem: Unity CLI
 
