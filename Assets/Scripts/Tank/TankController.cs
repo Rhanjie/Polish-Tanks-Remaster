@@ -8,21 +8,20 @@ namespace PolishTanks.Tank
     /// Builds the tank from a <see cref="TankLoadout"/>: computes its stats and pushes them
     /// into movement, turret and gun, and swaps sprites, collider and mass to match the modules.
     /// </summary>
+    [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(TankMovement))]
     public class TankController : MonoBehaviour
     {
         [SerializeField] private TankLoadout loadout;
 
-        [Header("Parts")]
-        [SerializeField] private TankMovement movement;
-        [SerializeField] private TurretAimer aimer;
-        [SerializeField] private TankGun gun;
-        [SerializeField] private TankGun coaxialGun;
-        [SerializeField] private Rigidbody2D body;
-        [SerializeField] private BoxCollider2D hullCollider;
-        [SerializeField] private SpriteRenderer hullSprite;
-        [SerializeField] private SpriteRenderer turretSprite;
-        [SerializeField] private Transform muzzleFlash;
-
+        private TankMovement movement;
+        private Rigidbody2D body;
+        private BoxCollider2D hullCollider;
+        private TurretAimer aimer;
+        private TankGun gun;
+        private TankGun coaxialGun;
+        private HullView hullView;
+        private TurretView turretView;
+        private bool partsFound;
         private bool initialized;
         private bool reapplyPending;
         private Vector3? baseMuzzleFlashScale;
@@ -42,6 +41,7 @@ namespace PolishTanks.Tank
                 return false;
             }
 
+            FindParts();
             Loadout = newLoadout;
             loadout = newLoadout;
             Stats = TankStatsCalculator.Calculate(newLoadout);
@@ -51,8 +51,24 @@ namespace PolishTanks.Tank
             return true;
         }
 
+        private void FindParts()
+        {
+            if (partsFound)
+                return;
+            partsFound = true;
+            movement = GetComponent<TankMovement>();
+            body = GetComponent<Rigidbody2D>();
+            hullCollider = GetComponent<BoxCollider2D>();
+            aimer = GetComponentInChildren<TurretAimer>(true);
+            gun = TankGun.Find(gameObject, GunMount.Main);
+            coaxialGun = TankGun.Find(gameObject, GunMount.Coaxial);
+            hullView = GetComponentInChildren<HullView>(true);
+            turretView = GetComponentInChildren<TurretView>(true);
+        }
+
         private void Awake()
         {
+            FindParts();
             initialized = true;
             if (loadout != null)
                 Apply(loadout);
@@ -95,33 +111,23 @@ namespace PolishTanks.Tank
             var hull = source.Hull;
             var turret = source.Turret;
 
-            if (hullSprite != null)
-            {
-                if (hull.Sprite != null)
-                    hullSprite.sprite = hull.Sprite;
-                hullSprite.transform.localScale = Vector3.one * hull.VisualScale;
-            }
-
+            if (hullView != null)
+                hullView.Apply(hull);
+            if (turretView != null)
+                turretView.Apply(turret);
             if (hullCollider != null)
                 hullCollider.size = hull.ColliderSize;
+            if (aimer != null)
+                aimer.transform.localPosition = hull.TurretMount;
+            if (gun == null)
+                return;
 
-            if (aimer != null && aimer.Turret != null)
-                aimer.Turret.localPosition = hull.TurretMount;
-
-            if (turretSprite != null)
+            gun.Muzzle.localPosition = new Vector3(0f, turret.MuzzleDistance, 0f);
+            var flash = gun.MuzzleFlash;
+            if (flash != null)
             {
-                if (turret.Sprite != null)
-                    turretSprite.sprite = turret.Sprite;
-                turretSprite.transform.localScale = Vector3.one * turret.VisualScale;
-            }
-
-            if (gun != null && gun.Muzzle != null)
-                gun.Muzzle.localPosition = new Vector3(0f, turret.MuzzleDistance, 0f);
-
-            if (muzzleFlash != null)
-            {
-                baseMuzzleFlashScale ??= muzzleFlash.localScale;
-                muzzleFlash.localScale = baseMuzzleFlashScale.Value * source.MainGun.MuzzleFlashScale;
+                baseMuzzleFlashScale ??= flash.localScale;
+                flash.localScale = baseMuzzleFlashScale.Value * source.MainGun.MuzzleFlashScale;
             }
         }
     }
