@@ -11,6 +11,10 @@ namespace PolishTanks.Weapons
     /// </summary>
     public class Projectile : PooledBehaviour
     {
+        private const float EmbeddedImpulseFactor = 3f;
+        private const float DamagedTrailWidth = 0.5f;
+        private const float DamagedTracerScale = 0.65f;
+
         [Tooltip("Radius of the swept circle, world units.")]
         [SerializeField, Min(0.001f)] private float radius = 0.06f;
         [SerializeField] private LayerMask hitMask = ~0;
@@ -24,6 +28,10 @@ namespace PolishTanks.Weapons
         private Vector2 velocity;
         private float lifeLeft;
         private Collider2D bouncedOff;
+        private Transform tracer;
+        private Vector3 tracerScale;
+        private float trailWidth = 1f;
+        private bool visualsCached;
 
         public Vector2 Velocity => velocity;
         public Rigidbody2D Shooter => shot.Shooter;
@@ -33,6 +41,7 @@ namespace PolishTanks.Weapons
         public void Launch(in ProjectileShot projectileShot)
         {
             shot = projectileShot;
+            ShowDamage(false);
             velocity = shot.Velocity;
             lifeLeft = shot.Lifetime;
 
@@ -44,6 +53,23 @@ namespace PolishTanks.Weapons
                 trail.Clear();
                 trail.emitting = true;
             }
+        }
+
+        private void ShowDamage(bool damaged)
+        {
+            if (!visualsCached)
+            {
+                visualsCached = true;
+                var sprite = GetComponentInChildren<SpriteRenderer>(true);
+                tracer = sprite != null ? sprite.transform : null;
+                tracerScale = tracer != null ? tracer.localScale : Vector3.one;
+                trailWidth = trail != null ? trail.widthMultiplier : 1f;
+            }
+
+            if (tracer != null)
+                tracer.localScale = damaged ? tracerScale * DamagedTracerScale : tracerScale;
+            if (trail != null)
+                trail.widthMultiplier = damaged ? trailWidth * DamagedTrailWidth : trailWidth;
         }
 
         protected internal override void OnReturned()
@@ -137,7 +163,11 @@ namespace PolishTanks.Weapons
                 response = new HitResponse(HitOutcome.Blocked, response.Normal, response.Material);
 
             var glancing = response.Outcome == HitOutcome.Ricochet;
-            Push(hit, direction, glancing ? shot.Impulse * RicochetMath.RetainedPower : shot.Impulse);
+            var embedded = response.Outcome == HitOutcome.Blocked && response.Material == SurfaceMaterial.Metal;
+            var impulse = glancing ? shot.Impulse * RicochetMath.RetainedPower
+                : embedded ? shot.Impulse * EmbeddedImpulseFactor
+                : shot.Impulse;
+            Push(hit, direction, impulse);
 
             if (glancing)
             {
@@ -146,7 +176,8 @@ namespace PolishTanks.Weapons
             }
 
             var brokeUp = response.Outcome == HitOutcome.Blocked || (shot.Ricocheted && response.Outcome != HitOutcome.Penetrated);
-            var effects = brokeUp && shot.BlockedPool != null ? shot.BlockedPool : shot.ImpactPool;
+            var onMetal = response.Material == SurfaceMaterial.Metal;
+            var effects = brokeUp && onMetal && shot.BlockedPool != null ? shot.BlockedPool : shot.ImpactPool;
             effects?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
             return false;
         }
@@ -154,7 +185,11 @@ namespace PolishTanks.Weapons
         private void Push(RaycastHit2D hit, Vector2 direction, float impulse)
         {
             var body = hit.rigidbody;
-            if (body != null && body.bodyType == RigidbodyType2D.Dynamic && impulse > 0f)
+            if (body == null || body.bodyType != RigidbodyType2D.Dynamic || impulse <= 0f)
+                return;
+            if (body.TryGetComponent<IImpulseReceiver>(out var receiver))
+                receiver.ReceiveHit(direction * impulse, hit.point);
+            else
                 body.AddForceAtPosition(direction * impulse, hit.point, ForceMode2D.Impulse);
         }
 
@@ -170,6 +205,7 @@ namespace PolishTanks.Weapons
             shot.PenetrationMax *= RicochetMath.RetainedPower;
             bouncedOff = hit.collider;
 
+            ShowDamage(true);
             var rotation = Quaternion.LookRotation(Vector3.forward, outgoing);
             transform.SetPositionAndRotation(hit.centroid + normal.normalized * 0.02f, rotation);
             var effects = material == SurfaceMaterial.Metal || shot.OtherRicochetPool == null ? shot.RicochetPool : shot.OtherRicochetPool;

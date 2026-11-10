@@ -1,3 +1,4 @@
+using PolishTanks.Weapons;
 using UnityEngine;
 
 namespace PolishTanks.Tank
@@ -7,7 +8,7 @@ namespace PolishTanks.Tank
     /// The hull's local up axis is its forward direction.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    public class TankMovement : MonoBehaviour
+    public class TankMovement : MonoBehaviour, IImpulseReceiver
     {
         private TankDriveSettings settings = TankDriveSettings.Default;
 
@@ -17,6 +18,7 @@ namespace PolishTanks.Tank
         private Vector2 requestedVelocity;
         private float throttle;
         private float steer;
+        private float staggerLeft;
 
         public TankDriveSettings Settings
         {
@@ -32,6 +34,23 @@ namespace PolishTanks.Tank
         public float CurrentSpeed => model?.Speed ?? 0f;
 
         public Vector2 ImpulseVelocity => kick.Velocity;
+
+        public event System.Action<float> Staggered;
+
+        public float StaggerRemaining => staggerLeft;
+        public bool IsStaggered => staggerLeft > 0f;
+
+        public void ReceiveHit(Vector2 impulse, Vector2 worldPoint)
+        {
+            AddImpulse(impulse, worldPoint);
+            if (body == null)
+                return;
+            var seconds = HitStagger.Duration(impulse.magnitude, body.mass);
+            if (seconds <= staggerLeft)
+                return;
+            staggerLeft = seconds;
+            Staggered?.Invoke(seconds);
+        }
 
         public void AddImpulse(Vector2 impulse, Vector2 worldPoint)
         {
@@ -59,6 +78,7 @@ namespace PolishTanks.Tank
             steer = 0f;
             model?.Reset();
             kick.Reset();
+            staggerLeft = 0f;
             requestedVelocity = Vector2.zero;
             if (body != null)
             {
@@ -74,7 +94,9 @@ namespace PolishTanks.Tank
             var dt = Time.fixedDeltaTime;
             kick.AbsorbLoss(requestedVelocity - body.linearVelocity);
             model.SyncSpeed(Vector2.Dot(body.linearVelocity - kick.Velocity, forward));
-            model.Step(throttle, steer, dt);
+            var staggered = staggerLeft > 0f;
+            staggerLeft = Mathf.Max(0f, staggerLeft - dt);
+            model.Step(staggered ? 0f : throttle, staggered ? 0f : steer, dt);
             kick.Step(dt, settings.impulseLinearDecay, settings.impulseAngularDecay);
 
             requestedVelocity = forward * model.Speed + kick.Velocity;
