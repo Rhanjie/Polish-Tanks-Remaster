@@ -18,4 +18,5 @@ MonoBehaviour:
     side: 6
     rear: 6
   destroyedEffect: {fileID: 210976013046461783, guid: 50113c86e85e2314d99f85a212442de3, type: 3}
+  surface: 1
   removeOnDeath: 1

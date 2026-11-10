@@ -17,4 +17,5 @@ MonoBehaviour:
   impactEffect: {fileID: 6518291198489183723, guid: 7bfb20a8d6ad14c4cbf7986d688327ac, type: 3}
   blockedEffect: {fileID: 5721371158852074015, guid: cbc5a2dfd2d4ee24bbb243102df18c97, type: 3}
   ricochetEffect: {fileID: 2440509177171920232, guid: fa353291f24835f4992b8e79a49ee96e, type: 3}
+  otherRicochetEffect: {fileID: 2440509177171920232, guid: e8892c8f841221940934ec5b4dbd4276, type: 3}
   prewarmCount: 6

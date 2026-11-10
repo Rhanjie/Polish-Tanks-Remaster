@@ -7073,3 +7073,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f60bacf97a41d4b40b2214490bb3f5ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Weapons.PooledEffect
+  soundVariants:
+  - {fileID: 8300000, guid: 2a9f5788e0d780344936ccb3ffe32251, type: 3}
