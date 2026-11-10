@@ -30,6 +30,12 @@ namespace PolishTanks.Tank
         [Tooltip("How fast the hull reaches the requested turn rate, degrees/s².")]
         [Min(0f)] public float turnAcceleration;
 
+        [Tooltip("How fast a recoil or hit shove fades, per second. Higher means the tracks bite sooner.")]
+        [Min(0f)] public float impulseLinearDecay;
+
+        [Tooltip("How fast a recoil or hit spin fades, per second.")]
+        [Min(0f)] public float impulseAngularDecay;
+
         public static TankDriveSettings Default => new TankDriveSettings
         {
             maxForwardSpeed = 6f,
@@ -40,6 +46,8 @@ namespace PolishTanks.Tank
             turnRate = 70f,
             turnRateAtMaxSpeed = 45f,
             turnAcceleration = 360f,
+            impulseLinearDecay = 4f,
+            impulseAngularDecay = 6f,
         };
     }
 }

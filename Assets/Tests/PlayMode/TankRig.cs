@@ -88,18 +88,11 @@ namespace PolishTanks.Tests.PlayMode
             muzzleObject.transform.SetParent(tank.Turret, false);
             tank.Muzzle = muzzleObject.transform;
 
-            tank.Aimer = tank.Root.AddComponent<TurretAimer>();
-            SetField(tank.Aimer, "turret", tank.Turret);
-            tank.Gun = tank.Root.AddComponent<TankGun>();
-            SetField(tank.Gun, "muzzle", tank.Muzzle);
+            tank.Aimer = turretObject.AddComponent<TurretAimer>();
+            tank.Gun = muzzleObject.AddComponent<TankGun>();
 
             tank.Controller = tank.Root.AddComponent<TankController>();
             SetField(tank.Controller, "loadout", loadout);
-            SetField(tank.Controller, "movement", tank.Movement);
-            SetField(tank.Controller, "aimer", tank.Aimer);
-            SetField(tank.Controller, "gun", tank.Gun);
-            SetField(tank.Controller, "body", tank.Body);
-            SetField(tank.Controller, "hullCollider", tank.Collider);
 
             tank.Root.SetActive(true);
             return tank;

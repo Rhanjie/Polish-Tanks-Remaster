@@ -16,6 +16,9 @@ namespace PolishTanks.Tank.Modules
 
         public const float ReferencePowerToWeight = 16f;
 
+        public const float BaseImpulseLinearDecay = 4f;
+        public const float BaseImpulseAngularDecay = 6f;
+
         public const float DefaultViewRange = 9f;
         public const float MuzzleFlashDuration = 0.06f;
         public const float MachineGunFlashDuration = 0.03f;
@@ -111,6 +114,8 @@ namespace PolishTanks.Tank.Modules
                 turnRate = turnRate,
                 turnRateAtMaxSpeed = turnRate * tracks.TurnRateAtSpeedRatio,
                 turnAcceleration = turnRate * 5f,
+                impulseLinearDecay = BaseImpulseLinearDecay * tracks.Grip,
+                impulseAngularDecay = BaseImpulseAngularDecay * tracks.Grip,
             };
         }
 
@@ -131,6 +136,7 @@ namespace PolishTanks.Tank.Modules
             {
                 reloadTime = gun.ReloadTime,
                 muzzleFlashDuration = MuzzleFlashDuration,
+                smokeParticles = gun.MuzzleSmoke,
                 projectile = gun.Projectile,
                 projectileSpeed = gun.MuzzleVelocity * ProjectileSpeedPerMuzzleVelocity,
                 dispersion = gun.Dispersion * accuracy,

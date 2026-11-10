@@ -26,6 +26,9 @@ namespace PolishTanks.Tank.Modules
         [Tooltip("Muzzle flash size multiplier.")]
         [SerializeField, Min(0.1f)] private float muzzleFlashScale = 1f;
 
+        [Tooltip("Smoke particles puffed from the muzzle per shot.")]
+        [SerializeField, Min(0)] private int muzzleSmoke = 10;
+
         [Header("Projectile")]
         [SerializeField] private ProjectileDefinition projectile;
         [Tooltip("Shove given to what the shell hits (mass × velocity, tank mass is in tonnes).")]
@@ -50,6 +53,7 @@ namespace PolishTanks.Tank.Modules
         public float Dispersion => dispersion;
         public int AmmoCapacity => ammoCapacity;
         public float MuzzleFlashScale => muzzleFlashScale;
+        public int MuzzleSmoke => muzzleSmoke;
         public ProjectileDefinition Projectile => projectile;
         public float ImpactImpulse => impactImpulse;
         public float RecoilImpulse => recoilImpulse;

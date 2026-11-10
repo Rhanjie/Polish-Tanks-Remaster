@@ -9,15 +9,24 @@ namespace PolishTanks.Tank
     /// Feeds the injected player input into the tank components.
     /// Disable it to drive the tank from code (tests, AI).
     /// </summary>
+    [RequireComponent(typeof(TankMovement))]
     public class TankInput : MonoBehaviour
     {
-        [SerializeField] private TankMovement movement;
-        [SerializeField] private TurretAimer aimer;
-        [SerializeField] private TankGun gun;
-        [SerializeField] private TankGun coaxialGun;
-
         [Inject] private IPlayerInput input;
         [Inject] private IGameCamera gameCamera;
+
+        private TankMovement movement;
+        private TurretAimer aimer;
+        private TankGun gun;
+        private TankGun coaxialGun;
+
+        private void Awake()
+        {
+            movement = GetComponent<TankMovement>();
+            aimer = GetComponentInChildren<TurretAimer>(true);
+            gun = TankGun.Find(gameObject, GunMount.Main);
+            coaxialGun = TankGun.Find(gameObject, GunMount.Coaxial);
+        }
 
         private void OnDisable()
         {
