@@ -22,7 +22,8 @@ MonoBehaviour:
   reloadTime: 2
   muzzleVelocity: 420
   damage: 110
-  penetration: 40
+  penetrationMin: 30
+  penetrationMax: 45
   dispersion: 0.6
   ammoCapacity: 80
   muzzleFlashScale: 0.85

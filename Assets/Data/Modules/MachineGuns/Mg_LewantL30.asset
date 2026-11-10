@@ -22,6 +22,8 @@ MonoBehaviour:
   roundsPerMinute: 500
   dispersion: 1.5
   damage: 9
+  penetrationMin: 7
+  penetrationMax: 11
   beltSize: 250
   beltChangeTime: 5
   projectile: {fileID: 11400000, guid: edfc9befa49505442ae029074bb4332e, type: 2}
