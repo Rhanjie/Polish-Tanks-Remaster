@@ -17,6 +17,7 @@ namespace PolishTanks.Combat
         public const float RetainedSpeed = 0.6f;
         public const float SkimFactor = 0.35f;
         public const float ScatterDegrees = 10f;
+        public const float MinLeaveDot = 0.05f;
 
         public static bool IsOvermatch(float caliber, float plateThickness) =>
             plateThickness <= 0f || caliber >= plateThickness * OvermatchRatio;
@@ -41,7 +42,11 @@ namespace PolishTanks.Combat
                 : reflected;
 
             var scattered = Rotate(skimmed, (Mathf.Clamp01(random01) * 2f - 1f) * ScatterDegrees);
-            return Vector2.Dot(scattered, normal) > 0.05f ? scattered : skimmed;
+            if (Vector2.Dot(scattered, normal) > MinLeaveDot)
+                return scattered;
+            if (Vector2.Dot(skimmed, normal) > MinLeaveDot)
+                return skimmed;
+            return along.sqrMagnitude > 0f ? (along.normalized + normal * MinLeaveDot * 2f).normalized : normal;
         }
 
         private static Vector2 Rotate(Vector2 v, float degrees)

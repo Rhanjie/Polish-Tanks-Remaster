@@ -28,6 +28,14 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
+        public void SnapToFace_CornerGraze_PicksFaceTheShotTravelsInto()
+        {
+            var face = ArmorMath.SnapToFace(new Vector2(0.8f, 0.6f), new Vector2(0.3f, -0.954f));
+
+            Assert.That(face, Is.EqualTo(Vector2.up));
+        }
+
+        [Test]
         public void EffectiveArmor_SquareHit_IsNominal()
         {
             Assert.That(ArmorMath.EffectiveArmor(50f, Vector2.up, Vector2.down), Is.EqualTo(50f).Within(1e-3f));

@@ -100,7 +100,7 @@ namespace PolishTanks.Weapons
             var found = false;
             foreach (var hit in Hits)
             {
-                if (shot.Shooter != null && hit.rigidbody == shot.Shooter)
+                if (!shot.Ricocheted && shot.Shooter != null && hit.rigidbody == shot.Shooter)
                     continue;
                 if (bouncedOff != null && hit.collider == bouncedOff)
                     continue;

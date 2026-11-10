@@ -20,7 +20,7 @@ namespace PolishTanks.Combat
         private HealthPool health;
         private ArmorProfile armor;
 
-        public event Action<PenetrationResult, float> Hit;
+        public event Action<PenetrationResult, HitOutcome, float> Hit;
         public event Action<Damageable> Died;
 
         public ArmorProfile Armor => armor;
@@ -56,22 +56,31 @@ namespace PolishTanks.Combat
         public HitResponse OnProjectileHit(in ProjectileHit hit)
         {
             if (IsDead)
+            {
+                LastOutcome = HitOutcome.Ignored;
                 return HitResponse.Ignored;
+            }
 
-            Vector2 face = transform.TransformDirection(ArmorMath.SnapToFace(transform.InverseTransformDirection(hit.Normal)));
+            var localFace = ArmorMath.SnapToFace(transform.InverseTransformDirection(hit.Normal),
+                transform.InverseTransformDirection(hit.Direction));
+            Vector2 face = transform.TransformDirection(localFace);
+            var side = ArmorMath.GetSide(transform.up, face);
+            var plate = armor.For(side);
+
+            if (!hit.Ricocheted && GlancesOff(hit, face, plate))
+            {
+                LastResult = new PenetrationResult(side, ArmorMath.EffectiveArmor(plate, face, hit.Direction), 0f);
+                return Respond(HitOutcome.Ricochet, face, 0f);
+            }
+
             LastResult = ArmorMath.Resolve(armor, transform.up, face, hit.Direction,
                 hit.PenetrationMin, hit.PenetrationMax, Random.value);
-
-            if (!hit.Ricocheted && GlancesOff(hit, face))
-                return Respond(HitOutcome.Ricochet, face, 0f);
-
             var dealt = LastResult.Penetrated ? Health.TakeDamage(hit.Damage) : 0f;
             return Respond(LastResult.Penetrated ? HitOutcome.Penetrated : HitOutcome.Blocked, face, dealt);
         }
 
-        private bool GlancesOff(in ProjectileHit hit, Vector2 face)
+        private static bool GlancesOff(in ProjectileHit hit, Vector2 face, float plate)
         {
-            var plate = armor.For(LastResult.Side);
             var angle = ArmorMath.ImpactAngle(face, hit.Direction);
             return RicochetMath.Rolls(angle, RicochetMath.IsOvermatch(hit.Caliber, plate), Random.value);
         }
@@ -79,7 +88,7 @@ namespace PolishTanks.Combat
         private HitResponse Respond(HitOutcome outcome, Vector2 face, float dealt)
         {
             LastOutcome = outcome;
-            Hit?.Invoke(LastResult, dealt);
+            Hit?.Invoke(LastResult, outcome, dealt);
             return new HitResponse(outcome, face);
         }
 

@@ -46,6 +46,14 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
+        public void Deflect_ShotLeavingThePlate_StillEndsUpAwayFromIt()
+        {
+            var outgoing = RicochetMath.Deflect(new Vector2(0.3f, -0.954f), Vector2.right, 0f);
+
+            Assert.That(Vector2.Dot(outgoing, Vector2.right), Is.GreaterThan(0f));
+        }
+
+        [Test]
         public void Deflect_SkimsFlatterThanAMirror()
         {
             var shot = new Vector2(1f, -1f).normalized;
