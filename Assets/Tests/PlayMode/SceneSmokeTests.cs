@@ -32,5 +32,19 @@ namespace PolishTanks.Tests.PlayMode
 
             Assert.That(SceneManager.GetActiveScene().path, Is.EqualTo(scenePath));
         }
+
+        [UnityTearDown]
+        public IEnumerator UnloadLoadedScene()
+        {
+            var loaded = SceneManager.GetActiveScene();
+            var empty = SceneManager.CreateScene("SceneSmokeTests_Empty_" + System.Guid.NewGuid().ToString("N"));
+            SceneManager.SetActiveScene(empty);
+            if (loaded.IsValid() && loaded.isLoaded && loaded != empty)
+            {
+                var unload = SceneManager.UnloadSceneAsync(loaded);
+                while (unload != null && !unload.isDone)
+                    yield return null;
+            }
+        }
     }
 }
