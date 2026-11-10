@@ -15,7 +15,6 @@ namespace PolishTanks.Tank
         public bool IsReloading => reloadLeft > 0f;
         public bool CanFire => IsUnlimited || (!IsReloading && Rounds > 0);
 
-        /// <summary>0 when a reload starts, 1 when not reloading.</summary>
         public float ReloadProgress => IsReloading && ReloadTime > 0f ? 1f - reloadLeft / ReloadTime : 1f;
 
         public Magazine(int size, float reloadTime)
@@ -23,7 +22,6 @@ namespace PolishTanks.Tank
             Configure(size, reloadTime);
         }
 
-        /// <summary>Changes the magazine and refills it.</summary>
         public void Configure(int size, float reloadTime)
         {
             Size = Mathf.Max(0, size);

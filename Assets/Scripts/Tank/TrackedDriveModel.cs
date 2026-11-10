@@ -12,10 +12,8 @@ namespace PolishTanks.Tank
 
         public TankDriveSettings Settings { get; set; }
 
-        /// <summary>Signed speed along the hull's forward axis; negative is reverse.</summary>
         public float Speed { get; private set; }
 
-        /// <summary>Hull turn rate in degrees per second; positive turns left (counter-clockwise).</summary>
         public float AngularSpeed { get; private set; }
 
         public TrackedDriveModel(TankDriveSettings settings)
@@ -23,18 +21,11 @@ namespace PolishTanks.Tank
             Settings = settings;
         }
 
-        /// <summary>
-        /// Takes the speed the physics actually produced, so a hull stopped by
-        /// a wall doesn't keep pushing at full speed. Clamped to the drive limits.
-        /// </summary>
         public void SyncSpeed(float measuredSpeed)
         {
             Speed = Mathf.Clamp(measuredSpeed, -Settings.maxReverseSpeed, Settings.maxForwardSpeed);
         }
 
-        /// <param name="throttle">-1 (full reverse) to 1 (full forward).</param>
-        /// <param name="steer">-1 (left) to 1 (right).</param>
-        /// <param name="deltaTime">Step length in seconds.</param>
         public void Step(float throttle, float steer, float deltaTime)
         {
             if (deltaTime <= 0f)

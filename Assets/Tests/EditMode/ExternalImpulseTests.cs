@@ -22,7 +22,6 @@ namespace PolishTanks.Tests.EditMode
         {
             var kick = new ExternalImpulse();
 
-            // Push right on a point above the center: clockwise (negative) spin.
             kick.Add(new Vector2(1f, 0f), new Vector2(0f, 2f), 10f, 4f);
 
             Assert.That(kick.AngularVelocity, Is.EqualTo(-0.5f * Mathf.Rad2Deg).Within(1e-3f));
@@ -57,7 +56,6 @@ namespace PolishTanks.Tests.EditMode
             var kick = new ExternalImpulse();
             kick.Add(new Vector2(0f, -3f), Vector2.zero, 1f, 1f);
 
-            // A wall behind the tank took away the whole backward shove.
             kick.AbsorbLoss(new Vector2(0f, -3f));
 
             Assert.That(kick.Velocity, Is.EqualTo(Vector2.zero));

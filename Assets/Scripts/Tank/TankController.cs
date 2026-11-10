@@ -27,16 +27,12 @@ namespace PolishTanks.Tank
         private bool reapplyPending;
         private Vector3? baseMuzzleFlashScale;
 
-        /// <summary>Raised after a loadout is applied.</summary>
         public event Action<TankStats> StatsApplied;
 
-        /// <summary>The loadout currently applied, or null. May differ from the Inspector field if that one was invalid.</summary>
         public TankLoadout Loadout { get; private set; }
 
-        /// <summary>Stats of the applied loadout, or null before one was applied.</summary>
         public TankStats Stats { get; private set; }
 
-        /// <summary>Applies a new loadout. Returns false and keeps the current setup if the loadout is invalid.</summary>
         public bool Apply(TankLoadout newLoadout)
         {
             var errors = TankStatsCalculator.Validate(newLoadout);
@@ -64,7 +60,6 @@ namespace PolishTanks.Tank
 
         private void OnValidate()
         {
-            // Sprite and transform changes aren't allowed inside OnValidate, so apply on the next frame.
             if (Application.isPlaying && initialized && loadout != null)
                 reapplyPending = true;
         }
@@ -92,7 +87,7 @@ namespace PolishTanks.Tank
                     coaxialGun.Settings = stats.MachineGun;
             }
             if (body != null)
-                body.mass = stats.TotalMass / 1000f; // tonnes keep the physics numbers small
+                body.mass = stats.TotalMass / 1000f;
         }
 
         private void ApplyVisuals(TankLoadout source)
@@ -125,7 +120,6 @@ namespace PolishTanks.Tank
 
             if (muzzleFlash != null)
             {
-                // Scale relative to the prefab's flash size, so 1 means "as authored".
                 baseMuzzleFlashScale ??= muzzleFlash.localScale;
                 muzzleFlash.localScale = baseMuzzleFlashScale.Value * source.MainGun.MuzzleFlashScale;
             }

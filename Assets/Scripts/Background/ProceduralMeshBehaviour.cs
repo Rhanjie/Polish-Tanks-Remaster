@@ -25,7 +25,6 @@ namespace PolishTanks.Background
 
         protected virtual void OnDisable() => ReleaseMesh();
 
-        // Mesh changes are not allowed during OnValidate, so the rebuild waits for the next Update.
         protected virtual void OnValidate() => _dirty = true;
 
         protected virtual void Update()
@@ -45,8 +44,6 @@ namespace PolishTanks.Background
             _colors.Clear();
             Build(_vertices, _triangles, _colors);
 
-            // Vertex colours reach the shader untouched, unlike SpriteRenderer.color, so in a Linear project
-            // the sRGB values picked in the Inspector have to be converted here or everything looks washed out.
             if (QualitySettings.activeColorSpace == ColorSpace.Linear)
             {
                 for (var i = 0; i < _colors.Count; i++)

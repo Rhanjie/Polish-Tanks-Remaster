@@ -11,10 +11,8 @@ namespace PolishTanks.Weapons
     {
         internal Action<PooledBehaviour> ReleaseAction;
 
-        /// <summary>True between being taken from the pool and returned to it.</summary>
         public bool IsSpawned { get; internal set; }
 
-        /// <summary>Gives the object back to its pool. Safe to call more than once.</summary>
         public void ReturnToPool()
         {
             if (!IsSpawned)
@@ -24,13 +22,11 @@ namespace PolishTanks.Weapons
             if (ReleaseAction != null)
                 ReleaseAction(this);
             else
-                Destroy(gameObject); // not from a pool, e.g. placed in a scene by hand
+                Destroy(gameObject);
         }
 
-        /// <summary>Called after the object is positioned and activated.</summary>
         protected internal virtual void OnSpawned() { }
 
-        /// <summary>Called right before the object is deactivated and stored.</summary>
         protected internal virtual void OnReturned() { }
     }
 }

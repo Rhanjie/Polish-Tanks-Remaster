@@ -22,7 +22,6 @@ namespace PolishTanks.Tests.EditMode
         [TestCaseSource(nameof(EnabledBuildScenes))]
         public void BuildScene_HasNoMissingScripts(string scenePath)
         {
-            // A scene the user already has open must not be closed by the test.
             var alreadyLoaded = SceneManager.GetSceneByPath(scenePath).isLoaded;
             var scene = alreadyLoaded
                 ? SceneManager.GetSceneByPath(scenePath)

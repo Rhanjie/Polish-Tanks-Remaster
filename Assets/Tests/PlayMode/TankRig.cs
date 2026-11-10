@@ -31,7 +31,6 @@ namespace PolishTanks.Tests.PlayMode
             public Transform Muzzle;
         }
 
-        /// <summary>Sets a field declared anywhere in the type hierarchy, private or not.</summary>
         public static void SetField(object target, string name, object value)
         {
             for (var type = target.GetType(); type != null; type = type.BaseType)
@@ -55,7 +54,6 @@ namespace PolishTanks.Tests.PlayMode
             return asset;
         }
 
-        /// <summary>A valid 20 t, 300 hp tank with no optional parts (same numbers as the EditMode baseline).</summary>
         public TankLoadout CreateLoadout(float horsePower = 300f, float muzzleDistance = 4f)
         {
             var loadout = Create<TankLoadout>();
@@ -71,10 +69,6 @@ namespace PolishTanks.Tests.PlayMode
             return loadout;
         }
 
-        /// <summary>
-        /// Builds a tank hierarchy with every part wired into the controller. The tank is created inactive
-        /// so the controller's Awake applies <paramref name="loadout"/> (or nothing, if null) on activation.
-        /// </summary>
         public BuiltTank BuildTank(string name, TankLoadout loadout, Vector2 position)
         {
             var tank = new BuiltTank();

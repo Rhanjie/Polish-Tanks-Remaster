@@ -75,7 +75,6 @@ namespace PolishTanks.Tank
             if (weapon == null || action == null)
                 return;
             weapon.SetTrigger(action.IsPressed());
-            // A click pressed and released within one frame never shows up in IsPressed.
             if (action.WasPressedThisFrame())
                 weapon.TryFire();
         }

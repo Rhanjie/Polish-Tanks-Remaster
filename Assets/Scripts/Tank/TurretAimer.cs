@@ -28,10 +28,8 @@ namespace PolishTanks.Tank
             }
         }
 
-        /// <summary>World-space direction the barrel points in.</summary>
         public Vector2 BarrelDirection => turret != null ? (Vector2)turret.up : (Vector2)transform.up;
 
-        /// <summary>Degrees the barrel still has to turn to face the aim point.</summary>
         public float RemainingAngle => hasAimPoint ? Vector2.SignedAngle(BarrelDirection, aimPoint - (Vector2)turret.position) : 0f;
 
         public void SetAimPoint(Vector2 worldPoint)
@@ -67,8 +65,6 @@ namespace PolishTanks.Tank
             if (toTarget.sqrMagnitude < 0.0001f)
                 return;
 
-            // Angle is relative to the hull, so turning the hull drags the turret along
-            // and the traverse then has to catch up with the cursor.
             var targetAngle = Vector2.SignedAngle(transform.up, toTarget);
             traverse.Step(targetAngle, Time.deltaTime);
             turret.localRotation = Quaternion.Euler(0f, 0f, traverse.Angle);

@@ -27,7 +27,7 @@ namespace PolishTanks.Tests.EditMode
 
             Assert.That(stats.TotalMass, Is.EqualTo(20000f));
             Assert.That(stats.PowerToWeight, Is.EqualTo(15f).Within(1e-4f));
-            Assert.That(stats.Cost, Is.EqualTo(600)); // six modules at the default cost of 100
+            Assert.That(stats.Cost, Is.EqualTo(600));
         }
 
         [Test]

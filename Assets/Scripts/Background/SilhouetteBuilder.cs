@@ -12,7 +12,6 @@ namespace PolishTanks.Background
     {
         private const int PineTiers = 3;
         private const int RoundCrownSegments = 14;
-        // Trees are sunk slightly into the ridge so they never float above a slope.
         private const float RootDepthRatio = 0.08f;
 
         public static float RidgeHeight(float x, in HillSettings hills, int seed)
@@ -41,7 +40,6 @@ namespace PolishTanks.Background
                 if (i == 0)
                     continue;
 
-                // Quad between the previous column (start-2, start-1) and this one (start, start+1), clockwise.
                 triangles.Add(start - 2);
                 triangles.Add(start - 1);
                 triangles.Add(start + 1);
@@ -63,7 +61,6 @@ namespace PolishTanks.Background
 
             for (var i = 0; i < trees.count; i++)
             {
-                // Jittered slots spread trees evenly while still looking random.
                 var x = -hills.width * 0.5f + slot * (i + (float)random.NextDouble());
                 var height = Mathf.Lerp(minHeight, maxHeight, (float)random.NextDouble());
                 var groundY = RidgeHeight(x, hills, seed) - height * RootDepthRatio;
@@ -115,7 +112,6 @@ namespace PolishTanks.Background
             for (var s = 0; s < RoundCrownSegments; s++)
             {
                 var next = (s + 1) % RoundCrownSegments;
-                // Counter-clockwise angles, so the winding is flipped to stay clockwise like the rest.
                 triangles.Add(centerIndex);
                 triangles.Add(centerIndex + 1 + next);
                 triangles.Add(centerIndex + 1 + s);
