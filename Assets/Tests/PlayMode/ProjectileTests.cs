@@ -29,7 +29,7 @@ namespace PolishTanks.Tests.PlayMode
         {
             Physics2D.SyncTransforms();
             var projectile = fixture.Pools.For(prefab).Get(from, Quaternion.identity);
-            projectile.Launch(velocity, lifetime, owner, impulse, damage, null);
+            projectile.Launch(new ProjectileShot { Velocity = velocity, Lifetime = lifetime, Shooter = owner, Impulse = impulse, Damage = damage });
             return projectile;
         }
 

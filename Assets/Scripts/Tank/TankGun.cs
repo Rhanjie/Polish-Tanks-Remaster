@@ -137,8 +137,8 @@ namespace PolishTanks.Tank
             if (pools == null || definition == null || definition.Prefab == null)
                 return;
             pools.For(definition.Prefab, definition.PrewarmCount);
-            if (definition.ImpactEffect != null)
-                pools.For(definition.ImpactEffect, ImpactPrewarm(definition));
+            EffectPool(definition.ImpactEffect, definition);
+            EffectPool(definition.BlockedEffect, definition);
         }
 
         private void SpawnProjectile(Vector2 direction)
@@ -156,13 +156,24 @@ namespace PolishTanks.Tank
             var shooterVelocity = ownerBody != null ? ownerBody.linearVelocity : Vector2.zero;
             var velocity = BallisticsMath.LaunchVelocity(direction, settings.projectileSpeed, shooterVelocity);
 
-            var impactPool = definition.ImpactEffect != null ? pools.For(definition.ImpactEffect, ImpactPrewarm(definition)) : null;
             var projectile = pools.For(definition.Prefab, definition.PrewarmCount)
                 .Get(origin, Quaternion.LookRotation(Vector3.forward, direction));
-            projectile.Launch(velocity, definition.Lifetime, ownerBody, settings.impactImpulse, settings.damage, impactPool);
+            projectile.Launch(new ProjectileShot
+            {
+                Velocity = velocity,
+                Lifetime = definition.Lifetime,
+                Shooter = ownerBody,
+                Impulse = settings.impactImpulse,
+                Damage = settings.damage,
+                PenetrationMin = settings.penetrationMin,
+                PenetrationMax = settings.penetrationMax,
+                ImpactPool = EffectPool(definition.ImpactEffect, definition),
+                BlockedPool = EffectPool(definition.BlockedEffect, definition),
+            });
         }
 
-        private static int ImpactPrewarm(ProjectileDefinition definition) => Mathf.Max(2, definition.PrewarmCount / 3);
+        private PrefabPool<PooledEffect> EffectPool(PooledEffect effect, ProjectileDefinition definition) =>
+            effect != null ? pools.For(effect, Mathf.Max(2, definition.PrewarmCount / 3)) : null;
 
         private void ApplyRecoil(Vector2 direction)
         {

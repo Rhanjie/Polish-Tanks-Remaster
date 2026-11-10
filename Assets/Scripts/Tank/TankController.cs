@@ -1,4 +1,5 @@
 using System;
+using PolishTanks.Combat;
 using PolishTanks.Tank.Modules;
 using UnityEngine;
 
@@ -6,11 +7,16 @@ namespace PolishTanks.Tank
 {
     /// <summary>
     /// Builds the tank from a <see cref="TankLoadout"/>: computes its stats and pushes them
-    /// into movement, turret and gun, and swaps sprites, collider and mass to match the modules.
+    /// into movement, turret, guns and armor, and swaps sprites, collider and mass to match the modules.
+    /// When its <see cref="Damageable"/> dies the tank becomes a wreck: controls and guns stop and the sprites darken.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(TankMovement))]
+    [RequireComponent(typeof(Damageable))]
     public class TankController : MonoBehaviour
     {
+        private const float WreckDamping = 4f;
+        private static readonly Color WreckTint = new Color(0.35f, 0.33f, 0.3f, 1f);
+
         [SerializeField] private TankLoadout loadout;
 
         private TankMovement movement;
@@ -21,12 +27,16 @@ namespace PolishTanks.Tank
         private TankGun coaxialGun;
         private HullView hullView;
         private TurretView turretView;
+        private Damageable damageable;
         private bool partsFound;
         private bool initialized;
         private bool reapplyPending;
         private Vector3? baseMuzzleFlashScale;
 
         public event Action<TankStats> StatsApplied;
+        public event Action<TankController> Destroyed;
+
+        public bool IsDestroyed { get; private set; }
 
         public TankLoadout Loadout { get; private set; }
 
@@ -63,6 +73,9 @@ namespace PolishTanks.Tank
             gun = TankGun.Find(gameObject, GunMount.Main);
             coaxialGun = TankGun.Find(gameObject, GunMount.Coaxial);
             hullView = GetComponentInChildren<HullView>(true);
+            damageable = GetComponent<Damageable>();
+            if (damageable != null)
+                damageable.Died += OnDied;
             turretView = GetComponentInChildren<TurretView>(true);
         }
 
@@ -104,6 +117,35 @@ namespace PolishTanks.Tank
             }
             if (body != null)
                 body.mass = stats.TotalMass / 1000f;
+            if (damageable != null)
+                damageable.Configure(stats.HitPoints, new ArmorProfile(stats.FrontArmor, stats.SideArmor, stats.RearArmor));
+        }
+
+        private void OnDied(Damageable _)
+        {
+            if (IsDestroyed)
+                return;
+            IsDestroyed = true;
+
+            var velocity = body != null ? body.linearVelocity : Vector2.zero;
+            var spin = body != null ? body.angularVelocity : 0f;
+
+            foreach (var behaviour in GetComponentsInChildren<MonoBehaviour>())
+                if (behaviour is TankInput || behaviour is TankGun || behaviour is TurretAimer || behaviour is TankMovement)
+                    behaviour.enabled = false;
+
+            if (body != null)
+            {
+                body.linearVelocity = velocity;
+                body.angularVelocity = spin;
+                body.linearDamping = WreckDamping;
+                body.angularDamping = WreckDamping;
+            }
+
+            foreach (var sprite in GetComponentsInChildren<SpriteRenderer>())
+                sprite.color *= WreckTint;
+
+            Destroyed?.Invoke(this);
         }
 
         private void ApplyVisuals(TankLoadout source)

@@ -19,7 +19,8 @@ namespace PolishTanks.Tank.Modules
         public float GunCaliber;
         public float MuzzleVelocity;
         public float GunDamage;
-        public float Penetration;
+        public float PenetrationMin;
+        public float PenetrationMax;
         public float GunDispersion;
         public int AmmoCapacity;
 

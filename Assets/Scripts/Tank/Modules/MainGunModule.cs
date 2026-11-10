@@ -1,5 +1,6 @@
 using PolishTanks.Weapons;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PolishTanks.Tank.Modules
 {
@@ -14,8 +15,10 @@ namespace PolishTanks.Tank.Modules
 
         [SerializeField, Min(0f)] private float damage = 120f;
 
-        [Tooltip("Armor penetration in mm.")]
-        [SerializeField, Min(0f)] private float penetration = 80f;
+        [Tooltip("Armor penetration in mm, rolled between min and max on every hit.")]
+        [SerializeField, Min(0f)] private float penetrationMin = 70f;
+        [FormerlySerializedAs("penetration")]
+        [SerializeField, Min(0f)] private float penetrationMax = 90f;
 
         [Tooltip("Random spread of a shot, degrees.")]
         [SerializeField, Min(0f)] private float dispersion = 0.4f;
@@ -49,7 +52,8 @@ namespace PolishTanks.Tank.Modules
         public float ReloadTime => reloadTime;
         public float MuzzleVelocity => muzzleVelocity;
         public float Damage => damage;
-        public float Penetration => penetration;
+        public float PenetrationMin => penetrationMin;
+        public float PenetrationMax => penetrationMax;
         public float Dispersion => dispersion;
         public int AmmoCapacity => ammoCapacity;
         public float MuzzleFlashScale => muzzleFlashScale;

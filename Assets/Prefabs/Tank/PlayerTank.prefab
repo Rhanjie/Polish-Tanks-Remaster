@@ -47,6 +47,54 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
   mount: 0
+--- !u!1 &1337713277372976376
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1367055380417641341}
+  - component: {fileID: 3786240339660252130}
+  m_Layer: 0
+  m_Name: HealthBar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1367055380417641341
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337713277372976376}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1330636576298914396}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3786240339660252130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337713277372976376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e79918433303b58499bd2265c99f5609, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Combat.HealthBar
+  offset: {x: 0, y: 2.8}
+  size: {x: 2, y: 0.22}
+  fullColor: {r: 0.45, g: 0.85, b: 0.35, a: 1}
+  lowColor: {r: 0.9, g: 0.25, b: 0.15, a: 1}
 --- !u!1 &3020770536975762780
 GameObject:
   m_ObjectHideFlags: 0
@@ -61,6 +109,7 @@ GameObject:
   - component: {fileID: 4872309102486316385}
   - component: {fileID: 3033694629029787339}
   - component: {fileID: 2523336779600019954}
+  - component: {fileID: 1713334498114228383}
   m_Layer: 0
   m_Name: PlayerTank
   m_TagString: Untagged
@@ -83,6 +132,7 @@ Transform:
   m_Children:
   - {fileID: 6978004844639537744}
   - {fileID: 8793578668461301085}
+  - {fileID: 1367055380417641341}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &8186226842230712442
@@ -195,6 +245,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankController
   loadout: {fileID: 11400000, guid: ca0ee4a91f2d7ba42b8464a5dd3e5802, type: 2}
+--- !u!114 &1713334498114228383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3020770536975762780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9bab0f5411d1f343b4b8defc29c006d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Combat.Damageable
+  profile: {fileID: 11400000, guid: 2234625ce8342474fba2c1b3371e8719, type: 2}
 --- !u!1 &3541372668314155345
 GameObject:
   m_ObjectHideFlags: 0
