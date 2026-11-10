@@ -108,6 +108,7 @@ W razie wątpliwości wybierz DUŻE.
 
 - **Zawsze po angielsku**, poprawną, naturalną angielszczyzną, w trybie rozkazującym, z wielkiej litery, bez kropki na końcu i bez prefiksów (`feat:` itp.).
 - Pierwsza linia do ~72 znaków. Ma mówić **co i po co**, a nie „jakie pliki”.
+- Rozbijaj funkcjonalność na mniejsze commity, gdy ma to sens: osobno nowy typ albo serwis, osobno jego użycie w istniejących klasach, osobno assety i sceny, osobno testy. Każdy commit ma się kompilować i dać się przejrzeć bez czytania całej gałęzi. Nie dziel sztucznie zmian, które mają sens tylko razem.
 - Przykłady dobre: `Add test bouncing ball to test CLI integration`, `Fix tank sliding after collision with walls`, `Move turret rotation logic to TurretAimer`.
 - Przykłady złe: `fixes`, `update files`, `WIP`, `Dodano piłkę`, `Changed PlayerController.cs`.
 - Jeśli zmiana wymaga wyjaśnienia, dodaj po pustej linii krótkie uzasadnienie „dlaczego” (od 2 do 4 linii).

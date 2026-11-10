@@ -43,7 +43,7 @@ Kierunek gry spisany z rozmów z właścicielem. To nie są plany implementacji.
 - Później: zmienna pogoda i pory dnia (klimatyczna mgła, deszcz, burza).
 
 ## Architektura
-- **Przerobić kod pod Extenject (Zenject, dependency injection).** Zrobić to osobną gałęzią, później, żeby było widać różnicę względem obecnego podejścia (referencje przez `[SerializeField]`, `PoolRegistry` jako statyczny rejestr, `Camera.main`, `InputSystem.actions`). Kandydaci do wstrzykiwania:
+- **Przerobić kod pod Reflex (dependency injection, https://github.com/gustavopsantos/Reflex), zamiast pierwotnie planowanego Extenject.** Zrobić to osobną gałęzią, później, żeby było widać różnicę względem obecnego podejścia (referencje przez `[SerializeField]`, `PoolRegistry` jako statyczny rejestr, `Camera.main`, `InputSystem.actions`). Kandydaci do wstrzykiwania:
   - pule;
   - wejście;
   - kalkulator statystyk;
