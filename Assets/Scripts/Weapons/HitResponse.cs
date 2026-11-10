@@ -7,11 +7,13 @@ namespace PolishTanks.Weapons
     {
         public readonly HitOutcome Outcome;
         public readonly Vector2 Normal;
+        public readonly SurfaceMaterial Material;
 
-        public HitResponse(HitOutcome outcome, Vector2 normal)
+        public HitResponse(HitOutcome outcome, Vector2 normal, SurfaceMaterial material = SurfaceMaterial.Other)
         {
             Outcome = outcome;
             Normal = normal;
+            Material = material;
         }
 
         public static HitResponse Ignored => new HitResponse(HitOutcome.Ignored, Vector2.zero);

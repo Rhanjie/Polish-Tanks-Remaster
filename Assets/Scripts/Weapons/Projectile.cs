@@ -131,17 +131,17 @@ namespace PolishTanks.Weapons
 
             if (response.Outcome == HitOutcome.Ignored && canBounce
                 && RicochetMath.Rolls(ArmorMath.ImpactAngle(hit.normal, direction), false, Random.value))
-                response = new HitResponse(HitOutcome.Ricochet, hit.normal);
+                response = new HitResponse(HitOutcome.Ricochet, hit.normal, SurfaceMaterial.Other);
 
             if (response.Outcome == HitOutcome.Ricochet && !canBounce)
-                response = new HitResponse(HitOutcome.Blocked, response.Normal);
+                response = new HitResponse(HitOutcome.Blocked, response.Normal, response.Material);
 
             var glancing = response.Outcome == HitOutcome.Ricochet;
             Push(hit, direction, glancing ? shot.Impulse * RicochetMath.RetainedPower : shot.Impulse);
 
             if (glancing)
             {
-                Bounce(hit, direction, response.Normal);
+                Bounce(hit, direction, response.Normal, response.Material);
                 return true;
             }
 
@@ -158,7 +158,7 @@ namespace PolishTanks.Weapons
                 body.AddForceAtPosition(direction * impulse, hit.point, ForceMode2D.Impulse);
         }
 
-        private void Bounce(RaycastHit2D hit, Vector2 direction, Vector2 normal)
+        private void Bounce(RaycastHit2D hit, Vector2 direction, Vector2 normal, SurfaceMaterial material)
         {
             var outgoing = RicochetMath.Deflect(direction, normal, Random.value);
             velocity = outgoing * (velocity.magnitude * RicochetMath.RetainedSpeed);
@@ -172,7 +172,8 @@ namespace PolishTanks.Weapons
 
             var rotation = Quaternion.LookRotation(Vector3.forward, outgoing);
             transform.SetPositionAndRotation(hit.centroid + normal.normalized * 0.02f, rotation);
-            shot.RicochetPool?.Get(hit.point, rotation);
+            var effects = material == SurfaceMaterial.Metal || shot.OtherRicochetPool == null ? shot.RicochetPool : shot.OtherRicochetPool;
+            effects?.Get(hit.point, rotation);
         }
     }
 }

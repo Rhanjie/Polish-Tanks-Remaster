@@ -140,6 +140,7 @@ namespace PolishTanks.Tank
             EffectPool(definition.ImpactEffect, definition);
             EffectPool(definition.BlockedEffect, definition);
             EffectPool(definition.RicochetEffect, definition);
+            EffectPool(definition.OtherRicochetEffect, definition);
         }
 
         private void SpawnProjectile(Vector2 direction)
@@ -172,6 +173,7 @@ namespace PolishTanks.Tank
                 ImpactPool = EffectPool(definition.ImpactEffect, definition),
                 BlockedPool = EffectPool(definition.BlockedEffect, definition),
                 RicochetPool = EffectPool(definition.RicochetEffect, definition),
+                OtherRicochetPool = EffectPool(definition.OtherRicochetEffect, definition),
             });
         }
 

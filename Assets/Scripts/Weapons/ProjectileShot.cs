@@ -17,5 +17,6 @@ namespace PolishTanks.Weapons
         public PrefabPool<PooledEffect> ImpactPool;
         public PrefabPool<PooledEffect> BlockedPool;
         public PrefabPool<PooledEffect> RicochetPool;
+        public PrefabPool<PooledEffect> OtherRicochetPool;
     }
 }

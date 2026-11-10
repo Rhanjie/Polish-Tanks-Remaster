@@ -30,6 +30,7 @@ namespace PolishTanks.Combat
         public bool IsDead => Health.IsDead;
         public PenetrationResult LastResult { get; private set; }
         public HitOutcome LastOutcome { get; private set; }
+        public SurfaceMaterial Surface => profile != null ? profile.Surface : SurfaceMaterial.Metal;
 
         private HealthPool Health
         {
@@ -89,7 +90,7 @@ namespace PolishTanks.Combat
         {
             LastOutcome = outcome;
             Hit?.Invoke(LastResult, outcome, dealt);
-            return new HitResponse(outcome, face);
+            return new HitResponse(outcome, face, Surface);
         }
 
         private void Awake() => _ = Health;
