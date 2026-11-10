@@ -9,19 +9,14 @@ namespace PolishTanks.Tank
 {
     /// <summary>
     /// A tank weapon (main gun or coaxial MG): reload and belt feed, pooled projectiles,
-    /// recoil on the hull, barrel kick, camera shake, muzzle flash and smoke.
+    /// recoil on the hull, barrel kick, camera shake, muzzle flash and smoke. Sits on the muzzle object:
+    /// its up axis is the barrel, the flash and smoke are children, and the hull and barrel recoil are found in its parents.
     /// </summary>
     public class TankGun : MonoBehaviour
     {
         [SerializeField] private GunSettings settings = GunSettings.Default;
-        [SerializeField] private Transform muzzle;
-        [SerializeField] private SpriteRenderer muzzleFlash;
+        [SerializeField] private GunMount mount = GunMount.Main;
 
-        [Header("Feedback (all optional)")]
-        [Tooltip("Hull that takes the recoil and that projectiles ignore.")]
-        [SerializeField] private TankMovement recoilTarget;
-        [SerializeField] private BarrelRecoil barrelRecoil;
-        [SerializeField] private ParticleSystem muzzleSmoke;
         [SerializeField, Min(0)] private int smokeParticles = 8;
 
         private const int MaxShotsPerFrame = 8;
@@ -29,6 +24,10 @@ namespace PolishTanks.Tank
         [Inject] private IPoolService pools;
         [Inject] private ICameraShake cameraShake;
 
+        private SpriteRenderer muzzleFlash;
+        private ParticleSystem muzzleSmoke;
+        private TankMovement recoilTarget;
+        private BarrelRecoil barrelRecoil;
         private ReloadTimer reload;
         private bool started;
         private Magazine magazine;
@@ -38,7 +37,9 @@ namespace PolishTanks.Tank
 
         public event Action<TankGun> Fired;
 
-        public Transform Muzzle => muzzle;
+        public GunMount Mount => mount;
+        public Transform Muzzle => transform;
+        public Transform MuzzleFlash => muzzleFlash != null ? muzzleFlash.transform : null;
         public bool IsReloaded => reload == null || reload.IsReady;
         public float ReloadProgress => reload?.Progress ?? 1f;
         public int RoundsInMagazine => magazine?.Rounds ?? 0;
@@ -62,6 +63,14 @@ namespace PolishTanks.Tank
             }
         }
 
+        public static TankGun Find(GameObject tank, GunMount mount)
+        {
+            foreach (var gun in tank.GetComponentsInChildren<TankGun>(true))
+                if (gun.mount == mount)
+                    return gun;
+            return null;
+        }
+
         public void SetTrigger(bool held) => triggerHeld = held;
 
         public bool TryFire()
@@ -70,7 +79,7 @@ namespace PolishTanks.Tank
                 return false;
             magazine.Consume();
 
-            Vector2 axis = muzzle != null ? muzzle.up : transform.up;
+            Vector2 axis = transform.up;
             var direction = BallisticsMath.ApplySpread(axis, settings.dispersion, Random.value, Random.value);
             LastShotDirection = direction;
 
@@ -88,6 +97,10 @@ namespace PolishTanks.Tank
         {
             reload = new ReloadTimer(settings.reloadTime);
             magazine = new Magazine(settings.magazineSize, settings.magazineReloadTime);
+            muzzleFlash = GetComponentInChildren<SpriteRenderer>(true);
+            muzzleSmoke = GetComponentInChildren<ParticleSystem>(true);
+            recoilTarget = GetComponentInParent<TankMovement>();
+            barrelRecoil = GetComponentInParent<BarrelRecoil>();
             if (recoilTarget != null)
                 ownerBody = recoilTarget.GetComponent<Rigidbody2D>();
             if (muzzleFlash != null)
@@ -147,7 +160,7 @@ namespace PolishTanks.Tank
                 return;
             }
 
-            var origin = muzzle != null ? muzzle.position : transform.position;
+            var origin = transform.position;
             var shooterVelocity = ownerBody != null ? ownerBody.linearVelocity : Vector2.zero;
             var velocity = BallisticsMath.LaunchVelocity(direction, settings.projectileSpeed, shooterVelocity);
 
@@ -163,14 +176,14 @@ namespace PolishTanks.Tank
         {
             if (recoilTarget != null && settings.recoilImpulse > 0f)
             {
-                var point = muzzle != null && muzzle.parent != null ? muzzle.parent.position : transform.position;
+                var point = transform.parent != null ? transform.parent.position : transform.position;
                 recoilTarget.AddImpulse(-direction * settings.recoilImpulse, point);
             }
 
             if (barrelRecoil != null && settings.barrelKick > 0f)
                 barrelRecoil.Kick(settings.barrelKick, settings.barrelReturnTime);
 
-            var origin = muzzle != null ? muzzle.position : transform.position;
+            var origin = transform.position;
             cameraShake?.Shake(origin, -direction, settings.shakeForce);
         }
 

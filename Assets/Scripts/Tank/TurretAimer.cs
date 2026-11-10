@@ -3,19 +3,16 @@ using UnityEngine;
 namespace PolishTanks.Tank
 {
     /// <summary>
-    /// Turns the turret toward an aim point with a delay. Sits on the hull; the turret
-    /// is a child whose local up axis points down the barrel.
+    /// Turns the turret it sits on toward an aim point with a delay. The turret's local up axis
+    /// points down the barrel and its parent is the hull, so the angle is relative to the hull.
     /// </summary>
     public class TurretAimer : MonoBehaviour
     {
-        [SerializeField] private Transform turret;
         [SerializeField] private TurretSettings settings = TurretSettings.Default;
 
         private TurretTraverse traverse;
         private Vector2 aimPoint;
         private bool hasAimPoint;
-
-        public Transform Turret => turret;
 
         public TurretSettings Settings
         {
@@ -28,9 +25,9 @@ namespace PolishTanks.Tank
             }
         }
 
-        public Vector2 BarrelDirection => turret != null ? (Vector2)turret.up : (Vector2)transform.up;
+        public Vector2 BarrelDirection => transform.up;
 
-        public float RemainingAngle => hasAimPoint ? Vector2.SignedAngle(BarrelDirection, aimPoint - (Vector2)turret.position) : 0f;
+        public float RemainingAngle => hasAimPoint ? Vector2.SignedAngle(BarrelDirection, aimPoint - (Vector2)transform.position) : 0f;
 
         public void SetAimPoint(Vector2 worldPoint)
         {
@@ -40,14 +37,7 @@ namespace PolishTanks.Tank
 
         private void Awake()
         {
-            if (turret == null)
-            {
-                Debug.LogError($"{nameof(TurretAimer)} on {name} has no turret assigned.", this);
-                enabled = false;
-                return;
-            }
-
-            traverse = new TurretTraverse(settings, turret.localEulerAngles.z);
+            traverse = new TurretTraverse(settings, transform.localEulerAngles.z);
         }
 
         private void OnValidate()
@@ -61,13 +51,14 @@ namespace PolishTanks.Tank
             if (!hasAimPoint)
                 return;
 
-            var toTarget = aimPoint - (Vector2)turret.position;
+            var toTarget = aimPoint - (Vector2)transform.position;
             if (toTarget.sqrMagnitude < 0.0001f)
                 return;
 
-            var targetAngle = Vector2.SignedAngle(transform.up, toTarget);
+            Vector2 hullForward = transform.parent != null ? transform.parent.up : Vector3.up;
+            var targetAngle = Vector2.SignedAngle(hullForward, toTarget);
             traverse.Step(targetAngle, Time.deltaTime);
-            turret.localRotation = Quaternion.Euler(0f, 0f, traverse.Angle);
+            transform.localRotation = Quaternion.Euler(0f, 0f, traverse.Angle);
         }
     }
 }

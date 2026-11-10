@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using PolishTanks.Tank;
 using UnityEngine;
@@ -22,10 +21,7 @@ namespace PolishTanks.Tests.PlayMode
             turret = new GameObject("Turret").transform;
             turret.SetParent(hull.transform, false);
 
-            aimer = hull.AddComponent<TurretAimer>();
-            typeof(TurretAimer)
-                .GetField("turret", BindingFlags.NonPublic | BindingFlags.Instance)
-                .SetValue(aimer, turret);
+            aimer = turret.gameObject.AddComponent<TurretAimer>();
 
             hull.SetActive(true);
         }

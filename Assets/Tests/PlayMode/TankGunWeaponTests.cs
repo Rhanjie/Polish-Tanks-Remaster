@@ -39,9 +39,7 @@ namespace PolishTanks.Tests.PlayMode
             var muzzle = new GameObject("Muzzle");
             muzzle.transform.SetParent(gunObject.transform, false);
 
-            rig.Gun = gunObject.AddComponent<TankGun>();
-            TankRig.SetField(rig.Gun, "muzzle", muzzle.transform);
-            TankRig.SetField(rig.Gun, "recoilTarget", rig.Movement);
+            rig.Gun = muzzle.AddComponent<TankGun>();
             rig.Gun.Settings = settings;
             fixture.Inject(root);
             root.SetActive(true);

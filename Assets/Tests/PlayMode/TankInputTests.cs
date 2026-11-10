@@ -36,7 +36,7 @@ namespace PolishTanks.Tests.PlayMode
             var root = fixture.Track(new GameObject("TankHull"));
             root.SetActive(false);
             body = root.AddComponent<Rigidbody2D>();
-            var movement = root.AddComponent<TankMovement>();
+            root.AddComponent<TankMovement>();
 
             var gunObject = new GameObject("Gun");
             gunObject.transform.SetParent(root.transform, false);
@@ -44,9 +44,7 @@ namespace PolishTanks.Tests.PlayMode
             gun.Settings = new GunSettings { reloadTime = 100f, projectileSpeed = 10f };
             gun.Fired += _ => shots++;
 
-            var tankInput = root.AddComponent<TankInput>();
-            TankRig.SetField(tankInput, "movement", movement);
-            TankRig.SetField(tankInput, "gun", gun);
+            root.AddComponent<TankInput>();
 
             GameObjectInjector.InjectRecursive(root, container);
             root.SetActive(true);

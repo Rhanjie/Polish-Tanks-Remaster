@@ -1,13 +1,12 @@
+using PolishTanks.Tank;
 using UnityEngine;
 
 namespace PolishTanks.Weapons
 {
-    /// <summary>Slides a visual (the turret sprite) back along its parent's -Y on a shot and springs it home.</summary>
+    /// <summary>Sits on the turret and slides its <see cref="TurretView"/> back along the barrel on a shot, then springs it home.</summary>
     public class BarrelRecoil : MonoBehaviour
     {
-        [Tooltip("Transform that kicks back. Its parent's up axis must point down the barrel.")]
-        [SerializeField] private Transform target;
-
+        private Transform target;
         private RecoilSpring spring;
         private Vector3 restPosition;
 
@@ -23,8 +22,8 @@ namespace PolishTanks.Weapons
 
         private void Awake()
         {
-            if (target == null)
-                target = transform;
+            var view = GetComponentInChildren<TurretView>();
+            target = view != null ? view.transform : transform;
             restPosition = target.localPosition;
             spring = new RecoilSpring(0.3f);
         }
