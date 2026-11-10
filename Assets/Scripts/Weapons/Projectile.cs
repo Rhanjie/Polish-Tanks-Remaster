@@ -16,25 +16,21 @@ namespace PolishTanks.Weapons
 
         private static readonly List<RaycastHit2D> Hits = new List<RaycastHit2D>(16);
 
+        private static readonly List<IProjectileHitHandler> Handlers = new List<IProjectileHitHandler>(4);
+
+        private ProjectileShot shot;
         private Vector2 velocity;
         private float lifeLeft;
-        private float impactImpulse;
-        private float damage;
-        private Rigidbody2D shooter;
-        private PrefabPool<PooledEffect> impactPool;
 
         public Vector2 Velocity => velocity;
-        public Rigidbody2D Shooter => shooter;
+        public Rigidbody2D Shooter => shot.Shooter;
         public float Radius => radius;
 
-        public void Launch(Vector2 launchVelocity, float lifetime, Rigidbody2D owner, float impulse, float hitDamage, PrefabPool<PooledEffect> effectPool)
+        public void Launch(in ProjectileShot projectileShot)
         {
-            velocity = launchVelocity;
-            lifeLeft = lifetime;
-            shooter = owner;
-            impactImpulse = impulse;
-            damage = hitDamage;
-            impactPool = effectPool;
+            shot = projectileShot;
+            velocity = shot.Velocity;
+            lifeLeft = shot.Lifetime;
 
             if (velocity.sqrMagnitude > 0f)
                 transform.rotation = Quaternion.LookRotation(Vector3.forward, velocity);
@@ -53,8 +49,7 @@ namespace PolishTanks.Weapons
                 trail.emitting = false;
                 trail.Clear();
             }
-            shooter = null;
-            impactPool = null;
+            shot = default;
             velocity = Vector2.zero;
         }
 
@@ -100,7 +95,7 @@ namespace PolishTanks.Weapons
             var found = false;
             foreach (var hit in Hits)
             {
-                if (shooter != null && hit.rigidbody == shooter)
+                if (shot.Shooter != null && hit.rigidbody == shot.Shooter)
                     continue;
                 if (!found || hit.distance < nearest.distance)
                 {
@@ -114,14 +109,23 @@ namespace PolishTanks.Weapons
         private void Impact(RaycastHit2D hit, Vector2 direction)
         {
             var body = hit.rigidbody;
-            if (body != null && body.bodyType == RigidbodyType2D.Dynamic && impactImpulse > 0f)
-                body.AddForceAtPosition(direction * impactImpulse, hit.point, ForceMode2D.Impulse);
+            if (body != null && body.bodyType == RigidbodyType2D.Dynamic && shot.Impulse > 0f)
+                body.AddForceAtPosition(direction * shot.Impulse, hit.point, ForceMode2D.Impulse);
 
-            var info = new ProjectileHit(hit.point, hit.normal, direction, damage, impactImpulse, shooter);
-            var handler = hit.collider.GetComponentInParent<IProjectileHitHandler>();
-            handler?.OnProjectileHit(info);
+            var info = new ProjectileHit(hit.point, hit.normal, direction, shot.Damage, shot.Impulse, shot.Shooter,
+                shot.PenetrationMin, shot.PenetrationMax);
+            var outcome = HitOutcome.Ignored;
+            hit.collider.GetComponentsInParent(false, Handlers);
+            foreach (var handler in Handlers)
+            {
+                var result = handler.OnProjectileHit(info);
+                if (result > outcome)
+                    outcome = result;
+            }
+            Handlers.Clear();
 
-            impactPool?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
+            var effects = outcome == HitOutcome.Blocked && shot.BlockedPool != null ? shot.BlockedPool : shot.ImpactPool;
+            effects?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
         }
     }
 }

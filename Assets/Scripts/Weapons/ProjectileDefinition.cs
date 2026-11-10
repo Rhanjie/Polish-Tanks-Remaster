@@ -14,12 +14,16 @@ namespace PolishTanks.Weapons
         [Tooltip("Pooled effect spawned where the projectile hits. Optional.")]
         [SerializeField] private PooledEffect impactEffect;
 
+        [Tooltip("Pooled effect spawned when armor stops the projectile. Falls back to the impact effect.")]
+        [SerializeField] private PooledEffect blockedEffect;
+
         [Tooltip("Instances created up front so the first shots don't instantiate.")]
         [SerializeField, Min(0)] private int prewarmCount = 8;
 
         public Projectile Prefab => prefab;
         public float Lifetime => lifetime;
         public PooledEffect ImpactEffect => impactEffect;
+        public PooledEffect BlockedEffect => blockedEffect;
         public int PrewarmCount => prewarmCount;
     }
 }

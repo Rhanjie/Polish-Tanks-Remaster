@@ -141,6 +141,8 @@ namespace PolishTanks.Tank.Modules
                 projectileSpeed = gun.MuzzleVelocity * ProjectileSpeedPerMuzzleVelocity,
                 dispersion = gun.Dispersion * accuracy,
                 damage = gun.Damage,
+                penetrationMin = gun.PenetrationMin,
+                penetrationMax = gun.PenetrationMax,
                 impactImpulse = gun.ImpactImpulse,
                 recoilImpulse = gun.RecoilImpulse,
                 shakeForce = gun.ShakeForce,
@@ -150,7 +152,8 @@ namespace PolishTanks.Tank.Modules
             stats.GunCaliber = gun.Caliber;
             stats.MuzzleVelocity = gun.MuzzleVelocity;
             stats.GunDamage = gun.Damage;
-            stats.Penetration = gun.Penetration;
+            stats.PenetrationMin = gun.PenetrationMin;
+            stats.PenetrationMax = gun.PenetrationMax;
             stats.GunDispersion = gun.Dispersion * accuracy;
             stats.AmmoCapacity = gun.AmmoCapacity;
 
@@ -170,6 +173,8 @@ namespace PolishTanks.Tank.Modules
                 projectileSpeed = mg.MuzzleVelocity * ProjectileSpeedPerMuzzleVelocity,
                 dispersion = stats.MachineGunDispersion,
                 damage = mg.Damage,
+                penetrationMin = mg.PenetrationMin,
+                penetrationMax = mg.PenetrationMax,
                 impactImpulse = mg.ImpactImpulse,
                 shakeForce = mg.ShakeForce,
                 barrelReturnTime = 0.1f,

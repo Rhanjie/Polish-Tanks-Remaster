@@ -15,12 +15,13 @@ namespace PolishTanks.Props
 
         public bool IsFlashing => timeLeft > 0f;
 
-        public void OnProjectileHit(in ProjectileHit hit)
+        public HitOutcome OnProjectileHit(in ProjectileHit hit)
         {
             if (target == null)
-                return;
+                return HitOutcome.Ignored;
             timeLeft = duration;
             target.color = flashColor;
+            return HitOutcome.Ignored;
         }
 
         private void Awake()

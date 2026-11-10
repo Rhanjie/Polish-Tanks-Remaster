@@ -9,10 +9,13 @@ namespace PolishTanks.Tests.PlayMode
         public int HitCount { get; private set; }
         public ProjectileHit LastHit { get; private set; }
 
-        public void OnProjectileHit(in ProjectileHit hit)
+        public HitOutcome Outcome { get; set; } = HitOutcome.Ignored;
+
+        public HitOutcome OnProjectileHit(in ProjectileHit hit)
         {
             HitCount++;
             LastHit = hit;
+            return Outcome;
         }
     }
 }

@@ -10,6 +10,9 @@ namespace PolishTanks.Tank.Modules
         [SerializeField, Min(1f)] private float roundsPerMinute = 900f;
         [SerializeField, Min(0f)] private float dispersion = 2f;
         [SerializeField, Min(0f)] private float damage = 8f;
+        [Tooltip("Armor penetration in mm, rolled between min and max on every hit.")]
+        [SerializeField, Min(0f)] private float penetrationMin = 6f;
+        [SerializeField, Min(0f)] private float penetrationMax = 10f;
 
         [Tooltip("Rounds per belt before a belt change.")]
         [SerializeField, Min(1)] private int beltSize = 150;
@@ -32,6 +35,8 @@ namespace PolishTanks.Tank.Modules
         public float FireInterval => 60f / roundsPerMinute;
         public float Dispersion => dispersion;
         public float Damage => damage;
+        public float PenetrationMin => penetrationMin;
+        public float PenetrationMax => penetrationMax;
         public int BeltSize => beltSize;
         public float BeltChangeTime => beltChangeTime;
         public ProjectileDefinition Projectile => projectile;
