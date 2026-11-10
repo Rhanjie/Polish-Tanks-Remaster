@@ -36,7 +36,7 @@ Użytkownik klika w tym samym edytorze, więc:
 
 - Kod gry: `Assets/Scripts/` z asmdef `PolishTanks.Runtime`. Kod edytorowy: `Assets/Scripts/Editor/` (`PolishTanks.Editor`). Testy: `Assets/Tests/EditMode/` (`PolishTanks.Tests.EditMode`) i `Assets/Tests/PlayMode/` (`PolishTanks.Tests.PlayMode`). Twórz te asmdefy, jeśli ich brakuje. Testy nie mogą referować `Assembly-CSharp`, dlatego kod gry musi mieć asmdef.
 - Jeden `MonoBehaviour`/`ScriptableObject` na plik, nazwa pliku = nazwa klasy.
-- Komentarze tylko na poziomie klasy (`/// <summary>` nad klasą). Nie komentuj metod, właściwości, pól ani kodu w środku metod. Właściciel czyta kod, a nazwy mają mówić same za siebie. `[Tooltip]` w polach inspektora to nie komentarz i zostaje.
+- Komentarze tylko na poziomie typu (`/// <summary>` nad typem: klasą, strukturą, interfejsem albo enumem). Nie komentuj metod, właściwości, pól ani kodu w środku metod. Właściciel czyta kod, a nazwy mają mówić same za siebie. `[Tooltip]` w polach inspektora to nie komentarz i zostaje.
 - Logikę, którą da się testować bez sceny, wydzielaj do zwykłych klas C#, które `MonoBehaviour` tylko wywołuje.
 - Każdy nowy asset razem z plikiem `.meta`. Nigdy nie commituj `Library/`, `Temp/`, `Logs/`, `UserSettings/`, `.idea/`.
 - Po każdej zmianie w `.cs` sprawdź `console status` / `console get --level error`. Kod, który się nie kompiluje, nie jest skończony. Liczy się `groundTruth` (`compilationFailed`, `consoleErrors`), bo lista wpisów może zawierać stare błędy z poprzednich importów.

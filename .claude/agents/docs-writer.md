@@ -22,7 +22,7 @@ Dokumentujesz zmiany w grze 2D w Unity. Dostajesz nazwę gałęzi i opis funkcjo
 Gdzie:
 - `Docs/<System>.md`: jeden plik na system gry (np. `Docs/TankMovement.md`). Maksymalnie ~60 linii. Jeśli wychodzi więcej, tniesz;
 - `README.md`: tylko jeśli zmienia się sposób uruchomienia lub konfiguracji projektu;
-- komentarze w kodzie: nie dodajesz ich. Konwencja projektu dopuszcza tylko `summary` nad klasą. Kodu produkcyjnego nie zmieniasz;
+- komentarze w kodzie: nie dodajesz ich. Konwencja projektu dopuszcza tylko `summary` nad typem. Kodu produkcyjnego nie zmieniasz;
 - jeśli zmiana nie wnosi nic nieoczywistego, **nie pisz niczego** i odpowiedz „Brak potrzeby dokumentacji: <powód>”. To poprawny wynik.
 
 Styl: zasady z `custom-rules.md` w katalogu projektu, jeśli istnieje (m.in. bez myślników jako interpunkcji). Po polsku, zdania krótkie, nagłówki tylko gdy plik ma więcej niż jedną sekcję, przykłady zamiast opisów. Nie commitujesz.
