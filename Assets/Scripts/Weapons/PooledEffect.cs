@@ -10,6 +10,7 @@ namespace PolishTanks.Weapons
     public class PooledEffect : PooledBehaviour
     {
         private ParticleSystem particles;
+        private AudioSource sound;
         private float totalDuration;
         private float timeLeft;
 
@@ -18,6 +19,9 @@ namespace PolishTanks.Weapons
         private void Awake()
         {
             particles = GetComponent<ParticleSystem>();
+            sound = GetComponent<AudioSource>();
+            if (sound != null)
+                sound.playOnAwake = false;
             foreach (var system in GetComponentsInChildren<ParticleSystem>(true))
             {
                 var main = system.main;
@@ -32,6 +36,12 @@ namespace PolishTanks.Weapons
             timeLeft = totalDuration;
             particles.Clear(true);
             particles.Play(true);
+            if (sound != null && sound.clip != null)
+            {
+                sound.pitch = Random.Range(0.85f, 1.15f);
+                sound.Play();
+                timeLeft = Mathf.Max(timeLeft, sound.clip.length / sound.pitch);
+            }
         }
 
         protected internal override void OnReturned()

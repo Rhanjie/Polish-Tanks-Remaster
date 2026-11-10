@@ -11,11 +11,11 @@ namespace PolishTanks.Tests.PlayMode
 
         public HitOutcome Outcome { get; set; } = HitOutcome.Ignored;
 
-        public HitOutcome OnProjectileHit(in ProjectileHit hit)
+        public HitResponse OnProjectileHit(in ProjectileHit hit)
         {
             HitCount++;
             LastHit = hit;
-            return Outcome;
+            return new HitResponse(Outcome, hit.Normal);
         }
     }
 }

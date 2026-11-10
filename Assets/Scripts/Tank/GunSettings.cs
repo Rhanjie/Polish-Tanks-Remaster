@@ -23,6 +23,8 @@ namespace PolishTanks.Tank
         [Tooltip("Max deviation from the barrel axis, degrees.")]
         [Min(0f)] public float dispersion;
         [Min(0f)] public float damage;
+        [Tooltip("Shell diameter, mm. A shell three times thicker than a plate cannot glance off it.")]
+        [Min(0f)] public float caliber;
         [Tooltip("Armor the projectile can defeat, rolled between min and max on every hit, mm.")]
         [Min(0f)] public float penetrationMin;
         [Min(0f)] public float penetrationMax;

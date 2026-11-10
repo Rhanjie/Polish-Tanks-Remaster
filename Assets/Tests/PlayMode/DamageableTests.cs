@@ -109,7 +109,7 @@ namespace PolishTanks.Tests.PlayMode
             target.ApplyDamage(50f);
             var hit = new ProjectileHit(Vector2.zero, Vector2.up, Vector2.down, 10f, 0f, null, 100f, 100f);
 
-            Assert.That(target.OnProjectileHit(hit), Is.EqualTo(HitOutcome.Ignored));
+            Assert.That(target.OnProjectileHit(hit).Outcome, Is.EqualTo(HitOutcome.Ignored));
         }
 
         [UnityTest]

@@ -7,8 +7,9 @@ using Random = UnityEngine.Random;
 namespace PolishTanks.Combat
 {
     /// <summary>
-    /// Takes projectile hits through armor. The plate is chosen from the hit surface against this object's up axis,
-    /// penetration is rolled per hit, and only penetrating hits cost hit points.
+    /// Takes projectile hits through armor. The plate is chosen from the hit surface against this object's up axis.
+    /// A steep enough hit may glance off (once per shell); otherwise penetration is rolled and only penetrating hits
+    /// cost hit points.
     /// </summary>
     public class Damageable : MonoBehaviour, IProjectileHitHandler
     {
@@ -28,6 +29,7 @@ namespace PolishTanks.Combat
         public float HealthFraction => Health.Fraction;
         public bool IsDead => Health.IsDead;
         public PenetrationResult LastResult { get; private set; }
+        public HitOutcome LastOutcome { get; private set; }
 
         private HealthPool Health
         {
@@ -51,18 +53,34 @@ namespace PolishTanks.Combat
 
         public float ApplyDamage(float amount) => Health.TakeDamage(amount);
 
-        public HitOutcome OnProjectileHit(in ProjectileHit hit)
+        public HitResponse OnProjectileHit(in ProjectileHit hit)
         {
             if (IsDead)
-                return HitOutcome.Ignored;
+                return HitResponse.Ignored;
 
-            var face = transform.TransformDirection(ArmorMath.SnapToFace(transform.InverseTransformDirection(hit.Normal)));
+            Vector2 face = transform.TransformDirection(ArmorMath.SnapToFace(transform.InverseTransformDirection(hit.Normal)));
             LastResult = ArmorMath.Resolve(armor, transform.up, face, hit.Direction,
                 hit.PenetrationMin, hit.PenetrationMax, Random.value);
 
+            if (!hit.Ricocheted && GlancesOff(hit, face))
+                return Respond(HitOutcome.Ricochet, face, 0f);
+
             var dealt = LastResult.Penetrated ? Health.TakeDamage(hit.Damage) : 0f;
+            return Respond(LastResult.Penetrated ? HitOutcome.Penetrated : HitOutcome.Blocked, face, dealt);
+        }
+
+        private bool GlancesOff(in ProjectileHit hit, Vector2 face)
+        {
+            var plate = armor.For(LastResult.Side);
+            var angle = ArmorMath.ImpactAngle(face, hit.Direction);
+            return RicochetMath.Rolls(angle, RicochetMath.IsOvermatch(hit.Caliber, plate), Random.value);
+        }
+
+        private HitResponse Respond(HitOutcome outcome, Vector2 face, float dealt)
+        {
+            LastOutcome = outcome;
             Hit?.Invoke(LastResult, dealt);
-            return LastResult.Penetrated ? HitOutcome.Penetrated : HitOutcome.Blocked;
+            return new HitResponse(outcome, face);
         }
 
         private void Awake() => _ = Health;

@@ -1,10 +1,11 @@
 namespace PolishTanks.Weapons
 {
-    /// <summary>What a target made of a hit: not its business, stopped by armor, or taken.</summary>
+    /// <summary>What a target made of a hit, ordered by precedence when several handlers answer.</summary>
     public enum HitOutcome
     {
         Ignored,
         Blocked,
+        Ricochet,
         Penetrated,
     }
 }
