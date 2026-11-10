@@ -43,6 +43,7 @@ namespace PolishTanks.Tests.PlayMode
             TankRig.SetField(rig.Gun, "muzzle", muzzle.transform);
             TankRig.SetField(rig.Gun, "recoilTarget", rig.Movement);
             rig.Gun.Settings = settings;
+            fixture.Inject(root);
             root.SetActive(true);
             return rig;
         }
@@ -80,7 +81,7 @@ namespace PolishTanks.Tests.PlayMode
 
             rig.Gun.TryFire();
 
-            Assert.That(PoolRegistry.For(prefab).CountActive, Is.EqualTo(1));
+            Assert.That(fixture.Pools.For(prefab).CountActive, Is.EqualTo(1));
         }
 
         [Test]

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using PolishTanks.CameraRig;
 using PolishTanks.Weapons;
+using Reflex.Core;
+using Reflex.Injectors;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -9,6 +12,21 @@ namespace PolishTanks.Tests.PlayMode
     /// <summary>Builds prefabs, definitions and colliders in code and destroys all of it, including the [Pools] root, on Dispose.</summary>
     internal sealed class WeaponFixture : IDisposable
     {
+        public WeaponFixture()
+        {
+            Pools = new PoolService(Track(new GameObject("[Pools]")).transform);
+            Container = new ContainerBuilder()
+                .RegisterValue(Pools, new[] { typeof(IPoolService) })
+                .RegisterValue(CameraShake, new[] { typeof(ICameraShake) })
+                .Build();
+        }
+
+        public PoolService Pools { get; }
+        public RecordingCameraShake CameraShake { get; } = new RecordingCameraShake();
+        public Container Container { get; }
+
+        public void Inject(GameObject root) => GameObjectInjector.InjectRecursive(root, Container);
+
         private readonly List<Object> created = new List<Object>();
 
         public T Track<T>(T obj) where T : Object
@@ -61,10 +79,7 @@ namespace PolishTanks.Tests.PlayMode
                 if (obj != null)
                     Object.DestroyImmediate(obj);
             created.Clear();
-
-            var pools = GameObject.Find("[Pools]");
-            if (pools != null)
-                Object.DestroyImmediate(pools);
+            Container.Dispose();
         }
     }
 }

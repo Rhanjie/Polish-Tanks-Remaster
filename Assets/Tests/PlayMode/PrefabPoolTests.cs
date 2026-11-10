@@ -1,6 +1,8 @@
+using System.Collections;
 using NUnit.Framework;
 using PolishTanks.Weapons;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace PolishTanks.Tests.PlayMode
 {
@@ -134,23 +136,24 @@ namespace PolishTanks.Tests.PlayMode
         }
 
         [Test]
-        public void PoolRegistry_For_SamePrefab_ReturnsSamePool()
+        public void PoolService_For_SamePrefab_ReturnsSamePool()
         {
-            var first = PoolRegistry.For(prefab);
+            var first = fixture.Pools.For(prefab);
 
-            Assert.That(PoolRegistry.For(prefab), Is.SameAs(first));
+            Assert.That(fixture.Pools.For(prefab), Is.SameAs(first));
         }
 
-        [Test]
-        public void PoolRegistry_For_AfterPoolsRootDestroyed_BuildsNewPool()
+        [UnityTest]
+        public IEnumerator PoolService_Dispose_DestroysPooledObjects()
         {
-            var first = PoolRegistry.For(prefab);
-            Object.DestroyImmediate(GameObject.Find("[Pools]"));
+            var root = new GameObject("[Pools]").transform;
+            var service = new PoolService(root);
+            var pool = service.For(prefab, 2);
 
-            var second = PoolRegistry.For(prefab);
+            service.Dispose();
+            yield return null;
 
-            Assert.That(second, Is.Not.SameAs(first));
-            Assert.That(second.IsAlive, Is.True);
+            Assert.That(pool.IsAlive, Is.False);
         }
     }
 }

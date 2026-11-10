@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using PolishTanks.CameraRig;
+using Reflex.Attributes;
 using UnityEngine;
 
 namespace PolishTanks.Prototypes
@@ -40,7 +42,7 @@ namespace PolishTanks.Prototypes
         private readonly List<Vector2> hull = new List<Vector2>(8);
         private readonly Vector2[] corners = new Vector2[4];
         private Mesh mesh;
-        private Camera viewCamera;
+        [Inject] private IGameCamera gameCamera;
         private float alpha = 1f;
 
         public Vector2 RoofOffset { get; private set; }
@@ -69,13 +71,11 @@ namespace PolishTanks.Prototypes
         {
             if (building == null || roof == null || walls == null)
                 return;
-            if (viewCamera == null)
-                viewCamera = Camera.main;
-            if (viewCamera == null)
+            if (gameCamera == null)
                 return;
 
             Vector2 basePosition = building.transform.position;
-            RoofOffset = HeightProjection.RoofOffset(basePosition, viewCamera.transform.position, building.Height, perspective);
+            RoofOffset = HeightProjection.RoofOffset(basePosition, gameCamera.Position, building.Height, perspective);
 
             roof.transform.position = new Vector3(basePosition.x + RoofOffset.x, basePosition.y + RoofOffset.y, roof.transform.position.z);
             roof.size = building.Size;

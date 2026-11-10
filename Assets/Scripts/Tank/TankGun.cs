@@ -1,6 +1,7 @@
 using System;
+using PolishTanks.CameraRig;
 using PolishTanks.Weapons;
-using Unity.Cinemachine;
+using Reflex.Attributes;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -20,11 +21,13 @@ namespace PolishTanks.Tank
         [Tooltip("Hull that takes the recoil and that projectiles ignore.")]
         [SerializeField] private TankMovement recoilTarget;
         [SerializeField] private BarrelRecoil barrelRecoil;
-        [SerializeField] private CinemachineImpulseSource impulseSource;
         [SerializeField] private ParticleSystem muzzleSmoke;
         [SerializeField, Min(0)] private int smokeParticles = 8;
 
         private const int MaxShotsPerFrame = 8;
+
+        [Inject] private IPoolService pools;
+        [Inject] private ICameraShake cameraShake;
 
         private ReloadTimer reload;
         private bool started;
@@ -126,11 +129,11 @@ namespace PolishTanks.Tank
         private void PrewarmPools()
         {
             var definition = settings.projectile;
-            if (definition == null || definition.Prefab == null)
+            if (pools == null || definition == null || definition.Prefab == null)
                 return;
-            PoolRegistry.For(definition.Prefab, definition.PrewarmCount);
+            pools.For(definition.Prefab, definition.PrewarmCount);
             if (definition.ImpactEffect != null)
-                PoolRegistry.For(definition.ImpactEffect, Mathf.Max(2, definition.PrewarmCount / 3));
+                pools.For(definition.ImpactEffect, ImpactPrewarm(definition));
         }
 
         private void SpawnProjectile(Vector2 direction)
@@ -138,15 +141,23 @@ namespace PolishTanks.Tank
             var definition = settings.projectile;
             if (definition == null || definition.Prefab == null)
                 return;
+            if (pools == null)
+            {
+                Debug.LogWarning($"{name}: no {nameof(IPoolService)} injected, the shot has no projectile.", this);
+                return;
+            }
 
             var origin = muzzle != null ? muzzle.position : transform.position;
             var shooterVelocity = ownerBody != null ? ownerBody.linearVelocity : Vector2.zero;
             var velocity = BallisticsMath.LaunchVelocity(direction, settings.projectileSpeed, shooterVelocity);
 
-            var projectile = PoolRegistry.For(definition.Prefab, definition.PrewarmCount)
+            var impactPool = definition.ImpactEffect != null ? pools.For(definition.ImpactEffect, ImpactPrewarm(definition)) : null;
+            var projectile = pools.For(definition.Prefab, definition.PrewarmCount)
                 .Get(origin, Quaternion.LookRotation(Vector3.forward, direction));
-            projectile.Launch(velocity, definition.Lifetime, ownerBody, settings.impactImpulse, settings.damage, definition.ImpactEffect);
+            projectile.Launch(velocity, definition.Lifetime, ownerBody, settings.impactImpulse, settings.damage, impactPool);
         }
+
+        private static int ImpactPrewarm(ProjectileDefinition definition) => Mathf.Max(2, definition.PrewarmCount / 3);
 
         private void ApplyRecoil(Vector2 direction)
         {
@@ -159,8 +170,8 @@ namespace PolishTanks.Tank
             if (barrelRecoil != null && settings.barrelKick > 0f)
                 barrelRecoil.Kick(settings.barrelKick, settings.barrelReturnTime);
 
-            if (impulseSource != null && settings.shakeForce > 0f)
-                impulseSource.GenerateImpulseWithVelocity(-direction * settings.shakeForce);
+            var origin = muzzle != null ? muzzle.position : transform.position;
+            cameraShake?.Shake(origin, -direction, settings.shakeForce);
         }
 
         private void ShowMuzzleFlash()

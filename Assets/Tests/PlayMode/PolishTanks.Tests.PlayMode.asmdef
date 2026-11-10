@@ -3,7 +3,8 @@
     "rootNamespace": "PolishTanks.Tests.PlayMode",
     "references": [
         "PolishTanks.Runtime",
-        "UnityEngine.TestRunner"
+        "UnityEngine.TestRunner",
+        "Reflex"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

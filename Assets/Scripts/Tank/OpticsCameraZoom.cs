@@ -1,14 +1,15 @@
 using PolishTanks.Tank.Modules;
+using Reflex.Attributes;
 using Unity.Cinemachine;
 using UnityEngine;
 
 namespace PolishTanks.Tank
 {
-    /// <summary>Eases a Cinemachine camera's orthographic size to the tank's optics view range.</summary>
+    /// <summary>Eases a Cinemachine camera's orthographic size to the player tank's optics view range.</summary>
     [RequireComponent(typeof(CinemachineCamera))]
     public class OpticsCameraZoom : MonoBehaviour
     {
-        [SerializeField] private TankController tank;
+        [Inject] private PlayerTank player;
 
         [Tooltip("Seconds to get most of the way to a new view range.")]
         [SerializeField, Min(0.01f)] private float zoomTime = 0.5f;
@@ -25,6 +26,7 @@ namespace PolishTanks.Tank
 
         private void OnEnable()
         {
+            var tank = player?.Controller;
             if (tank == null)
                 return;
             tank.StatsApplied += OnStatsApplied;
@@ -34,6 +36,7 @@ namespace PolishTanks.Tank
 
         private void OnDisable()
         {
+            var tank = player?.Controller;
             if (tank != null)
                 tank.StatsApplied -= OnStatsApplied;
         }

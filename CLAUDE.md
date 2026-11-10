@@ -3,7 +3,7 @@
 Gra 2D w Unity 6 (`6000.6.7f1`), URP 2D, Input System, Unity Test Framework.
 Edytor jest zwykle otwarty i użytkownik pracuje w nim **równolegle z agentem**.
 
-Jeśli w katalogu projektu jest `custom-rules.md` (lokalny, w `.gitignore`), przeczytaj go na starcie i stosuj. Ma pierwszeństwo przed tym plikiem w sprawach stylu tekstu.
+Jeśli w katalogu projektu jest `custom-rules.md` (lokalny, w `.gitignore`), przeczytaj go na starcie i stosuj. Ma pierwszeństwo przed tym plikiem w sprawach tekstu, commitów, PR i dokumentacji.
 
 ## Sterowanie edytorem: Unity CLI
 
@@ -108,6 +108,7 @@ W razie wątpliwości wybierz DUŻE.
 
 - **Zawsze po angielsku**, poprawną, naturalną angielszczyzną, w trybie rozkazującym, z wielkiej litery, bez kropki na końcu i bez prefiksów (`feat:` itp.).
 - Pierwsza linia do ~72 znaków. Ma mówić **co i po co**, a nie „jakie pliki”.
+- Rozbijaj funkcjonalność na mniejsze commity, gdy ma to sens: osobno nowy typ albo serwis, osobno jego użycie w istniejących klasach, osobno assety i sceny, osobno testy. Każdy commit ma się kompilować i dać się przejrzeć bez czytania całej gałęzi. Nie dziel sztucznie zmian, które mają sens tylko razem.
 - Przykłady dobre: `Add test bouncing ball to test CLI integration`, `Fix tank sliding after collision with walls`, `Move turret rotation logic to TurretAimer`.
 - Przykłady złe: `fixes`, `update files`, `WIP`, `Dodano piłkę`, `Changed PlayerController.cs`.
 - Jeśli zmiana wymaga wyjaśnienia, dodaj po pustej linii krótkie uzasadnienie „dlaczego” (od 2 do 4 linii).

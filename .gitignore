@@ -112,5 +112,6 @@ InitTestScene*.unity*
 # Claude Code - osobiste ustawienia (wspoldzielone: CLAUDE.md, .claude/agents/)
 .claude/settings.local.json
 
-# Lokalne zasady wlasciciela (czytane przez agenta, nie commitowane)
+# Pliki lokalne
 custom-rules.md
+Docs/

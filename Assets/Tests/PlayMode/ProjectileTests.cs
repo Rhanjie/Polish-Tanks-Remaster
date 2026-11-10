@@ -28,7 +28,7 @@ namespace PolishTanks.Tests.PlayMode
         private Projectile Fire(Vector2 from, Vector2 velocity, float lifetime = 5f, Rigidbody2D owner = null, float impulse = 0f, float damage = 0f)
         {
             Physics2D.SyncTransforms();
-            var projectile = PoolRegistry.For(prefab).Get(from, Quaternion.identity);
+            var projectile = fixture.Pools.For(prefab).Get(from, Quaternion.identity);
             projectile.Launch(velocity, lifetime, owner, impulse, damage, null);
             return projectile;
         }
