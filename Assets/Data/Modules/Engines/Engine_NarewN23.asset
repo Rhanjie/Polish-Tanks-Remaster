@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 579858a642ba0f54ab6549c68db58726, type: 3}
-  m_Name: Engine_TurboPrototype
+  m_Name: Engine_NarewN23
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.EngineModule
-  displayName: Turbo Prototype
-  description: Experimental turbocharged unit. Huge power, poor reliability.
+  displayName: Narew N23 twin bank
+  description: Two engine blocks on one crankcase, 700 hp with a hydraulic turret drive. Runs hot.
   icon: {fileID: 0}
-  mass: 1400
-  cost: 1600
-  tier: 4
-  horsePower: 950
-  traverseDriveMultiplier: 1.25
-  reliability: 0.5
-  fuelCapacity: 600
+  mass: 1300
+  cost: 1100
+  tier: 3
+  horsePower: 700
+  traverseDriveMultiplier: 1.15
+  reliability: 0.7
+  fuelCapacity: 720

@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 579858a642ba0f54ab6549c68db58726, type: 3}
-  m_Name: Engine_MaybachHL230
+  m_Name: Engine_WolaW12
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.EngineModule
-  displayName: Maybach HL230 P45
-  description: 700 hp with a hydraulic turret drive. Runs hot.
+  displayName: Wola W12 petrol
+  description: Twelve cylinders rebuilt from tractor plant spares. 300 hp and easy to fix in the field.
   icon: {fileID: 0}
-  mass: 1300
-  cost: 1100
-  tier: 3
-  horsePower: 700
-  traverseDriveMultiplier: 1.15
-  reliability: 0.7
-  fuelCapacity: 720
+  mass: 1000
+  cost: 300
+  tier: 1
+  horsePower: 300
+  traverseDriveMultiplier: 1
+  reliability: 0.85
+  fuelCapacity: 320

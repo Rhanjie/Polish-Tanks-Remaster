@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75596a9c39812a540b67edaeeb32d43e, type: 3}
-  m_Name: Transmission_MerrittBrown
+  m_Name: Transmission_TripleDiff
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.TransmissionModule
-  displayName: Merritt-Brown Triple Differential
+  displayName: Triple differential steering box
   description: 'Regenerative steering: turns sharply without losing speed.'
   icon: {fileID: 0}
   mass: 800

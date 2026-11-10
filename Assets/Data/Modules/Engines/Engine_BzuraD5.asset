@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 579858a642ba0f54ab6549c68db58726, type: 3}
-  m_Name: Engine_DieselV2
+  m_Name: Engine_BzuraD5
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.EngineModule
-  displayName: Diesel V-2
-  description: Rugged diesel, 500 hp. Hard to set on fire.
+  displayName: Bzura D5 diesel
+  description: Rugged 500 hp diesel. Hard to set on fire, harder to start in winter.
   icon: {fileID: 0}
   mass: 1000
   cost: 600

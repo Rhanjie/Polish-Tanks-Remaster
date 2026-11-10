@@ -42,11 +42,6 @@ Kierunek gry spisany z rozmów z właścicielem. To nie są plany implementacji.
 - Prosty, nowoczesny HUD.
 - Później: zmienna pogoda i pory dnia (klimatyczna mgła, deszcz, burza).
 
-## Do zrobienia przy okazji
-- **Zmienić nazwy przykładowych modułów z `Assets/Data/Modules/` na fikcyjne.** Obecne są historyczne (Maybach HL120/HL230, KwK 37/40/36, MG 34, Browning M1919, TZF 9b, Merritt-Brown, Schürzen). Zmieniać `displayName` i opisy. Nazwy plików assetów można zostawić albo zmienić przez AssetDatabase, żeby nie zgubić referencji.
-
-- **Usunąć komentarze z metod i z wnętrza kodu** w obecnych skryptach, bo nowa konwencja jest w CLAUDE.md. Zostają tylko podsumowania klas i `[Tooltip]`.
-
 ## Architektura
 - **Przerobić kod pod Extenject (Zenject, dependency injection).** Zrobić to osobną gałęzią, później, żeby było widać różnicę względem obecnego podejścia (referencje przez `[SerializeField]`, `PoolRegistry` jako statyczny rejestr, `Camera.main`, `InputSystem.actions`). Kandydaci do wstrzykiwania:
   - pule;

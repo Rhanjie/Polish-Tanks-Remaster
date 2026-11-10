@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75596a9c39812a540b67edaeeb32d43e, type: 3}
   m_Name: Transmission_Synchro8
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.TransmissionModule
-  displayName: Synchromesh 8-speed
+  displayName: Eight speed synchromesh
   description: Smooth semi-automatic shifting.
   icon: {fileID: 0}
   mass: 650
