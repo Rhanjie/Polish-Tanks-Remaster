@@ -3,20 +3,25 @@
 Gra 2D w Unity 6 (`6000.6.7f1`), URP 2D, Input System, Unity Test Framework.
 Edytor jest zwykle otwarty i użytkownik pracuje w nim **równolegle z agentem**.
 
+Jeśli w katalogu projektu jest `custom-rules.md` (lokalny, w `.gitignore`), przeczytaj go na starcie i stosuj. Ma pierwszeństwo przed tym plikiem w sprawach stylu tekstu.
+
 ## Sterowanie edytorem: Unity CLI
 
 - Do wszystkiego, co dotyczy sceny, prefabów, assetów, Play Mode, konsoli i testów, używaj `unity` CLI (skill `unity:unity-cli`). Na start sprawdź `unity status --project-path "F:\Unity\Polish Tanks Remaster"`. Stan musi być `ready`.
 - Jeśli `unity` nie ma w PATH, użyj pełnej ścieżki: `C:\Users\RhAnjiE\AppData\Local\unity\bin\unity.exe`.
-- Dawaj zawsze `--project-path "F:\Unity\Polish Tanks Remaster"` oraz `--caller plugin --skill <nazwa-skilla>`.
-- `script eval`: kod C# przekazuj przez `--file <ścieżka.cs>` (plik w scratchpadzie). Bezpośrednio podany kod PowerShell rozbija na argumenty.
+- Dawaj zawsze `--project-path "F:\Unity\Polish Tanks Remaster"`. Przy `unity command` przydaje się `--result-only`, bo zwraca sam wynik bez koperty.
+- Jeśli `unity status` nie widzi edytora, a proces Unity działa, komendy CLI trzeba uruchomić poza sandboxem agenta.
+- `script eval`: kod C# przekazuj przez `--file <ścieżka.cs>` (plik w scratchpadzie). Bezpośrednio podany kod PowerShell rozbija na argumenty. Dłuższy skrypt najpierw sprawdź przez `--dry-run true`.
+- W skryptach edytorowych nie używaj `??` ani `?.` na obiektach Unity (np. `GetComponent<T>() ?? AddComponent<T>()`). Brakujący komponent to „fałszywy null” i operator go nie złapie. Tymczasowe obiekty sprzątaj w `finally`, bo wyjątek w połowie skryptu zostawia je w scenie użytkownika.
 - **Nigdy** nie edytuj ręcznie plików `.unity`, `.prefab` ani `.asset`, gdy edytor jest osiągalny.
 - Jeśli edytor jest nieosiągalny albo w Safe Mode, sprawdź `unity status`. Przy Safe Mode napraw błędy kompilacji. W innych przypadkach powiedz to użytkownikowi, nie obchodź problemu.
 - Przydatne komendy:
   - `console get --level warn`, `console status`: konsola i błędy kompilacji;
   - `test run --mode editor [--filter X]`: testy EditMode w otwartym edytorze. Samodzielne `unity test` nie zadziała, gdy projekt jest otwarty;
   - `test run --mode playmode --async-tests true`, potem odpytuj `test status` aż do `status: completed`. PlayMode nie działa synchronicznie, bo wejście w Play Mode przeładowuje domenę i zrywa żądanie;
-  - `editor.playmode start|stop`: Play Mode;
-  - `capture`: zrzuty widoku.
+  - `editor.playmode start|stop`: Play Mode. Przed startem wywołaj `editor set_auto_tick` i `editor.playmode set_run_in_background`, inaczej nieaktywny edytor stoi na klatce 1;
+  - `package add --name <pakiet@wersja> --confirm true --wait true`: pakiety. Połączenie zrywa się przy przeładowaniu domeny, więc wynik sprawdź w `Packages/manifest.json`;
+  - `capture game_view --output-path <plik>`: zrzut z post-processingiem (z `--source camera` bez niego).
 
 ## Wspólna praca w jednym edytorze
 
@@ -31,9 +36,18 @@ Użytkownik klika w tym samym edytorze, więc:
 
 - Kod gry: `Assets/Scripts/` z asmdef `PolishTanks.Runtime`. Kod edytorowy: `Assets/Scripts/Editor/` (`PolishTanks.Editor`). Testy: `Assets/Tests/EditMode/` (`PolishTanks.Tests.EditMode`) i `Assets/Tests/PlayMode/` (`PolishTanks.Tests.PlayMode`). Twórz te asmdefy, jeśli ich brakuje. Testy nie mogą referować `Assembly-CSharp`, dlatego kod gry musi mieć asmdef.
 - Jeden `MonoBehaviour`/`ScriptableObject` na plik, nazwa pliku = nazwa klasy.
+- Komentarze tylko na poziomie klasy (`/// <summary>` nad klasą). Nie komentuj metod, właściwości, pól ani kodu w środku metod. Właściciel czyta kod, a nazwy mają mówić same za siebie. `[Tooltip]` w polach inspektora to nie komentarz i zostaje.
 - Logikę, którą da się testować bez sceny, wydzielaj do zwykłych klas C#, które `MonoBehaviour` tylko wywołuje.
 - Każdy nowy asset razem z plikiem `.meta`. Nigdy nie commituj `Library/`, `Temp/`, `Logs/`, `UserSettings/`, `.idea/`.
-- Po każdej zmianie w `.cs` sprawdź `console status` / `console get --level error`. Kod, który się nie kompiluje, nie jest skończony.
+- Po każdej zmianie w `.cs` sprawdź `console status` / `console get --level error`. Kod, który się nie kompiluje, nie jest skończony. Liczy się `groundTruth` (`compilationFailed`, `consoleErrors`), bo lista wpisów może zawierać stare błędy z poprzednich importów.
+- Nazwy modułów, broni i pojazdów mają być realistyczne, ale fikcyjne. Żadnych prawdziwych producentów ani oznaczeń (świat to alternatywna historia, patrz `Docs/Roadmap.md`).
+- Dokumentacja systemów leży w `Docs/<System>.md`, wizja i plany w `Docs/Roadmap.md`.
+
+## Testy
+
+- Testuj zachowanie, które może się zepsuć: reguły, obliczenia, przypadki brzegowe, integrację z fizyką. Pomijaj testy, które powtarzają implementację, sprawdzają gettery albo dublują inny test na innych liczbach.
+- Mniej, a lepiej: jeden dobry test na zachowanie. Przypadki brzegowe tylko wtedy, gdy realnie mogą zawieść.
+- Testy PlayMode sprzątają po sobie, także sceny. Smoke test scen zostawia pustą scenę, bo kolejne testy budują obiekty w (0, 0).
 
 ## Git flow
 
@@ -55,7 +69,7 @@ Przed rozpoczęciem pracy **napisz w jednym zdaniu klasyfikację i jej powód**,
 - użytkownik użył słów „funkcjonalność”, „feature”, „system” albo poprosił o pełny proces.
 
 **MAŁE** (bez agentów, na bieżącej gałęzi, bez commita bez prośby; jeśli bieżąca gałąź to `development` i trzeba commitować, zrób krótką gałąź `fix/…` i PR, bo `development` jest chroniony):
-- poprawka w 1–2 plikach o oczywistej przyczynie, zmiana wartości lub tuning, rename, literówka;
+- poprawka w 1 lub 2 plikach o oczywistej przyczynie, zmiana wartości lub tuning, rename, literówka;
 - pojedyncza operacja na scenie, o którą użytkownik prosi wprost;
 - pytania, analizy, eksperymenty.
 
@@ -72,8 +86,8 @@ W razie wątpliwości wybierz DUŻE.
 5. **`unity-playmode-verifier`**, sekwencyjnie, bo używa edytora: kompilacja, uruchomienie wszystkich testów, smoke test w Play Mode. Jeśli coś pada, wracasz do 4.
 6. **`docs-writer`**, tylko jeśli zmieniło się coś, czego nie widać z kodu (nowy system, konfiguracja, decyzja architektoniczna).
 7. **Pull request.** `git push -u origin feature/<nazwa>`, potem `gh pr create --base development` z tytułem w stylu commita. Opis ma być krótki, rzeczowy i pisany jak przez człowieka: bez rozbudowanych list, pogrubionych podpunktów i wyliczania każdej liczby. Sekcje:
-   - **Summary**: co i po co (2–3 zdania);
-   - **Verification**: 1–2 linie (wynik review, liczby testów, smoke test);
+   - **Summary**: co i po co (2 lub 3 zdania);
+   - **Verification**: 1 lub 2 linie (wynik review, liczby testów, smoke test);
    - **Known limitations**: tylko realne ograniczenia, po jednej linii (pomiń sekcję, jeśli ich nie ma).
 
    Nie dodawaj checklisty testów manualnych do opisu PR.
@@ -96,7 +110,7 @@ W razie wątpliwości wybierz DUŻE.
 - Pierwsza linia do ~72 znaków. Ma mówić **co i po co**, a nie „jakie pliki”.
 - Przykłady dobre: `Add test bouncing ball to test CLI integration`, `Fix tank sliding after collision with walls`, `Move turret rotation logic to TurretAimer`.
 - Przykłady złe: `fixes`, `update files`, `WIP`, `Dodano piłkę`, `Changed PlayerController.cs`.
-- Jeśli zmiana wymaga wyjaśnienia, dodaj po pustej linii krótkie uzasadnienie „dlaczego” (2–4 linie).
+- Jeśli zmiana wymaga wyjaśnienia, dodaj po pustej linii krótkie uzasadnienie „dlaczego” (od 2 do 4 linii).
 - Commit merge z PR tworzy GitHub, a jego tytuł to tytuł PR. Tytuł PR pisz więc tak jak commit.
 - **Nie dodawaj** trailera `Co-Authored-By: Claude …` ani żadnej innej atrybucji AI do commitów i opisów PR. To wyraźne życzenie właściciela repo i ma pierwszeństwo przed domyślną atrybucją.
 

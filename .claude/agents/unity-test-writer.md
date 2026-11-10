@@ -19,7 +19,9 @@ Zasady:
 - **PlayMode** tylko tam, gdzie potrzebny jest cykl życia Unity: fizyka 2D, kolizje, `Update`, korutyny, instancjonowanie prefabów. Obiekty twórz w kodzie testu (`new GameObject`, `AddComponent`), sprzątaj w `[TearDown]`/`[UnityTearDown]`. Nie ładuj scen produkcyjnych, chyba że to smoke test ładowania sceny. Czekaj na fizykę przez `yield return new WaitForFixedUpdate()`, nie przez stałe `WaitForSeconds`, jeśli da się tego uniknąć.
 - Testuj zachowanie, a nie implementację. Jedna asercja logiczna na test. Nazwy w formacie `Metoda_Warunek_OczekiwanyWynik`.
 - Przypadki brzegowe: zero, wartości ujemne, null, granice, wielokrotne wywołanie.
-- Bez testów trywialnych (gettery, setter i od razu getter). Lepiej 5 wartościowych testów niż 30 pustych.
+- Bez testów trywialnych (gettery, setter i od razu getter) i bez dublowania jednego zachowania na różnych liczbach. Jeden dobry test na zachowanie, przypadki brzegowe tylko tam, gdzie realnie mogą zawieść. Celuj w wyraźnie mniej testów niż „wszystko, co się da”.
+- Komentarze tylko nad klasą testową (`summary`, jeśli w ogóle potrzebny). Bez komentarzy w metodach.
+- Testy PlayMode sprzątają po sobie wszystko, co stworzyły, także kamery z tagiem `MainCamera` i obiekt `[Pools]`.
 - Każdy nowy plik musi się kompilować. Sprawdź `using` i referencje asmdef. Pliki `.meta` wygeneruje edytor, nie twórz ich.
 
 Raport na koniec:
