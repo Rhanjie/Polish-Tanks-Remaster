@@ -16,6 +16,9 @@ namespace PolishTanks.Combat
         [Tooltip("Pooled effect played where the object breaks. Optional.")]
         [SerializeField] private PooledEffect destroyedEffect;
 
+        [Tooltip("What the object is made of. Decides how ricochets off it look and sound.")]
+        [SerializeField] private SurfaceMaterial surface = SurfaceMaterial.Metal;
+
         [Tooltip("Remove the object when it breaks. Off for tanks, which stay as wrecks.")]
         [SerializeField] private bool removeOnDeath = true;
 
@@ -23,5 +26,6 @@ namespace PolishTanks.Combat
         public ArmorProfile Armor => armor;
         public PooledEffect DestroyedEffect => destroyedEffect;
         public bool RemoveOnDeath => removeOnDeath;
+        public SurfaceMaterial Surface => surface;
     }
 }

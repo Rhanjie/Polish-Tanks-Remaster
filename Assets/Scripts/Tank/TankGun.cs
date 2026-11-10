@@ -139,6 +139,8 @@ namespace PolishTanks.Tank
             pools.For(definition.Prefab, definition.PrewarmCount);
             EffectPool(definition.ImpactEffect, definition);
             EffectPool(definition.BlockedEffect, definition);
+            EffectPool(definition.RicochetEffect, definition);
+            EffectPool(definition.OtherRicochetEffect, definition);
         }
 
         private void SpawnProjectile(Vector2 direction)
@@ -167,8 +169,11 @@ namespace PolishTanks.Tank
                 Damage = settings.damage,
                 PenetrationMin = settings.penetrationMin,
                 PenetrationMax = settings.penetrationMax,
+                Caliber = settings.caliber,
                 ImpactPool = EffectPool(definition.ImpactEffect, definition),
                 BlockedPool = EffectPool(definition.BlockedEffect, definition),
+                RicochetPool = EffectPool(definition.RicochetEffect, definition),
+                OtherRicochetPool = EffectPool(definition.OtherRicochetEffect, definition),
             });
         }
 

@@ -9,7 +9,11 @@ namespace PolishTanks.Weapons
     [RequireComponent(typeof(ParticleSystem))]
     public class PooledEffect : PooledBehaviour
     {
+        [Tooltip("Sounds to pick from at random on each play. Empty keeps the AudioSource clip.")]
+        [SerializeField] private AudioClip[] soundVariants;
+
         private ParticleSystem particles;
+        private AudioSource sound;
         private float totalDuration;
         private float timeLeft;
 
@@ -18,6 +22,9 @@ namespace PolishTanks.Weapons
         private void Awake()
         {
             particles = GetComponent<ParticleSystem>();
+            sound = GetComponent<AudioSource>();
+            if (sound != null)
+                sound.playOnAwake = false;
             foreach (var system in GetComponentsInChildren<ParticleSystem>(true))
             {
                 var main = system.main;
@@ -32,6 +39,14 @@ namespace PolishTanks.Weapons
             timeLeft = totalDuration;
             particles.Clear(true);
             particles.Play(true);
+            if (sound != null && soundVariants != null && soundVariants.Length > 0)
+                sound.clip = soundVariants[Random.Range(0, soundVariants.Length)];
+            if (sound != null && sound.clip != null)
+            {
+                sound.pitch = Random.Range(0.85f, 1.15f);
+                sound.Play();
+                timeLeft = Mathf.Max(timeLeft, sound.clip.length / sound.pitch);
+            }
         }
 
         protected internal override void OnReturned()

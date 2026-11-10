@@ -1962,7 +1962,7 @@ PrefabInstance:
     - target: {fileID: 2523336779600019954, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
       propertyPath: loadout
       value: 
-      objectReference: {fileID: 11400000, guid: 1bc7fb3bd5ecbf3459aa02b65353eb65, type: 2}
+      objectReference: {fileID: 11400000, guid: ff950fd6ec8421049bf6487b673041bf, type: 2}
     - target: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
       propertyPath: m_Name
       value: TargetTank
