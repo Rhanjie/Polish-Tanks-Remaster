@@ -3,20 +3,21 @@ using UnityEngine;
 namespace PolishTanks.Combat
 {
     /// <summary>
-    /// Ricochet rules. Near-square hits never bounce: they penetrate or break up on the plate.
-    /// From <see cref="StartAngle"/> to <see cref="FullAngle"/> (degrees from the plate normal) the chance rises
-    /// to certain. A shell at least <see cref="OvermatchRatio"/> times the plate thickness punches in instead.
-    /// The bounce mirrors off the plate, skims flatter along it and scatters a little.
+    /// Ricochet rules for a shell that failed to penetrate. Near-square hits never bounce: the shell stays in the
+    /// plate, flattened or broken up. From <see cref="StartAngle"/> to <see cref="FullAngle"/> (degrees from the
+    /// plate normal, so 50 to 20 degrees from the surface) the chance rises to certain. A shell at least
+    /// <see cref="OvermatchRatio"/> times the plate thickness digs in instead. The bounce mirrors off the plate,
+    /// skims flatter along it and scatters noticeably.
     /// </summary>
     public static class RicochetMath
     {
-        public const float StartAngle = 55f;
+        public const float StartAngle = 40f;
         public const float FullAngle = 70f;
         public const float OvermatchRatio = 3f;
         public const float RetainedPower = 0.3f;
         public const float RetainedSpeed = 0.6f;
         public const float SkimFactor = 0.35f;
-        public const float ScatterDegrees = 10f;
+        public const float ScatterDegrees = 18f;
         public const float MinLeaveDot = 0.05f;
 
         public static bool IsOvermatch(float caliber, float plateThickness) =>

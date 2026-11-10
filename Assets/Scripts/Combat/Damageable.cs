@@ -7,9 +7,9 @@ using Random = UnityEngine.Random;
 namespace PolishTanks.Combat
 {
     /// <summary>
-    /// Takes projectile hits through armor. The plate is chosen from the hit surface against this object's up axis.
-    /// A steep enough hit may glance off (once per shell); otherwise penetration is rolled and only penetrating hits
-    /// cost hit points.
+    /// Takes projectile hits through armor. The plate is chosen from the hit surface against this object's up axis
+    /// and penetration is rolled. Only penetrating hits cost hit points; a shell that fails may glance off at a steep
+    /// angle (once per shell), otherwise it stays in the plate.
     /// </summary>
     public class Damageable : MonoBehaviour, IProjectileHitHandler
     {
@@ -68,16 +68,13 @@ namespace PolishTanks.Combat
             var side = ArmorMath.GetSide(transform.up, face);
             var plate = armor.For(side);
 
-            if (!hit.Ricocheted && GlancesOff(hit, face, plate))
-            {
-                LastResult = new PenetrationResult(side, ArmorMath.EffectiveArmor(plate, face, hit.Direction), 0f);
-                return Respond(HitOutcome.Ricochet, face, 0f);
-            }
-
             LastResult = ArmorMath.Resolve(armor, transform.up, face, hit.Direction,
                 hit.PenetrationMin, hit.PenetrationMax, Random.value);
-            var dealt = LastResult.Penetrated ? Health.TakeDamage(hit.Damage) : 0f;
-            return Respond(LastResult.Penetrated ? HitOutcome.Penetrated : HitOutcome.Blocked, face, dealt);
+            if (LastResult.Penetrated)
+                return Respond(HitOutcome.Penetrated, face, Health.TakeDamage(hit.Damage));
+
+            var glances = !hit.Ricocheted && GlancesOff(hit, face, plate);
+            return Respond(glances ? HitOutcome.Ricochet : HitOutcome.Blocked, face, 0f);
         }
 
         private static bool GlancesOff(in ProjectileHit hit, Vector2 face, float plate)

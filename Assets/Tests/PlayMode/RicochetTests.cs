@@ -133,7 +133,7 @@ namespace PolishTanks.Tests.PlayMode
         public void OnProjectileHit_SteepHitOnThinPlateAgainstLargeCaliber_DoesNotRicochet()
         {
             var plate = CreatePlate(new Vector2(0f, 3f), armor: 10f);
-            var projectile = Fire(Vector2.zero, GlancingDirectionAtCeiling, caliber: 100f);
+            var projectile = Fire(Vector2.zero, GlancingDirectionAtCeiling, caliber: 100f, penetration: 5f);
 
             projectile.Step(2f);
 
