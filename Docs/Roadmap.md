@@ -43,12 +43,7 @@ Kierunek gry spisany z rozmów z właścicielem. To nie są plany implementacji.
 - Później: zmienna pogoda i pory dnia (klimatyczna mgła, deszcz, burza).
 
 ## Architektura
-- **Przerobić kod pod Reflex (dependency injection, https://github.com/gustavopsantos/Reflex), zamiast pierwotnie planowanego Extenject.** Zrobić to osobną gałęzią, później, żeby było widać różnicę względem obecnego podejścia (referencje przez `[SerializeField]`, `PoolRegistry` jako statyczny rejestr, `Camera.main`, `InputSystem.actions`). Kandydaci do wstrzykiwania:
-  - pule;
-  - wejście;
-  - kalkulator statystyk;
-  - źródło impulsów kamery;
-  - przyszłe serwisy (misje, zapis, warsztat).
+- **Zrobione:** kod używa Reflex (dependency injection) zamiast pierwotnie planowanego Extenject, opis w `Docs/DependencyInjection.md`. Pule, wejście, kamera i shake są wstrzykiwane zamiast statycznego rejestru, `Camera.main` i `InputSystem.actions`. Kolejne serwisy (misje, zapis, warsztat) też idą przez installery.
 
 ## Otwarte decyzje
 - **Pełny top-down czy top-down 2.5D** (wysokie budynki mają faktyczną wysokość). Decyzja wpłynie na:

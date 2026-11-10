@@ -10,7 +10,7 @@ Prototyp: jazda, wieża z opóźnieniem, strzelanie z działa i karabinu oraz pa
 - Kąt wieży jest lokalny względem kadłuba. Obrót kadłuba ciągnie wieżę, a `TurretAimer` musi ją potem dogonić.
 
 ## Sterowanie
-- `TankInput` czyta project-wide Input Actions: `Player/Move`, `Player/Aim`, `Player/Attack` (działo, LPM) i `Player/FireSecondary` (karabin sprzężony, PPM).
+- `TankInput` dostaje wstrzyknięte `IPlayerInput` i `IGameCamera` (patrz `DependencyInjection.md`). Akcje z project-wide Input Actions: `Player/Move`, `Player/Aim`, `Player/Attack` (działo, LPM) i `Player/FireSecondary` (karabin sprzężony, PPM).
 - Kompozyt WASD ma tryb Digital (`Dpad(mode=1)`). Domyślna normalizacja obcinała gaz przy skręcie.
 - Wyłącz `TankInput`, żeby sterować z kodu (testy, AI):
   - `TankMovement.SetInput(throttle, steer)`
@@ -26,9 +26,9 @@ Prototyp: jazda, wieża z opóźnieniem, strzelanie z działa i karabinu oraz pa
 ## Strzelanie
 - Czołg ma dwa komponenty `TankGun`: działo (`Muzzle`) i karabin sprzężony (`CoaxMuzzle`). `TankController` ustawia oba z `TankStats.Gun` i `TankStats.MachineGun`.
 - Pociski (`Projectile`) nie mają colliderów. Co klatkę robią `CircleCast` po odcinku lotu, pomijając Rigidbody2D strzelca. Dlatego karabin może strzelać spod wieży, z wnętrza własnego kadłuba, a szybkie pociski nie przenikają przez obiekty. Matryca kolizji warstw nie jest potrzebna.
-- Pooling: `PoolRegistry.For(prefab)` daje jedną pulę na prefab pod obiektem `[Pools]` w scenie. Pula ginie razem ze sceną i jest tworzona od nowa. Obiekty oddaje się przez `ReturnToPool()`, nigdy przez `Destroy`. `TankGun` rozgrzewa pule pocisku i efektu trafienia w `Start`.
+- Pooling: wstrzyknięty `IPoolService.For(prefab)` daje jedną pulę na prefab dla danej sceny. Pule giną razem z kontenerem sceny. Obiekty oddaje się przez `ReturnToPool()`, nigdy przez `Destroy`. `TankGun` rozgrzewa pule pocisku i efektu trafienia w `Start`.
 - `ReloadTimer` przenosi resztę czasu z klatki, w której padł strzał, a `TankGun` może oddać kilka strzałów na klatkę. Dzięki temu szybkostrzelność karabinu nie zależy od FPS.
-- „Walnięcie” jest konfigurowane w `MainGunModule`: `recoilImpulse` (odrzut kadłuba), `shakeForce` (Cinemachine Impulse, kanał 1, listener na `Tank Follow Camera`), `barrelKick`/`barrelReturnTime` (`BarrelRecoil` cofa `TurretSprite`) i `impactImpulse` (pchnięcie celu). Impulsy liczą się w tonach × j/s.
+- „Walnięcie” jest konfigurowane w `MainGunModule`: `recoilImpulse` (odrzut kadłuba), `shakeForce` (wstrzyknięty `ICameraShake`: impulse source w `SceneScope/CameraShake`, kanał 1, listener na `Tank Follow Camera`), `barrelKick`/`barrelReturnTime` (`BarrelRecoil` cofa `TurretSprite`) i `impactImpulse` (pchnięcie celu). Impulsy liczą się w tonach × j/s.
 - Reakcja na trafienie: komponent z `IProjectileHitHandler` na colliderze albo jego rodzicu (np. `HitFlash` na skrzyniach).
 
 ## Świecenie
