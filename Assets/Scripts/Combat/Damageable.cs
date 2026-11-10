@@ -56,7 +56,8 @@ namespace PolishTanks.Combat
             if (IsDead)
                 return HitOutcome.Ignored;
 
-            LastResult = ArmorMath.Resolve(armor, transform.up, hit.Normal, hit.Direction,
+            var face = transform.TransformDirection(ArmorMath.SnapToFace(transform.InverseTransformDirection(hit.Normal)));
+            LastResult = ArmorMath.Resolve(armor, transform.up, face, hit.Direction,
                 hit.PenetrationMin, hit.PenetrationMax, Random.value);
 
             var dealt = LastResult.Penetrated ? Health.TakeDamage(hit.Damage) : 0f;

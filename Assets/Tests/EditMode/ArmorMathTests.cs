@@ -21,6 +21,13 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
+        public void SnapToFace_CornerNormal_PicksDominantFace()
+        {
+            Assert.That(ArmorMath.SnapToFace(new Vector2(0.6f, -0.8f)), Is.EqualTo(Vector2.down));
+            Assert.That(ArmorMath.SnapToFace(new Vector2(-0.9f, 0.3f)), Is.EqualTo(Vector2.left));
+        }
+
+        [Test]
         public void EffectiveArmor_SquareHit_IsNominal()
         {
             Assert.That(ArmorMath.EffectiveArmor(50f, Vector2.up, Vector2.down), Is.EqualTo(50f).Within(1e-3f));

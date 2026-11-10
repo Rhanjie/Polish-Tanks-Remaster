@@ -4,13 +4,24 @@ namespace PolishTanks.Combat
 {
     /// <summary>
     /// Armor rules. The plate is picked from the hit surface normal against the target's forward axis
-    /// (front and rear plates cover 45 degrees either side). Effective thickness is nominal armor over the
-    /// cosine of the impact angle, capped so a grazing hit counts as at most <see cref="MaxImpactAngle"/>.
+    /// (front and rear plates cover 45 degrees either side). Box-shaped targets snap the normal to their nearest
+    /// face first, since a circle cast against a corner reports a normal pointing back along the shot.
+    /// Effective thickness is nominal armor over the cosine of the impact angle, capped so a grazing hit
+    /// counts as at most <see cref="MaxImpactAngle"/>.
     /// </summary>
     public static class ArmorMath
     {
         public const float FrontRearHalfArc = 45f;
         public const float MaxImpactAngle = 75f;
+
+        public static Vector2 SnapToFace(Vector2 localNormal)
+        {
+            if (localNormal.sqrMagnitude <= 0f)
+                return Vector2.up;
+            return Mathf.Abs(localNormal.x) > Mathf.Abs(localNormal.y)
+                ? new Vector2(Mathf.Sign(localNormal.x), 0f)
+                : new Vector2(0f, Mathf.Sign(localNormal.y));
+        }
 
         public static HitSide GetSide(Vector2 targetForward, Vector2 surfaceNormal)
         {

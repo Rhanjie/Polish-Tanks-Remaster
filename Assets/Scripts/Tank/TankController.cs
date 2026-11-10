@@ -127,12 +127,17 @@ namespace PolishTanks.Tank
                 return;
             IsDestroyed = true;
 
+            var velocity = body != null ? body.linearVelocity : Vector2.zero;
+            var spin = body != null ? body.angularVelocity : 0f;
+
             foreach (var behaviour in GetComponentsInChildren<MonoBehaviour>())
                 if (behaviour is TankInput || behaviour is TankGun || behaviour is TurretAimer || behaviour is TankMovement)
                     behaviour.enabled = false;
 
             if (body != null)
             {
+                body.linearVelocity = velocity;
+                body.angularVelocity = spin;
                 body.linearDamping = WreckDamping;
                 body.angularDamping = WreckDamping;
             }
