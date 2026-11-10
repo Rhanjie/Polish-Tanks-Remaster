@@ -53,7 +53,6 @@ namespace PolishTanks.Tests.PlayMode
 
             projectile.Step(Step);
 
-            // box face at x = 1.5, minus the sweep radius
             Assert.That(projectile.transform.position.x, Is.EqualTo(1.5f - projectile.Radius).Within(0.02f));
         }
 

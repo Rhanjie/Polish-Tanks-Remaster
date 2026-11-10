@@ -76,7 +76,7 @@ namespace PolishTanks.Tests.PlayMode
         {
             var pool = new PrefabPool<TestPooled>(prefab, root, 1);
             var item = pool.Get(Vector3.zero, Quaternion.identity);
-            var returnedBefore = item.ReturnedCount; // prewarming also releases once
+            var returnedBefore = item.ReturnedCount;
 
             item.ReturnToPool();
 

@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75074c26658a62748b49c821cc4aab0a, type: 3}
-  m_Name: Mg_MG34
+  m_Name: Mg_LewantL30
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.CoaxialMachineGunModule
-  displayName: MG 34
-  description: Fast-firing 7.92 mm coaxial gun.
+  displayName: Lewant L30 machine gun
+  description: Slower but steadier, with long belts.
   icon: {fileID: 0}
-  mass: 12
-  cost: 100
-  tier: 1
-  caliber: 7.92
-  roundsPerMinute: 900
-  dispersion: 2
-  damage: 8
-  beltSize: 150
-  beltChangeTime: 4
+  mass: 14
+  cost: 150
+  tier: 2
+  caliber: 7.62
+  roundsPerMinute: 500
+  dispersion: 1.5
+  damage: 9
+  beltSize: 250
+  beltChangeTime: 5
   projectile: {fileID: 11400000, guid: edfc9befa49505442ae029074bb4332e, type: 2}
-  muzzleVelocity: 755
-  impactImpulse: 0.15
+  muzzleVelocity: 850
+  impactImpulse: 0.18
   shakeForce: 0.02

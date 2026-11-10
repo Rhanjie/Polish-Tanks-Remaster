@@ -20,7 +20,6 @@ namespace PolishTanks.Weapons
             Prewarm(prewarm);
         }
 
-        /// <summary>False once the parent was destroyed, e.g. by a scene change.</summary>
         public bool IsAlive => parent != null;
 
         public int CountAll => pool.CountAll;
@@ -30,7 +29,6 @@ namespace PolishTanks.Weapons
         public T Get(Vector3 position, Quaternion rotation)
         {
             var item = pool.Get();
-            // Position before activating, so trails and particles don't streak from the old spot.
             item.transform.SetPositionAndRotation(position, rotation);
             item.IsSpawned = true;
             item.gameObject.SetActive(true);

@@ -27,12 +27,6 @@ namespace PolishTanks.Weapons
         public Rigidbody2D Shooter => shooter;
         public float Radius => radius;
 
-        /// <param name="launchVelocity">World velocity, units per second.</param>
-        /// <param name="lifetime">Seconds before the projectile expires.</param>
-        /// <param name="owner">Body the projectile passes through (the tank that fired it). Optional.</param>
-        /// <param name="impulse">Impulse given to a dynamic body it hits.</param>
-        /// <param name="hitDamage">Damage passed to <see cref="IProjectileHitHandler"/>s.</param>
-        /// <param name="effect">Pooled effect spawned at the hit point. Optional.</param>
         public void Launch(Vector2 launchVelocity, float lifetime, Rigidbody2D owner, float impulse, float hitDamage, PooledEffect effect)
         {
             velocity = launchVelocity;
@@ -66,7 +60,6 @@ namespace PolishTanks.Weapons
 
         private void Update() => Step(Time.deltaTime);
 
-        /// <summary>Advances the projectile, resolving a hit along the way. Public for tests.</summary>
         public void Step(float deltaTime)
         {
             if (!IsSpawned || deltaTime <= 0f)
@@ -107,7 +100,6 @@ namespace PolishTanks.Weapons
             var found = false;
             foreach (var hit in Hits)
             {
-                // The shooter's own hull overlaps the coaxial gun's muzzle; skip it.
                 if (shooter != null && hit.rigidbody == shooter)
                     continue;
                 if (!found || hit.distance < nearest.distance)

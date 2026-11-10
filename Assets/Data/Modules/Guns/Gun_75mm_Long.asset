@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 278f6ac87c365794d849a76a6d0b8b22, type: 3}
-  m_Name: Gun_75mm_L48
+  m_Name: Gun_75mm_Long
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.MainGunModule
-  displayName: 7.5 cm KwK 40 L/48
-  description: Long high-velocity gun. Solid all-rounder.
+  displayName: 75 mm long gun
+  description: Long high velocity barrel. The workhorse of the armored companies.
   icon: {fileID: 0}
   mass: 1500
   cost: 800

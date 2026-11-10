@@ -34,18 +34,10 @@ namespace PolishTanks.Tank
             }
         }
 
-        /// <summary>Signed speed along the hull's forward axis, units per second.</summary>
         public float CurrentSpeed => model?.Speed ?? 0f;
 
-        /// <summary>Velocity currently added on top of the drive by recoil and hits.</summary>
         public Vector2 ImpulseVelocity => kick.Velocity;
 
-        /// <summary>
-        /// Shoves the hull (gun recoil, a hit). Setting the body's velocity directly would be
-        /// overwritten by the drive next step, so the shove is layered on and fades out.
-        /// </summary>
-        /// <param name="impulse">World impulse (mass × velocity).</param>
-        /// <param name="worldPoint">Where it acts; off-center points also turn the hull.</param>
         public void AddImpulse(Vector2 impulse, Vector2 worldPoint)
         {
             if (body == null)
@@ -53,8 +45,6 @@ namespace PolishTanks.Tank
             kick.Add(impulse, worldPoint - body.worldCenterOfMass, body.mass, body.inertia);
         }
 
-        /// <param name="newThrottle">-1 (full reverse) to 1 (full forward).</param>
-        /// <param name="newSteer">-1 (left) to 1 (right).</param>
         public void SetInput(float newThrottle, float newSteer)
         {
             throttle = Mathf.Clamp(newThrottle, -1f, 1f);
@@ -90,14 +80,9 @@ namespace PolishTanks.Tank
 
         private void FixedUpdate()
         {
-            // Read the pose from the body: with interpolation on, the transform lags one physics step.
             var forward = body.GetRelativeVector(Vector2.up);
 
-            // Read back what physics did last step, so collisions slow the hull down.
-            // The recoil part was added by us, so it doesn't count as track speed.
             var dt = Time.fixedDeltaTime;
-            // What a collision took away is charged to the recoil first, so a blocked shove
-            // doesn't later read as forward track speed.
             kick.AbsorbLoss(requestedVelocity - body.linearVelocity);
             model.SyncSpeed(Vector2.Dot(body.linearVelocity - kick.Velocity, forward));
             model.Step(throttle, steer, dt);

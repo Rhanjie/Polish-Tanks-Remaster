@@ -17,7 +17,7 @@ namespace PolishTanks.Tests.PlayMode
         public void SetUp()
         {
             hull = new GameObject("TestHull");
-            hull.SetActive(false); // keep Awake from running until the turret is assigned
+            hull.SetActive(false);
 
             turret = new GameObject("Turret").transform;
             turret.SetParent(hull.transform, false);
@@ -46,7 +46,7 @@ namespace PolishTanks.Tests.PlayMode
         [UnityTest]
         public IEnumerator SetAimPoint_SidePoint_TurretLagsBehindTarget()
         {
-            aimer.SetAimPoint(new Vector2(-10f, 0f)); // 90 degrees to the left
+            aimer.SetAimPoint(new Vector2(-10f, 0f));
 
             yield return null;
             yield return null;

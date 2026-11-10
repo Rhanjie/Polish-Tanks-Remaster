@@ -25,7 +25,6 @@ namespace PolishTanks.Weapons
             return pool;
         }
 
-        // Static state survives Play Mode restarts when domain reload is off.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
         {

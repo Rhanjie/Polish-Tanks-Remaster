@@ -10,10 +10,8 @@ namespace PolishTanks.Tank
     {
         public TurretSettings Settings { get; set; }
 
-        /// <summary>Current angle in degrees, normalized to [-180, 180].</summary>
         public float Angle { get; private set; }
 
-        /// <summary>Current traverse speed in degrees per second.</summary>
         public float Velocity { get; private set; }
 
         public TurretTraverse(TurretSettings settings, float startAngle = 0f)
@@ -35,7 +33,6 @@ namespace PolishTanks.Tank
             var step = Velocity * deltaTime;
             if (Mathf.Abs(step) >= Mathf.Abs(error) && Mathf.Sign(step) == Mathf.Sign(error))
             {
-                // The step would overshoot: land on the target and stop.
                 Angle = Normalize(targetAngle);
                 Velocity = 0f;
                 return;

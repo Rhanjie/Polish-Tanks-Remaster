@@ -28,7 +28,7 @@ namespace PolishTanks.Tests.PlayMode
         private GunRig BuildGun(GunSettings settings, Vector2 position)
         {
             var root = fixture.Track(new GameObject("TankHull"));
-            root.SetActive(false); // wire everything before Awake runs
+            root.SetActive(false);
             root.transform.position = position;
             var rig = new GunRig { Body = root.AddComponent<Rigidbody2D>() };
             rig.Body.mass = 1f;
@@ -179,7 +179,7 @@ namespace PolishTanks.Tests.PlayMode
                 yield return WaitUntilReloaded(rig.Gun);
                 Assert.That(rig.Gun.TryFire(), Is.True, $"shot {i + 1} of {rounds} should fire");
             }
-            yield return WaitUntilReloaded(rig.Gun); // per-shot timer is ready, the belt change is not
+            yield return WaitUntilReloaded(rig.Gun);
 
             Assert.That(rig.Gun.IsChangingMagazine, Is.True);
             Assert.That(rig.Gun.TryFire(), Is.False);

@@ -8,26 +8,20 @@ namespace PolishTanks.Tank.Modules
     /// <summary>Turns a <see cref="TankLoadout"/> into the stats the tank components run on.</summary>
     public static class TankStatsCalculator
     {
-        /// <summary>Top speed (units/s) per square root of power-to-weight (hp/t).</summary>
         public const float SpeedPerSqrtPowerToWeight = 1.9f;
 
-        /// <summary>Acceleration (units/s²) per hp/t.</summary>
         public const float AccelerationPerPowerToWeight = 0.35f;
 
-        /// <summary>Braking (units/s²) on tracks with grip 1.</summary>
         public const float BaseBraking = 12f;
 
-        /// <summary>Power-to-weight (hp/t) where the turn rate equals the tracks' rating.</summary>
         public const float ReferencePowerToWeight = 16f;
 
         public const float DefaultViewRange = 9f;
         public const float MuzzleFlashDuration = 0.06f;
         public const float MachineGunFlashDuration = 0.03f;
 
-        /// <summary>World units per second for each m/s of muzzle velocity; real speeds would cross the screen in a frame.</summary>
         public const float ProjectileSpeedPerMuzzleVelocity = 0.06f;
 
-        /// <summary>Lists what's wrong with a loadout. Empty means it can be calculated.</summary>
         public static IReadOnlyList<string> Validate(TankLoadout loadout)
         {
             var errors = new List<string>();
@@ -51,7 +45,6 @@ namespace PolishTanks.Tank.Modules
             return errors;
         }
 
-        /// <exception cref="InvalidOperationException">The loadout fails <see cref="Validate"/>.</exception>
         public static TankStats Calculate(TankLoadout loadout)
         {
             var errors = Validate(loadout);
@@ -96,7 +89,6 @@ namespace PolishTanks.Tank.Modules
             var tonnes = Mathf.Max(0.1f, stats.TotalMass / 1000f);
             stats.PowerToWeight = stats.HorsePower / tonnes;
 
-            // Above the tracks' rated load the tank loses speed and pickup in proportion.
             stats.IsOverloaded = stats.TotalMass > tracks.MaxLoad;
             var overloadFactor = stats.IsOverloaded ? tracks.MaxLoad / stats.TotalMass : 1f;
 
@@ -125,7 +117,6 @@ namespace PolishTanks.Tank.Modules
         private static void CalculateFirepower(TankStats stats, EngineModule engine, TurretModule turret,
             MainGunModule gun, CoaxialMachineGunModule mg, OpticsModule optics)
         {
-            // A gun heavier than the turret is built for slows the traverse.
             var gunLoadFactor = gun.Mass > turret.MaxGunMass ? turret.MaxGunMass / gun.Mass : 1f;
             var traverseFactor = engine.TraverseDriveMultiplier * gunLoadFactor;
             stats.Turret = new TurretSettings

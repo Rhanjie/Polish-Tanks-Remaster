@@ -17,7 +17,6 @@ namespace PolishTanks.Tests.PlayMode
             return obj;
         }
 
-        /// <summary>An inactive object with component T, standing in for a prefab asset.</summary>
         public T CreatePrefab<T>(string name = "Prefab") where T : Component
         {
             var go = Track(new GameObject(name));

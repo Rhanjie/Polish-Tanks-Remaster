@@ -33,7 +33,6 @@ namespace PolishTanks.Tank
         private float flashTimeLeft;
         private bool triggerHeld;
 
-        /// <summary>Raised on every shot with the gun that fired.</summary>
         public event Action<TankGun> Fired;
 
         public Transform Muzzle => muzzle;
@@ -42,7 +41,6 @@ namespace PolishTanks.Tank
         public int RoundsInMagazine => magazine?.Rounds ?? 0;
         public bool IsChangingMagazine => magazine != null && magazine.IsReloading;
 
-        /// <summary>Direction of the last shot, after spread.</summary>
         public Vector2 LastShotDirection { get; private set; }
 
         public GunSettings Settings
@@ -57,11 +55,10 @@ namespace PolishTanks.Tank
                 if (magazine != null && feedChanged)
                     magazine.Configure(value.magazineSize, value.magazineReloadTime);
                 if (started)
-                    PrewarmPools(); // a loadout swap may bring a new projectile
+                    PrewarmPools();
             }
         }
 
-        /// <summary>While held, the gun fires every time it's ready.</summary>
         public void SetTrigger(bool held) => triggerHeld = held;
 
         public bool TryFire()
@@ -119,7 +116,6 @@ namespace PolishTanks.Tank
             reload.Tick(Time.deltaTime);
             magazine.Tick(Time.deltaTime);
 
-            // A fast gun at a low frame rate owes more than one shot per frame.
             var shots = 0;
             while (triggerHeld && shots < MaxShotsPerFrame && TryFire())
                 shots++;
@@ -127,7 +123,6 @@ namespace PolishTanks.Tank
             UpdateMuzzleFlash(Time.deltaTime);
         }
 
-        /// <summary>Creates the projectile and impact pools up front, so the first shot doesn't stall.</summary>
         private void PrewarmPools()
         {
             var definition = settings.projectile;
@@ -157,8 +152,6 @@ namespace PolishTanks.Tank
         {
             if (recoilTarget != null && settings.recoilImpulse > 0f)
             {
-                // Recoil goes into the turret ring (the muzzle's parent), not the barrel tip,
-                // so firing sideways nudges the hull instead of spinning it.
                 var point = muzzle != null && muzzle.parent != null ? muzzle.parent.position : transform.position;
                 recoilTarget.AddImpulse(-direction * settings.recoilImpulse, point);
             }

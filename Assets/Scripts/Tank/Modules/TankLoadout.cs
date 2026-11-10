@@ -33,7 +33,6 @@ namespace PolishTanks.Tank.Modules
         public OpticsModule Optics => optics;
         public IReadOnlyList<EquipmentModule> Equipment => equipment;
 
-        /// <summary>Every assigned module, skipping empty slots.</summary>
         public IEnumerable<TankModule> AllModules()
         {
             TankModule[] fixedSlots = { hull, engine, transmission, tracks, turret, mainGun, coaxialMachineGun, optics };

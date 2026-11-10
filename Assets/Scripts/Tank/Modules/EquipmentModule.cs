@@ -8,7 +8,6 @@ namespace PolishTanks.Tank.Modules
     {
         public override ModuleSlot Slot => ModuleSlot.Equipment;
 
-        /// <summary>Called after the base stats are computed, in loadout order.</summary>
         public abstract void Modify(TankStats stats);
     }
 }

@@ -233,7 +233,6 @@ namespace PolishTanks.Tests.PlayMode
         [UnityTest]
         public IEnumerator Apply_StrongerEngine_DrivesFartherInSameTime()
         {
-            // Far apart in X so the two hulls never touch.
             var weak = rig.BuildTank("Weak", rig.CreateLoadout(150f), new Vector2(-100f, 0f));
             var strong = rig.BuildTank("Strong", rig.CreateLoadout(300f), new Vector2(100f, 0f));
             weak.Movement.SetInput(1f, 0f);

@@ -18,6 +18,7 @@ Szukaj **realnych błędów**, które da się opisać konkretnym scenariuszem:
 - alokacje w gorących ścieżkach (`Update`, `FixedUpdate`): LINQ, `GetComponent`, `Find`, konkatenacja stringów, closure'y;
 - zmiany w scenie/prefabach/`ProjectSettings` w diffie, które nie mają związku z zadaniem;
 - brakujące pliki `.meta` dla nowych assetów; skrypt, którego nazwa pliku nie zgadza się z nazwą klasy;
+- naruszenia konwencji z `CLAUDE.md`: komentarze przy metodach lub w kodzie (dozwolone tylko `summary` nad typem i `[Tooltip]`), prawdziwe nazwy producentów lub oznaczeń w danych modułów;
 - naruszenia `CLAUDE.md` (asmdefy, struktura katalogów).
 
 **Pomiń:** styl, nazewnictwo, sugestie „można by”, rzeczy, których nie potrafisz powiązać z konkretną awarią.

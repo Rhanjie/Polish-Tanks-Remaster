@@ -21,7 +21,7 @@ namespace PolishTanks.Tests.PlayMode
         {
             fixture = new WeaponFixture();
             var go = fixture.Track(new GameObject("FlashingCrate"));
-            go.SetActive(false); // configure before Awake captures the base color
+            go.SetActive(false);
             sprite = go.AddComponent<SpriteRenderer>();
             sprite.color = BaseColor;
             flash = go.AddComponent<HitFlash>();

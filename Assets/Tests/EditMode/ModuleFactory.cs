@@ -50,7 +50,6 @@ namespace PolishTanks.Tests.EditMode
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        /// <summary>A valid medium tank: 20 t, 300 hp, no penalties, no optional parts.</summary>
         public TankLoadout CreateBaseline()
         {
             var loadout = Create<TankLoadout>();

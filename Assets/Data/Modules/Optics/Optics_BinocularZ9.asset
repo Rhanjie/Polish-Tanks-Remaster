@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02f6ae2ba63141d44af68bd521ad53b5, type: 3}
-  m_Name: Optics_TZF9b
+  m_Name: Optics_BinocularZ9
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.OpticsModule
-  displayName: TZF 9b Gunsight
+  displayName: Z9 binocular gunsight
   description: Binocular gunsight with better magnification.
   icon: {fileID: 0}
   mass: 40

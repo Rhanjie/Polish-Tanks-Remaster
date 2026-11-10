@@ -37,7 +37,7 @@ namespace PolishTanks.Tests.PlayMode
         {
             wallObject = new GameObject("Wall");
             wallObject.transform.position = new Vector3(0f, 2.5f, 0f);
-            wallObject.AddComponent<BoxCollider2D>().size = new Vector2(5f, 1f); // bottom edge at y = 2
+            wallObject.AddComponent<BoxCollider2D>().size = new Vector2(5f, 1f);
         }
 
         [UnityTest]
@@ -98,7 +98,7 @@ namespace PolishTanks.Tests.PlayMode
 
             yield return WaitFixedUpdates(150);
 
-            Assert.Less(tankObject.transform.position.y, 1.6f); // hull half-size 0.5 + tolerance
+            Assert.Less(tankObject.transform.position.y, 1.6f);
         }
 
         [UnityTest]

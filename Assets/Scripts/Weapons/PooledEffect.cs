@@ -13,7 +13,6 @@ namespace PolishTanks.Weapons
         private float totalDuration;
         private float timeLeft;
 
-        /// <summary>Seconds the effect stays out of the pool.</summary>
         public float TotalDuration => totalDuration;
 
         private void Awake()

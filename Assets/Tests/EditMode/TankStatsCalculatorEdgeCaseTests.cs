@@ -60,7 +60,7 @@ namespace PolishTanks.Tests.EditMode
         [Test]
         public void Calculate_MassExactlyAtTrackLoad_IsNotOverloaded()
         {
-            ModuleFactory.Set(loadout.Tracks, ("maxLoad", 20000f)); // baseline weighs exactly 20 t
+            ModuleFactory.Set(loadout.Tracks, ("maxLoad", 20000f));
 
             var stats = TankStatsCalculator.Calculate(loadout);
 

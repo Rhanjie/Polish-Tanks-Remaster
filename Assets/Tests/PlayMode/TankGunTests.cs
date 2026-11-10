@@ -19,7 +19,7 @@ namespace PolishTanks.Tests.PlayMode
         {
             fireCount = 0;
             gunObject = new GameObject("TestGun");
-            gunObject.SetActive(false); // configure before Awake builds the reload timer
+            gunObject.SetActive(false);
             gun = gunObject.AddComponent<TankGun>();
             gun.Settings = new GunSettings { reloadTime = ReloadTime, muzzleFlashDuration = 0f };
             gunObject.SetActive(true);

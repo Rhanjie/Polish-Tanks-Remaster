@@ -52,7 +52,6 @@ namespace PolishTanks.Tests.EditMode
 
             traverse.Step(-170f, Dt);
 
-            // Shortest way from 170 to -170 is +20 degrees, through 180.
             Assert.That(traverse.Velocity, Is.GreaterThan(0f));
         }
 

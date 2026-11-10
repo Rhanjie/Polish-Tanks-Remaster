@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 278f6ac87c365794d849a76a6d0b8b22, type: 3}
-  m_Name: Gun_88mm_L56
+  m_Name: Gun_88mm_Salvaged
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.MainGunModule
-  displayName: 8.8 cm KwK 36 L/56
-  description: The famous eighty-eight. Hits like a train, reloads like one too.
+  displayName: 88 mm salvaged AA gun
+  description: Pulled off a fixed anti-aircraft emplacement and welded into a turret. Hits like a train, reloads like one too.
   icon: {fileID: 0}
   mass: 2600
   cost: 1600
