@@ -46,7 +46,7 @@ Użytkownik klika w tym samym edytorze, więc:
 ## Testy
 
 - Testuj zachowanie, które może się zepsuć: reguły, obliczenia, przypadki brzegowe, integrację z fizyką. Pomijaj testy, które powtarzają implementację, sprawdzają gettery albo dublują inny test na innych liczbach.
-- Mniej, a lepiej: jeden dobry test na zachowanie. Przypadki brzegowe tylko wtedy, gdy realnie mogą zawieść.
+- Mniej, a lepiej: jeden dobry test na zachowanie. Przypadki brzegowe tylko wtedy, gdy realnie mogą zawieść. Dotyczy to nowych testów. Istniejących nie usuwaj bez wyraźnej prośby.
 - Testy PlayMode sprzątają po sobie, także sceny. Smoke test scen zostawia pustą scenę, bo kolejne testy budują obiekty w (0, 0).
 
 ## Git flow
