@@ -8,7 +8,7 @@ namespace PolishTanks.Tank
     /// </summary>
     public class TurretAimer : MonoBehaviour
     {
-        [SerializeField] private TurretSettings settings = TurretSettings.Default;
+        private TurretSettings settings = TurretSettings.Default;
 
         private TurretTraverse traverse;
         private Vector2 aimPoint;
@@ -38,12 +38,6 @@ namespace PolishTanks.Tank
         private void Awake()
         {
             traverse = new TurretTraverse(settings, transform.localEulerAngles.z);
-        }
-
-        private void OnValidate()
-        {
-            if (traverse != null)
-                traverse.Settings = settings;
         }
 
         private void Update()

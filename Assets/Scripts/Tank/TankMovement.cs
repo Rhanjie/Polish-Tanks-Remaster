@@ -9,12 +9,7 @@ namespace PolishTanks.Tank
     [RequireComponent(typeof(Rigidbody2D))]
     public class TankMovement : MonoBehaviour
     {
-        [SerializeField] private TankDriveSettings settings = TankDriveSettings.Default;
-
-        [Header("Recoil and hits")]
-        [Tooltip("How fast a recoil shove fades, per second. Higher = tracks bite sooner.")]
-        [SerializeField, Min(0f)] private float impulseLinearDecay = 4f;
-        [SerializeField, Min(0f)] private float impulseAngularDecay = 6f;
+        private TankDriveSettings settings = TankDriveSettings.Default;
 
         private Rigidbody2D body;
         private TrackedDriveModel model;
@@ -72,12 +67,6 @@ namespace PolishTanks.Tank
             }
         }
 
-        private void OnValidate()
-        {
-            if (model != null)
-                model.Settings = settings;
-        }
-
         private void FixedUpdate()
         {
             var forward = body.GetRelativeVector(Vector2.up);
@@ -86,7 +75,7 @@ namespace PolishTanks.Tank
             kick.AbsorbLoss(requestedVelocity - body.linearVelocity);
             model.SyncSpeed(Vector2.Dot(body.linearVelocity - kick.Velocity, forward));
             model.Step(throttle, steer, dt);
-            kick.Step(dt, impulseLinearDecay, impulseAngularDecay);
+            kick.Step(dt, settings.impulseLinearDecay, settings.impulseAngularDecay);
 
             requestedVelocity = forward * model.Speed + kick.Velocity;
             body.linearVelocity = requestedVelocity;

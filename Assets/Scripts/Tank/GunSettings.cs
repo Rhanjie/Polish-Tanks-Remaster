@@ -13,6 +13,9 @@ namespace PolishTanks.Tank
         [Tooltip("How long the muzzle flash stays visible, seconds.")]
         [Min(0f)] public float muzzleFlashDuration;
 
+        [Tooltip("Smoke particles emitted from the muzzle per shot.")]
+        [Min(0)] public int smokeParticles;
+
         [Header("Projectile")]
         [Tooltip("What the gun fires. Without one the gun only flashes.")]
         public ProjectileDefinition projectile;

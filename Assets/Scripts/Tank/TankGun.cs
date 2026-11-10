@@ -14,16 +14,14 @@ namespace PolishTanks.Tank
     /// </summary>
     public class TankGun : MonoBehaviour
     {
-        [SerializeField] private GunSettings settings = GunSettings.Default;
         [SerializeField] private GunMount mount = GunMount.Main;
-
-        [SerializeField, Min(0)] private int smokeParticles = 8;
 
         private const int MaxShotsPerFrame = 8;
 
         [Inject] private IPoolService pools;
         [Inject] private ICameraShake cameraShake;
 
+        private GunSettings settings = GunSettings.Default;
         private SpriteRenderer muzzleFlash;
         private ParticleSystem muzzleSmoke;
         private TankMovement recoilTarget;
@@ -86,8 +84,8 @@ namespace PolishTanks.Tank
             SpawnProjectile(direction);
             ApplyRecoil(direction);
             ShowMuzzleFlash();
-            if (muzzleSmoke != null && smokeParticles > 0)
-                muzzleSmoke.Emit(smokeParticles);
+            if (muzzleSmoke != null && settings.smokeParticles > 0)
+                muzzleSmoke.Emit(settings.smokeParticles);
 
             Fired?.Invoke(this);
             return true;
@@ -113,12 +111,6 @@ namespace PolishTanks.Tank
             flashTimeLeft = 0f;
             if (muzzleFlash != null)
                 muzzleFlash.enabled = false;
-        }
-
-        private void OnValidate()
-        {
-            if (reload != null)
-                reload.ReloadTime = settings.reloadTime;
         }
 
         private void Start()

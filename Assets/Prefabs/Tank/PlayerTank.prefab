@@ -46,22 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2f484481144ab6489197f5d5f46fbc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
-  settings:
-    reloadTime: 1.5
-    muzzleFlashDuration: 0.06
-    projectile: {fileID: 0}
-    projectileSpeed: 40
-    dispersion: 0
-    damage: 0
-    impactImpulse: 0
-    recoilImpulse: 0
-    shakeForce: 0
-    barrelKick: 0
-    barrelReturnTime: 0.3
-    magazineSize: 0
-    magazineReloadTime: 0
   mount: 0
-  smokeParticles: 10
 --- !u!1 &3020770536975762780
 GameObject:
   m_ObjectHideFlags: 0
@@ -185,17 +170,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feff1409e7f522041888047c22546770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankMovement
-  settings:
-    maxForwardSpeed: 6
-    maxReverseSpeed: 2.5
-    acceleration: 5
-    braking: 12
-    coastDeceleration: 6
-    turnRate: 70
-    turnRateAtMaxSpeed: 45
-    turnAcceleration: 360
-  impulseLinearDecay: 4
-  impulseAngularDecay: 6
 --- !u!114 &3033694629029787339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2973,10 +2947,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c50ebf8b5612291459621ba6823d994c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TurretAimer
-  settings:
-    maxTraverseSpeed: 90
-    traverseAcceleration: 240
-    responseTime: 0.25
 --- !u!1 &8900536754056010770
 GameObject:
   m_ObjectHideFlags: 0
@@ -3022,19 +2992,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2f484481144ab6489197f5d5f46fbc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
-  settings:
-    reloadTime: 1.5
-    muzzleFlashDuration: 0.06
-    projectile: {fileID: 0}
-    projectileSpeed: 40
-    dispersion: 0
-    damage: 0
-    impactImpulse: 0
-    recoilImpulse: 0
-    shakeForce: 0
-    barrelKick: 0
-    barrelReturnTime: 0.3
-    magazineSize: 0
-    magazineReloadTime: 0
   mount: 1
-  smokeParticles: 0
