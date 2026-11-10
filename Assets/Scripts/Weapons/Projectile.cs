@@ -21,20 +21,20 @@ namespace PolishTanks.Weapons
         private float impactImpulse;
         private float damage;
         private Rigidbody2D shooter;
-        private PooledEffect impactEffect;
+        private PrefabPool<PooledEffect> impactPool;
 
         public Vector2 Velocity => velocity;
         public Rigidbody2D Shooter => shooter;
         public float Radius => radius;
 
-        public void Launch(Vector2 launchVelocity, float lifetime, Rigidbody2D owner, float impulse, float hitDamage, PooledEffect effect)
+        public void Launch(Vector2 launchVelocity, float lifetime, Rigidbody2D owner, float impulse, float hitDamage, PrefabPool<PooledEffect> effectPool)
         {
             velocity = launchVelocity;
             lifeLeft = lifetime;
             shooter = owner;
             impactImpulse = impulse;
             damage = hitDamage;
-            impactEffect = effect;
+            impactPool = effectPool;
 
             if (velocity.sqrMagnitude > 0f)
                 transform.rotation = Quaternion.LookRotation(Vector3.forward, velocity);
@@ -54,7 +54,7 @@ namespace PolishTanks.Weapons
                 trail.Clear();
             }
             shooter = null;
-            impactEffect = null;
+            impactPool = null;
             velocity = Vector2.zero;
         }
 
@@ -121,8 +121,7 @@ namespace PolishTanks.Weapons
             var handler = hit.collider.GetComponentInParent<IProjectileHitHandler>();
             handler?.OnProjectileHit(info);
 
-            if (impactEffect != null)
-                PoolRegistry.For(impactEffect).Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
+            impactPool?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
         }
     }
 }

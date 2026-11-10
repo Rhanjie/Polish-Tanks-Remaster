@@ -1,10 +1,12 @@
+using PolishTanks.CameraRig;
+using PolishTanks.Controls;
+using Reflex.Attributes;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace PolishTanks.Tank
 {
     /// <summary>
-    /// Feeds player input from the project-wide Input Actions into the tank components.
+    /// Feeds the injected player input into the tank components.
     /// Disable it to drive the tank from code (tests, AI).
     /// </summary>
     public class TankInput : MonoBehaviour
@@ -14,32 +16,8 @@ namespace PolishTanks.Tank
         [SerializeField] private TankGun gun;
         [SerializeField] private TankGun coaxialGun;
 
-        [Header("Actions (project-wide Input Actions)")]
-        [SerializeField] private string moveAction = "Player/Move";
-        [SerializeField] private string aimAction = "Player/Aim";
-        [SerializeField] private string fireAction = "Player/Attack";
-        [SerializeField] private string secondaryFireAction = "Player/FireSecondary";
-
-        private InputAction move;
-        private InputAction aim;
-        private InputAction fire;
-        private InputAction secondaryFire;
-        private Camera cachedCamera;
-
-        private void OnEnable()
-        {
-            var actions = InputSystem.actions;
-            if (actions == null)
-            {
-                Debug.LogWarning($"{nameof(TankInput)}: no project-wide Input Actions asset is set.", this);
-                return;
-            }
-
-            move = actions.FindAction(moveAction);
-            aim = actions.FindAction(aimAction);
-            fire = actions.FindAction(fireAction);
-            secondaryFire = actions.FindAction(secondaryFireAction);
-        }
+        [Inject] private IPlayerInput input;
+        [Inject] private IGameCamera gameCamera;
 
         private void OnDisable()
         {
@@ -53,38 +31,29 @@ namespace PolishTanks.Tank
 
         private void Update()
         {
-            if (movement != null && move != null)
+            if (input == null)
+                return;
+
+            if (movement != null)
             {
-                var value = move.ReadValue<Vector2>();
+                var value = input.Move;
                 movement.SetInput(value.y, value.x);
             }
 
-            if (aimer != null && aim != null && TryGetCamera(out var cam))
-            {
-                Vector3 screen = aim.ReadValue<Vector2>();
-                screen.z = -cam.transform.position.z;
-                aimer.SetAimPoint(cam.ScreenToWorldPoint(screen));
-            }
+            if (aimer != null && gameCamera != null)
+                aimer.SetAimPoint(gameCamera.ScreenToWorld(input.PointerScreenPosition));
 
-            UpdateTrigger(gun, fire);
-            UpdateTrigger(coaxialGun, secondaryFire);
+            UpdateTrigger(gun, input.FireHeld, input.FirePressedThisFrame);
+            UpdateTrigger(coaxialGun, input.SecondaryFireHeld, input.SecondaryFirePressedThisFrame);
         }
 
-        private static void UpdateTrigger(TankGun weapon, InputAction action)
+        private static void UpdateTrigger(TankGun weapon, bool held, bool pressedThisFrame)
         {
-            if (weapon == null || action == null)
+            if (weapon == null)
                 return;
-            weapon.SetTrigger(action.IsPressed());
-            if (action.WasPressedThisFrame())
+            weapon.SetTrigger(held);
+            if (pressedThisFrame)
                 weapon.TryFire();
-        }
-
-        private bool TryGetCamera(out Camera cam)
-        {
-            if (cachedCamera == null || !cachedCamera.isActiveAndEnabled)
-                cachedCamera = Camera.main;
-            cam = cachedCamera;
-            return cam != null;
         }
     }
 }

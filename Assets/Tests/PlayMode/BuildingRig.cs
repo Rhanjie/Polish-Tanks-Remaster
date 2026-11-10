@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using PolishTanks.CameraRig;
 using PolishTanks.Prototypes;
+using Reflex.Core;
+using Reflex.Injectors;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -8,12 +11,13 @@ namespace PolishTanks.Tests.PlayMode
 {
     /// <summary>
     /// Builds buildings, views, a main camera and roof sprites in code for the view prototype tests.
-    /// Views are created inactive so serialized fields are set before OnEnable runs. Dispose destroys
-    /// everything immediately, so no MainCamera-tagged object outlives a test.
+    /// Views are created inactive so serialized fields are set and the camera is injected before OnEnable
+    /// runs. Dispose destroys everything immediately, so no MainCamera-tagged object outlives a test.
     /// </summary>
     internal sealed class BuildingRig : IDisposable
     {
         private readonly List<Object> created = new List<Object>();
+        private Container container;
 
         public T Track<T>(T obj) where T : Object
         {
@@ -37,6 +41,8 @@ namespace PolishTanks.Tests.PlayMode
             go.transform.position = new Vector3(position.x, position.y, -10f);
             var camera = go.AddComponent<Camera>();
             camera.orthographic = true;
+            container?.Dispose();
+            container = new ContainerBuilder().RegisterValue(new GameCamera(camera), new[] { typeof(IGameCamera) }).Build();
             return camera;
         }
 
@@ -64,12 +70,16 @@ namespace PolishTanks.Tests.PlayMode
             TankRig.SetField(view, "walls", walls);
             if (target != null)
                 view.SetOcclusionTarget(target);
+            if (container != null)
+                GameObjectInjector.InjectRecursive(go, container);
             go.SetActive(true);
             return view;
         }
 
         public void Dispose()
         {
+            container?.Dispose();
+            container = null;
             foreach (var obj in created)
                 if (obj != null)
                     Object.DestroyImmediate(obj);
