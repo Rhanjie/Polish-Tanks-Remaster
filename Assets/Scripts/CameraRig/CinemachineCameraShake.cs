@@ -14,11 +14,11 @@ namespace PolishTanks.CameraRig
             this.source = source != null ? source : throw new ArgumentNullException(nameof(source));
         }
 
-        public void Shake(Vector2 direction, float force)
+        public void Shake(Vector2 origin, Vector2 direction, float force)
         {
             if (force <= 0f || direction.sqrMagnitude <= 0f)
                 return;
-            source.GenerateImpulseWithVelocity(direction.normalized * force);
+            source.GenerateImpulseAtPositionWithVelocity(origin, direction.normalized * force);
         }
     }
 }

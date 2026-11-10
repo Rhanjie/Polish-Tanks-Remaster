@@ -170,7 +170,8 @@ namespace PolishTanks.Tank
             if (barrelRecoil != null && settings.barrelKick > 0f)
                 barrelRecoil.Kick(settings.barrelKick, settings.barrelReturnTime);
 
-            cameraShake?.Shake(-direction, settings.shakeForce);
+            var origin = muzzle != null ? muzzle.position : transform.position;
+            cameraShake?.Shake(origin, -direction, settings.shakeForce);
         }
 
         private void ShowMuzzleFlash()
