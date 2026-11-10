@@ -3,7 +3,8 @@
     "rootNamespace": "PolishTanks",
     "references": [
         "Unity.InputSystem",
-        "Unity.Cinemachine"
+        "Unity.Cinemachine",
+        "Reflex"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
