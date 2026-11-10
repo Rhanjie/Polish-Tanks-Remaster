@@ -16,4 +16,5 @@ MonoBehaviour:
   lifetime: 0.9
   impactEffect: {fileID: 862695741835161345, guid: 06b332d49b1f59d43b6400b746fb3c92, type: 3}
   blockedEffect: {fileID: 5721371158852074015, guid: cbc5a2dfd2d4ee24bbb243102df18c97, type: 3}
+  ricochetEffect: {fileID: 3800062601261554471, guid: 96fadcafc37a684489cc1c3df4b8a33a, type: 3}
   prewarmCount: 30
