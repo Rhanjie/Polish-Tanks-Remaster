@@ -65,6 +65,17 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
+        public void GrippierTracks_DampRecoilFaster()
+        {
+            var before = TankStatsCalculator.Calculate(loadout);
+
+            ModuleFactory.Set(loadout.Tracks, ("grip", 2f));
+            var after = TankStatsCalculator.Calculate(loadout);
+
+            Assert.That(after.Drive.impulseLinearDecay, Is.EqualTo(before.Drive.impulseLinearDecay * 2f).Within(1e-4f));
+        }
+
+        [Test]
         public void OverloadedTracks_PenalizeSpeed()
         {
             var before = TankStatsCalculator.Calculate(loadout);
