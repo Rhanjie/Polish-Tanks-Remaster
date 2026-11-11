@@ -197,9 +197,9 @@ namespace PolishTanks.Tank
             FireChanged?.Invoke(fire.IsBurning);
             if (fireEffect == null)
                 return;
-            if (fire.IsBurning && !fireEffect.isPlaying)
+            if (fire.IsBurning)
                 fireEffect.Play(true);
-            else if (!fire.IsBurning && fireEffect.isPlaying)
+            else
                 fireEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         }
 
