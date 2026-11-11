@@ -33,6 +33,21 @@ namespace PolishTanks.Damage
         [Tooltip("Damage per fire tick as a fraction of maximum hit points.")]
         [SerializeField, Range(0f, 1f)] private float fireTickDamage = 0.03f;
 
+        [Header("Field repair (seconds per part)")]
+        [SerializeField, Min(0f)] private float engineRepair = 8f;
+        [SerializeField, Min(0f)] private float trackRepair = 6f;
+        [SerializeField, Min(0f)] private float turretRingRepair = 5f;
+        [SerializeField, Min(0f)] private float visionBlockRepair = 3f;
+
+        public float RepairSeconds(VehiclePart part) => part switch
+        {
+            VehiclePart.Engine => engineRepair,
+            VehiclePart.LeftTrack => trackRepair,
+            VehiclePart.RightTrack => trackRepair,
+            VehiclePart.TurretRing => turretRingRepair,
+            _ => visionBlockRepair,
+        };
+
         public float MinCaliber => minCaliber;
         public float NonPenetratingTrackFactor => nonPenetratingTrackFactor;
         public float TrackYank => trackYank;
