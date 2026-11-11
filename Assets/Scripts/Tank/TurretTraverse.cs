@@ -41,6 +41,8 @@ namespace PolishTanks.Tank
             Angle = Normalize(Angle + step);
         }
 
+        public void Stop() => Velocity = 0f;
+
         private static float Normalize(float angle) => Mathf.DeltaAngle(0f, angle);
     }
 }
