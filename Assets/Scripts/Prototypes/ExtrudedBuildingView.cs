@@ -11,6 +11,8 @@ namespace PolishTanks.Prototypes
     /// roof, and the whole building fades when it hides the tracked target. The building may be rotated: the lean is
     /// worked out in world space and turned into the building's own space for the walls.
     /// Also runs in the editor so the scene shows real sizes; there the lean comes from the main camera.
+    /// Buildings closer to the view centre lean over the ones further out, so walls and roof get a sorting order
+    /// from <see cref="HeightProjection.BuildingSortingOrder"/> every frame instead of a fixed one.
     /// </summary>
     [ExecuteAlways]
     [DefaultExecutionOrder(200)]
@@ -46,6 +48,7 @@ namespace PolishTanks.Prototypes
         private readonly Vector2[] corners = new Vector2[4];
         private readonly Vector2[] worldCorners = new Vector2[4];
         private Vector2 localRoofOffset;
+        private MeshRenderer wallRenderer;
         private Mesh mesh;
         [Inject] private IGameCamera gameCamera;
         private float alpha = 1f;
@@ -91,6 +94,7 @@ namespace PolishTanks.Prototypes
                 roof.transform.position = roofPosition;
             if (roof.size != building.Size)
                 roof.size = building.Size;
+            ApplySortingOrder(viewCenter);
             localRoofOffset = walls.transform.InverseTransformVector(RoofOffset);
 
             FillCorners();
@@ -103,6 +107,21 @@ namespace PolishTanks.Prototypes
                 roofColor.a = alpha;
                 roof.color = roofColor;
             }
+        }
+
+        private void ApplySortingOrder(Vector2 viewCenter)
+        {
+            Vector2 local = building.transform.InverseTransformPoint(viewCenter);
+            var half = building.Size * 0.5f;
+            var nearest = new Vector2(Mathf.Clamp(local.x, -half.x, half.x), Mathf.Clamp(local.y, -half.y, half.y));
+            var distance = Vector2.Distance(viewCenter, building.transform.TransformPoint(nearest));
+            var order = HeightProjection.BuildingSortingOrder(distance);
+            if (wallRenderer == null)
+                wallRenderer = walls.GetComponent<MeshRenderer>();
+            if (wallRenderer != null && wallRenderer.sortingOrder != order)
+                wallRenderer.sortingOrder = order;
+            if (roof.sortingOrder != order + 1)
+                roof.sortingOrder = order + 1;
         }
 
         private bool TryGetViewCenter(out Vector2 center)

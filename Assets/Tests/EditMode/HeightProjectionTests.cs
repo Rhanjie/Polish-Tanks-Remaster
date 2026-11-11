@@ -177,5 +177,14 @@ namespace PolishTanks.Tests.EditMode
         {
             Assert.That(HeightProjection.IsVisibleWall(Vector2.left, Vector2.zero), Is.False);
         }
+
+        [Test]
+        public void BuildingSortingOrder_CloserToViewCenter_DrawsAboveFartherBuildingsRoof()
+        {
+            var near = HeightProjection.BuildingSortingOrder(5f);
+            var farRoof = HeightProjection.BuildingSortingOrder(5.2f) + 1;
+
+            Assert.That(near, Is.GreaterThan(farRoof));
+        }
     }
 }
