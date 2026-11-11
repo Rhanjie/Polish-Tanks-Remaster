@@ -2,8 +2,8 @@
     position: absolute;
     left: 24px;
     bottom: 24px;
-    width: 168px;
-    padding: 12px;
+    width: 220px;
+    padding: 14px;
     align-items: center;
     background-color: rgba(16, 18, 14, 0.72);
     border-width: 1px;
@@ -17,16 +17,16 @@
 
 .tank {
     flex-direction: row;
-    height: 120px;
+    height: 160px;
 }
 
 .track {
-    width: 20px;
+    width: 26px;
     border-radius: 4px;
 }
 
 .hull {
-    width: 72px;
+    width: 96px;
     margin-left: 4px;
     margin-right: 4px;
     padding: 6px;
@@ -43,31 +43,31 @@
 }
 
 .vision-block {
-    width: 12px;
-    height: 8px;
+    width: 18px;
+    height: 11px;
     margin-left: 1px;
     margin-right: 1px;
     border-radius: 2px;
 }
 
 .turret-ring {
-    width: 38px;
-    height: 38px;
-    border-radius: 19px;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
 }
 
 .engine {
     align-self: stretch;
-    height: 24px;
+    height: 32px;
     border-radius: 3px;
     justify-content: center;
     align-items: center;
 }
 
 .fire {
-    width: 14px;
-    height: 14px;
-    border-radius: 7px;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
     background-color: rgb(255, 196, 40);
     border-width: 2px;
     border-color: rgb(255, 90, 20);
@@ -114,8 +114,9 @@
 }
 
 .repair-key {
-    min-width: 22px;
-    height: 22px;
+    min-width: 28px;
+    height: 28px;
+    font-size: 16px;
     padding-left: 4px;
     padding-right: 4px;
     margin-right: 8px;
@@ -129,18 +130,18 @@
 
 .repair-caption {
     color: rgb(240, 236, 220);
-    font-size: 14px;
+    font-size: 19px;
 }
 
 .repair-part {
     margin-top: 4px;
     color: rgb(190, 188, 176);
-    font-size: 12px;
+    font-size: 15px;
 }
 
 .progress {
     margin-top: 4px;
-    height: 6px;
+    height: 8px;
     background-color: rgba(240, 236, 220, 0.2);
     border-radius: 3px;
     display: none;
