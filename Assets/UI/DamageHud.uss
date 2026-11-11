@@ -1,0 +1,158 @@
+.hud {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    width: 168px;
+    padding: 12px;
+    align-items: center;
+    background-color: rgba(16, 18, 14, 0.72);
+    border-width: 1px;
+    border-color: rgba(200, 200, 180, 0.25);
+    border-radius: 6px;
+}
+
+.hud--hidden {
+    display: none;
+}
+
+.tank {
+    flex-direction: row;
+    height: 120px;
+}
+
+.track {
+    width: 20px;
+    border-radius: 4px;
+}
+
+.hull {
+    width: 72px;
+    margin-left: 4px;
+    margin-right: 4px;
+    padding: 6px;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(70, 74, 62, 0.9);
+    border-radius: 4px;
+}
+
+.vision-row {
+    flex-direction: row;
+    align-self: stretch;
+    justify-content: center;
+}
+
+.vision-block {
+    width: 12px;
+    height: 8px;
+    margin-left: 1px;
+    margin-right: 1px;
+    border-radius: 2px;
+}
+
+.turret-ring {
+    width: 38px;
+    height: 38px;
+    border-radius: 19px;
+}
+
+.engine {
+    align-self: stretch;
+    height: 24px;
+    border-radius: 3px;
+    justify-content: center;
+    align-items: center;
+}
+
+.fire {
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    background-color: rgb(255, 196, 40);
+    border-width: 2px;
+    border-color: rgb(255, 90, 20);
+    display: none;
+}
+
+.fire--burning {
+    display: flex;
+}
+
+.fire--dim {
+    opacity: 0.2;
+}
+
+.part--intact {
+    background-color: rgb(150, 152, 140);
+}
+
+.part--destroyed {
+    background-color: rgb(206, 44, 36);
+}
+
+.part--patched {
+    background-color: rgb(236, 140, 32);
+}
+
+.vision-block--absent {
+    display: none;
+}
+
+.repair {
+    margin-top: 10px;
+    align-self: stretch;
+    display: none;
+}
+
+.repair--available {
+    display: flex;
+}
+
+.repair-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.repair-key {
+    min-width: 22px;
+    height: 22px;
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-right: 8px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    color: rgb(240, 236, 220);
+    border-width: 1px;
+    border-color: rgb(240, 236, 220);
+    border-radius: 3px;
+}
+
+.repair-caption {
+    color: rgb(240, 236, 220);
+    font-size: 14px;
+}
+
+.repair-part {
+    margin-top: 4px;
+    color: rgb(190, 188, 176);
+    font-size: 12px;
+}
+
+.progress {
+    margin-top: 4px;
+    height: 6px;
+    background-color: rgba(240, 236, 220, 0.2);
+    border-radius: 3px;
+    display: none;
+}
+
+.progress--active {
+    display: flex;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0;
+    background-color: rgb(236, 140, 32);
+    border-radius: 3px;
+}

@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="DamageHud.uss" />
+    <ui:VisualElement name="damageHud" class="hud hud--hidden" picking-mode="Ignore">
+        <ui:VisualElement name="tank" class="tank" picking-mode="Ignore">
+            <ui:VisualElement name="leftTrack" class="track part--intact" picking-mode="Ignore" />
+            <ui:VisualElement name="hull" class="hull" picking-mode="Ignore">
+                <ui:VisualElement name="visionRow" class="vision-row" picking-mode="Ignore">
+                    <ui:VisualElement name="visionBlock0" class="vision-block part--intact" picking-mode="Ignore" />
+                    <ui:VisualElement name="visionBlock1" class="vision-block part--intact" picking-mode="Ignore" />
+                    <ui:VisualElement name="visionBlock2" class="vision-block part--intact" picking-mode="Ignore" />
+                    <ui:VisualElement name="visionBlock3" class="vision-block part--intact" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="turretRing" class="turret-ring part--intact" picking-mode="Ignore" />
+                <ui:VisualElement name="engine" class="engine part--intact" picking-mode="Ignore">
+                    <ui:VisualElement name="fire" class="fire" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="rightTrack" class="track part--intact" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="repair" class="repair" picking-mode="Ignore">
+            <ui:VisualElement class="repair-row" picking-mode="Ignore">
+                <ui:Label name="repairKey" class="repair-key" text="R" picking-mode="Ignore" />
+                <ui:Label name="repairCaption" class="repair-caption" text="Naprawa" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="repairPart" class="repair-part" text="" picking-mode="Ignore" />
+            <ui:VisualElement name="progress" class="progress" picking-mode="Ignore">
+                <ui:VisualElement name="progressFill" class="progress-fill" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
