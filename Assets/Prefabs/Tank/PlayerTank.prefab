@@ -2409,6 +2409,7 @@ GameObject:
   - component: {fileID: 2523336779600019954}
   - component: {fileID: 1713334498114228383}
   - component: {fileID: 7887285382291675319}
+  - component: {fileID: 132134804144245890}
   m_Layer: 0
   m_Name: PlayerTank
   m_TagString: Untagged
@@ -2572,6 +2573,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.ModuleDamage
   settings: {fileID: 11400000, guid: 7a4d8c2efb01f2b4fb7d2c9c8e638b75, type: 2}
   fireEffect: {fileID: 6194369125632562372}
+--- !u!114 &132134804144245890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3020770536975762780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f34cec0cce2bf1641ab8dde4aef18da5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.ModuleDamageDebugKeys
 --- !u!1 &3541372668314155345
 GameObject:
   m_ObjectHideFlags: 0
