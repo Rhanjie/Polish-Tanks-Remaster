@@ -1,3 +1,5 @@
+using PolishTanks.Damage;
+
 namespace PolishTanks.Tank.Modules
 {
     /// <summary>
@@ -39,6 +41,7 @@ namespace PolishTanks.Tank.Modules
         public float HitPoints;
 
         public float ViewRange;
+        public PartDamageChances PartChances;
         public int Cost;
     }
 }

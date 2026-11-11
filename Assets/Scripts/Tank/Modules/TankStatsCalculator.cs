@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PolishTanks.Damage;
 using UnityEngine;
 
 namespace PolishTanks.Tank.Modules
@@ -20,6 +21,8 @@ namespace PolishTanks.Tank.Modules
         public const float BaseImpulseAngularDecay = 6f;
 
         public const float DefaultViewRange = 9f;
+        public const int DefaultVisionBlocks = 4;
+        public const float DefaultVisionBlockBreakChance = 0.3f;
         public const float MuzzleFlashDuration = 0.06f;
         public const float MachineGunFlashDuration = 0.03f;
 
@@ -79,6 +82,16 @@ namespace PolishTanks.Tank.Modules
             stats.TurretFrontArmor = turret.FrontArmor;
             stats.HitPoints = hull.HitPoints;
             stats.ViewRange = optics != null ? optics.ViewRange : DefaultViewRange;
+            stats.PartChances = new PartDamageChances
+            {
+                HasTracks = true,
+                HasTurretRing = true,
+                VisionBlocks = optics != null ? optics.VisionBlocks : DefaultVisionBlocks,
+                TrackBreak = tracks.BreakChance,
+                EngineBreak = 1f - engine.Reliability,
+                TurretRingJam = turret.RingJamChance,
+                VisionBlockBreak = optics != null ? optics.BlockBreakChance : DefaultVisionBlockBreakChance,
+            };
 
             foreach (var item in loadout.Equipment)
                 if (item != null)

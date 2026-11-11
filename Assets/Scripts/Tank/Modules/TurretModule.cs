@@ -24,6 +24,9 @@ namespace PolishTanks.Tank.Modules
         [SerializeField, Min(0f)] private float frontArmor = 60f;
         [SerializeField, Min(0f)] private float sideArmor = 40f;
 
+        [Tooltip("Chance a penetrating hit from any side jams the turret ring.")]
+        [SerializeField, Range(0f, 1f)] private float ringJamChance = 0.15f;
+
         public override ModuleSlot Slot => ModuleSlot.Turret;
 
         public Sprite Sprite => sprite;
@@ -35,5 +38,6 @@ namespace PolishTanks.Tank.Modules
         public float MaxGunMass => maxGunMass;
         public float FrontArmor => frontArmor;
         public float SideArmor => sideArmor;
+        public float RingJamChance => ringJamChance;
     }
 }
