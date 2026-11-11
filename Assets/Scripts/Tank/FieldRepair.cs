@@ -16,6 +16,7 @@ namespace PolishTanks.Tank
         private TankController controller;
         private FieldRepairCrew crew;
         private PartId? lastPart;
+        private Action<PartId> patch;
 
         public event Action Changed;
 
@@ -55,6 +56,7 @@ namespace PolishTanks.Tank
             damage = GetComponent<ModuleDamage>();
             controller = GetComponent<TankController>();
             crew = new FieldRepairCrew(part => damage.Settings.RepairSeconds(part));
+            patch = Patch;
             controller.Destroyed += OnTankDestroyed;
         }
 
@@ -68,7 +70,7 @@ namespace PolishTanks.Tank
         {
             if (!IsRepairing || damage.Model == null)
                 return;
-            crew.Tick(damage.Model, Time.deltaTime, Patch);
+            crew.Tick(damage.Model, Time.deltaTime, patch);
             NotifyIfChanged();
         }
 

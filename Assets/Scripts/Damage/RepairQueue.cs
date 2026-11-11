@@ -31,6 +31,15 @@ namespace PolishTanks.Damage
             return FirstDestroyedBlock(model);
         }
 
+        public static int Urgency(VehicleDamageModel model, PartId id)
+        {
+            if (id.Part == VehiclePart.Engine)
+                return 0;
+            if (id.Part == VehiclePart.VisionBlock && model.Visibility <= 0f)
+                return 1;
+            return 2;
+        }
+
         private static PartId? FirstDestroyedBlock(VehicleDamageModel model)
         {
             for (var i = 0; i < model.VisionBlocks; i++)

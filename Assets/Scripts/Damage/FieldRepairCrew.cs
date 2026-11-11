@@ -6,6 +6,8 @@ namespace PolishTanks.Damage
     /// <summary>
     /// A crew working through <see cref="RepairQueue"/> one part at a time. Each part takes its own time; when it is
     /// done the crew hands it back for patching and moves on to the next, stopping once nothing destroyed is left.
+    /// If something more urgent breaks meanwhile (the engine, or the last vision block), the crew drops the current
+    /// part and starts over on that one.
     /// </summary>
     public sealed class FieldRepairCrew
     {
@@ -40,7 +42,7 @@ namespace PolishTanks.Damage
             if (!Current.HasValue)
                 return;
 
-            if (model.ConditionOf(Current.Value) != PartCondition.Destroyed)
+            if (model.ConditionOf(Current.Value) != PartCondition.Destroyed || SomethingMoreUrgent(model))
             {
                 Pick(model);
                 return;
@@ -52,6 +54,13 @@ namespace PolishTanks.Damage
 
             patch(Current.Value);
             Pick(model);
+        }
+
+        private bool SomethingMoreUrgent(VehicleDamageModel model)
+        {
+            var next = RepairQueue.Next(model);
+            return next.HasValue && next.Value != Current.Value
+                && RepairQueue.Urgency(model, next.Value) < RepairQueue.Urgency(model, Current.Value);
         }
 
         private void Pick(VehicleDamageModel model)
