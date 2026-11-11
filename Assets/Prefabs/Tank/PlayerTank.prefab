@@ -2411,6 +2411,7 @@ GameObject:
   - component: {fileID: 7887285382291675319}
   - component: {fileID: 132134804144245890}
   - component: {fileID: 746036302692276548}
+  - component: {fileID: 2266228562909589655}
   m_Layer: 0
   m_Name: PlayerTank
   m_TagString: Untagged
@@ -2601,9 +2602,19 @@ MonoBehaviour:
   snapEffect: {fileID: 6518291198489183723, guid: 7bfb20a8d6ad14c4cbf7986d688327ac, type: 3}
   destroyedColor: {r: 0.85, g: 0.1, b: 0.05, a: 0.75}
   patchedColor: {r: 1, g: 0.55, b: 0.1, a: 0.6}
-  groundColor: {r: 0.2, g: 0.19, b: 0.17, a: 1}
-  groundLifetime: 30
-  groundFade: 5
+  looseEndColor: {r: 0.2, g: 0.19, b: 0.17, a: 1}
+--- !u!114 &2266228562909589655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3020770536975762780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af3e6cf8d8c513d45bc829dfcba1f322, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.FieldRepair
 --- !u!1 &3541372668314155345
 GameObject:
   m_ObjectHideFlags: 0
