@@ -8,6 +8,7 @@ namespace PolishTanks.CameraRig
     /// <summary>
     /// The commander's binoculars: shifts the follow camera toward the cursor so the player sees further where
     /// they aim. Uses <see cref="LookAheadMath"/> and eases the shift through a <see cref="CinemachineCameraOffset"/>.
+    /// Stays centred until the pointer has reported a position, since an untouched mouse reads as the screen corner.
     /// </summary>
     [RequireComponent(typeof(CinemachineCamera), typeof(CinemachineCameraOffset))]
     public class CommanderLookAhead : MonoBehaviour
@@ -27,6 +28,7 @@ namespace PolishTanks.CameraRig
         private CinemachineCameraOffset cameraOffset;
         private Vector2 current;
         private Vector2 velocity;
+        private bool pointerSeen;
 
         private void Awake()
         {
@@ -46,8 +48,11 @@ namespace PolishTanks.CameraRig
         {
             if (input == null)
                 return;
-            var target = LookAheadMath.Offset(input.PointerScreenPosition, new Vector2(Screen.width, Screen.height),
-                vcam.Lens.OrthographicSize, strength, maxDistance);
+            var pointer = input.PointerScreenPosition;
+            pointerSeen |= pointer != Vector2.zero;
+            var target = pointerSeen
+                ? LookAheadMath.Offset(pointer, new Vector2(Screen.width, Screen.height), vcam.Lens.OrthographicSize, strength, maxDistance)
+                : Vector2.zero;
             current = Vector2.SmoothDamp(current, target, ref velocity, smoothTime);
             cameraOffset.Offset = new Vector3(current.x, current.y, 0f);
         }
