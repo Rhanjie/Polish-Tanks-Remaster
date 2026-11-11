@@ -27,3 +27,4 @@ MonoBehaviour:
   maxGunMass: 1200
   frontArmor: 30
   sideArmor: 20
+  ringJamChance: 0.2

@@ -11,6 +11,7 @@ namespace PolishTanks.Tank
     public class TankMovement : MonoBehaviour, IImpulseReceiver
     {
         private TankDriveSettings settings = TankDriveSettings.Default;
+        private DriveCondition condition = DriveCondition.Healthy;
 
         private Rigidbody2D body;
         private TrackedDriveModel model;
@@ -32,6 +33,17 @@ namespace PolishTanks.Tank
         }
 
         public float CurrentSpeed => model?.Speed ?? 0f;
+
+        public DriveCondition Condition
+        {
+            get => condition;
+            set
+            {
+                condition = value;
+                if (model != null)
+                    model.Condition = value;
+            }
+        }
 
         public Vector2 ImpulseVelocity => kick.Velocity;
 
@@ -69,7 +81,7 @@ namespace PolishTanks.Tank
         {
             body = GetComponent<Rigidbody2D>();
             body.gravityScale = 0f;
-            model = new TrackedDriveModel(settings);
+            model = new TrackedDriveModel(settings) { Condition = condition };
         }
 
         private void OnDisable()

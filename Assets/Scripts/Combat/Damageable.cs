@@ -30,6 +30,8 @@ namespace PolishTanks.Combat
         public bool IsDead => Health.IsDead;
         public PenetrationResult LastResult { get; private set; }
         public HitOutcome LastOutcome { get; private set; }
+        public Vector2 LastFace { get; private set; }
+        public float LastCaliber { get; private set; }
         public SurfaceMaterial Surface => profile != null ? profile.Surface : SurfaceMaterial.Metal;
 
         private HealthPool Health
@@ -62,6 +64,7 @@ namespace PolishTanks.Combat
                 return HitResponse.Ignored;
             }
 
+            LastCaliber = hit.Caliber;
             var localFace = ArmorMath.SnapToFace(transform.InverseTransformDirection(hit.Normal),
                 transform.InverseTransformDirection(hit.Direction));
             Vector2 face = transform.TransformDirection(localFace);
@@ -87,6 +90,7 @@ namespace PolishTanks.Combat
         private HitResponse Respond(HitOutcome outcome, Vector2 face, float dealt)
         {
             LastOutcome = outcome;
+            LastFace = face;
             Hit?.Invoke(LastResult, outcome, dealt);
             return new HitResponse(outcome, face, Surface);
         }

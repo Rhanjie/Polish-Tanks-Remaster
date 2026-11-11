@@ -24,3 +24,4 @@ MonoBehaviour:
   turnRateAtSpeedRatio: 0.7
   maxLoad: 60000
   terrainResistance: 0.8
+  breakChance: 0.15
