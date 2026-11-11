@@ -5,23 +5,41 @@ namespace PolishTanks.Prototypes
 {
     /// <summary>
     /// Math for faking object height in a top-down view: roofs pushed away from the view center
-    /// (perspective parallax) and shadows cast along the sun direction.
+    /// (perspective parallax) and shadows cast along the sun direction. Offsets are in world space; a rotated
+    /// building converts them into its own space before building walls or shadows. Building sorting orders go from
+    /// <see cref="BuildingSortingBase"/> up, two per step (walls, then roof), higher for buildings nearer the centre.
     /// </summary>
     public static class HeightProjection
     {
         public static Vector2 RoofOffset(Vector2 basePosition, Vector2 viewCenter, float height, float perspective) =>
             (basePosition - viewCenter) * (height * perspective);
 
+        public const int BuildingSortingBase = 100;
+        public const int BuildingSortingSteps = 2000;
+        public const float BuildingSortingStepsPerUnit = 10f;
+
+        public static int BuildingSortingOrder(float distanceFromViewCenter)
+        {
+            var steps = Mathf.Clamp(Mathf.RoundToInt(distanceFromViewCenter * BuildingSortingStepsPerUnit), 0, BuildingSortingSteps);
+            return BuildingSortingBase + (BuildingSortingSteps - steps) * 2;
+        }
+
         public static Vector2 ShadowOffset(Vector2 sunDirection, float height, float shadowLength) =>
             sunDirection.sqrMagnitude > 0f ? sunDirection.normalized * (height * shadowLength) : Vector2.zero;
 
         public static void ExtrudedRectHull(Rect rect, Vector2 offset, List<Vector2> result)
         {
+            ExtrudedQuadHull(new Vector2(rect.xMin, rect.yMin), new Vector2(rect.xMax, rect.yMin),
+                new Vector2(rect.xMax, rect.yMax), new Vector2(rect.xMin, rect.yMax), offset, result);
+        }
+
+        public static void ExtrudedQuadHull(Vector2 a, Vector2 b, Vector2 c, Vector2 d, Vector2 offset, List<Vector2> result)
+        {
             Corners.Clear();
-            Corners.Add(new Vector2(rect.xMin, rect.yMin));
-            Corners.Add(new Vector2(rect.xMax, rect.yMin));
-            Corners.Add(new Vector2(rect.xMax, rect.yMax));
-            Corners.Add(new Vector2(rect.xMin, rect.yMax));
+            Corners.Add(a);
+            Corners.Add(b);
+            Corners.Add(c);
+            Corners.Add(d);
             for (var i = 0; i < 4; i++)
                 Corners.Add(Corners[i] + offset);
             ConvexHull(Corners, result);

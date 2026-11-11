@@ -24,7 +24,8 @@ namespace PolishTanks.Tank.Modules
         [SerializeField] private ProjectileDefinition projectile;
         [Tooltip("Muzzle velocity in m/s. Projectiles scale it to world units.")]
         [SerializeField, Min(1f)] private float muzzleVelocity = 750f;
-        [SerializeField, Min(0f)] private float impactImpulse = 0.15f;
+        [Tooltip("Push on whatever the bullet hits. Rifle-calibre rounds are too light to shove crates or vehicles, so keep it at 0.")]
+        [SerializeField, Min(0f)] private float impactImpulse;
         [Tooltip("Camera shake per round. Keep it tiny, MGs fire fast.")]
         [SerializeField, Min(0f)] private float shakeForce = 0.03f;
 

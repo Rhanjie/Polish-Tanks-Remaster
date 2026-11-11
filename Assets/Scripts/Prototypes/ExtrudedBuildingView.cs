@@ -8,8 +8,13 @@ namespace PolishTanks.Prototypes
     /// <summary>
     /// 2.5D top-down view of a building in the style of early GTA: the roof leans away from the
     /// camera center in proportion to height, walls are rebuilt every frame between footprint and
-    /// roof, and the whole building fades when it hides the tracked target.
+    /// roof, and the whole building fades when it hides the tracked target. The building may be rotated: the lean is
+    /// worked out in world space and turned into the building's own space for the walls.
+    /// Also runs in the editor so the scene shows real sizes; there the lean comes from the main camera.
+    /// Buildings closer to the view centre lean over the ones further out, so walls and roof get a sorting order
+    /// from <see cref="HeightProjection.BuildingSortingOrder"/> every frame instead of a fixed one.
     /// </summary>
+    [ExecuteAlways]
     [DefaultExecutionOrder(200)]
     public class ExtrudedBuildingView : MonoBehaviour
     {
@@ -41,6 +46,9 @@ namespace PolishTanks.Prototypes
         private readonly List<int> triangles = new List<int>(24);
         private readonly List<Vector2> hull = new List<Vector2>(8);
         private readonly Vector2[] corners = new Vector2[4];
+        private readonly Vector2[] worldCorners = new Vector2[4];
+        private Vector2 localRoofOffset;
+        private MeshRenderer wallRenderer;
         private Mesh mesh;
         [Inject] private IGameCamera gameCamera;
         private float alpha = 1f;
@@ -55,7 +63,7 @@ namespace PolishTanks.Prototypes
         {
             if (building == null)
                 building = GetComponentInParent<Building>();
-            mesh = new Mesh { name = "Building Walls" };
+            mesh = new Mesh { name = "Building Walls", hideFlags = HideFlags.DontSave };
             mesh.MarkDynamic();
             if (walls != null)
                 walls.sharedMesh = mesh;
@@ -63,33 +71,79 @@ namespace PolishTanks.Prototypes
 
         private void OnDisable()
         {
-            if (mesh != null)
+            if (mesh == null)
+                return;
+            if (Application.isPlaying)
                 Destroy(mesh);
+            else
+                DestroyImmediate(mesh);
         }
 
         private void LateUpdate()
         {
             if (building == null || roof == null || walls == null)
                 return;
-            if (gameCamera == null)
+            if (!TryGetViewCenter(out var viewCenter))
                 return;
 
             Vector2 basePosition = building.transform.position;
-            RoofOffset = HeightProjection.RoofOffset(basePosition, gameCamera.Position, building.Height, perspective);
+            RoofOffset = HeightProjection.RoofOffset(basePosition, viewCenter, building.Height, perspective);
 
-            roof.transform.position = new Vector3(basePosition.x + RoofOffset.x, basePosition.y + RoofOffset.y, roof.transform.position.z);
-            roof.size = building.Size;
+            var roofPosition = new Vector3(basePosition.x + RoofOffset.x, basePosition.y + RoofOffset.y, roof.transform.position.z);
+            if ((roof.transform.position - roofPosition).sqrMagnitude > 1e-6f)
+                roof.transform.position = roofPosition;
+            if (roof.size != building.Size)
+                roof.size = building.Size;
+            ApplySortingOrder(viewCenter);
+            localRoofOffset = walls.transform.InverseTransformVector(RoofOffset);
 
+            FillCorners();
             UpdateFade();
             BuildWalls();
 
             var roofColor = roof.color;
-            roofColor.a = alpha;
-            roof.color = roofColor;
+            if (!Mathf.Approximately(roofColor.a, alpha))
+            {
+                roofColor.a = alpha;
+                roof.color = roofColor;
+            }
+        }
+
+        private void ApplySortingOrder(Vector2 viewCenter)
+        {
+            Vector2 local = building.transform.InverseTransformPoint(viewCenter);
+            var half = building.Size * 0.5f;
+            var nearest = new Vector2(Mathf.Clamp(local.x, -half.x, half.x), Mathf.Clamp(local.y, -half.y, half.y));
+            var distance = Vector2.Distance(viewCenter, building.transform.TransformPoint(nearest));
+            var order = HeightProjection.BuildingSortingOrder(distance);
+            if (wallRenderer == null)
+                wallRenderer = walls.GetComponent<MeshRenderer>();
+            if (wallRenderer != null && wallRenderer.sortingOrder != order)
+                wallRenderer.sortingOrder = order;
+            if (roof.sortingOrder != order + 1)
+                roof.sortingOrder = order + 1;
+        }
+
+        private bool TryGetViewCenter(out Vector2 center)
+        {
+            if (gameCamera != null)
+            {
+                center = gameCamera.Position;
+                return true;
+            }
+            var main = Application.isPlaying ? null : Camera.main;
+            center = main != null ? (Vector2)main.transform.position : Vector2.zero;
+            return main != null;
         }
 
         private void UpdateFade()
         {
+            if (!Application.isPlaying)
+            {
+                IsOccluding = false;
+                alpha = 1f;
+                return;
+            }
             IsOccluding = occlusionTarget != null && Covers(occlusionTarget.position);
             var target = IsOccluding ? fadedAlpha : 1f;
             alpha = Mathf.MoveTowards(alpha, target, fadeSpeed * Time.deltaTime);
@@ -97,7 +151,7 @@ namespace PolishTanks.Prototypes
 
         private bool Covers(Vector2 point)
         {
-            HeightProjection.ExtrudedRectHull(building.Footprint, RoofOffset, hull);
+            HeightProjection.ExtrudedQuadHull(worldCorners[0], worldCorners[1], worldCorners[2], worldCorners[3], RoofOffset, hull);
             for (var i = 0; i < hull.Count; i++)
             {
                 var a = hull[i];
@@ -108,6 +162,17 @@ namespace PolishTanks.Prototypes
             return hull.Count >= 3;
         }
 
+        private void FillCorners()
+        {
+            var half = building.Size * 0.5f;
+            corners[0] = new Vector2(-half.x, -half.y);
+            corners[1] = new Vector2(half.x, -half.y);
+            corners[2] = new Vector2(half.x, half.y);
+            corners[3] = new Vector2(-half.x, half.y);
+            for (var i = 0; i < 4; i++)
+                worldCorners[i] = building.transform.TransformPoint(corners[i]);
+        }
+
         private void BuildWalls()
         {
             vertices.Clear();
@@ -115,31 +180,25 @@ namespace PolishTanks.Prototypes
             colors.Clear();
             triangles.Clear();
 
-            var half = building.Size * 0.5f;
-            corners[0] = new Vector2(-half.x, -half.y);
-            corners[1] = new Vector2(half.x, -half.y);
-            corners[2] = new Vector2(half.x, half.y);
-            corners[3] = new Vector2(-half.x, half.y);
-
             var light = lightDirection.normalized;
             for (var edge = 0; edge < 4; edge++)
             {
                 var normal = EdgeNormals[edge];
-                if (!HeightProjection.IsVisibleWall(normal, RoofOffset))
+                if (!HeightProjection.IsVisibleWall(normal, localRoofOffset))
                     continue;
 
                 var a = corners[edge];
                 var b = corners[(edge + 1) % 4];
                 var length = Vector2.Distance(a, b) / wallTextureSize.x;
                 var up = building.Height / wallTextureSize.y;
-                var shade = Color.Lerp(shadedWall, litWall, Mathf.Clamp01(Vector2.Dot(normal, light) * 0.5f + 0.5f));
+                var shade = Color.Lerp(shadedWall, litWall, Mathf.Clamp01(Vector2.Dot((Vector2)walls.transform.TransformDirection(normal), light) * 0.5f + 0.5f));
                 shade.a = alpha;
 
                 var start = vertices.Count;
                 vertices.Add(a);
                 vertices.Add(b);
-                vertices.Add(b + RoofOffset);
-                vertices.Add(a + RoofOffset);
+                vertices.Add(b + localRoofOffset);
+                vertices.Add(a + localRoofOffset);
                 uvs.Add(new Vector2(0f, 0f));
                 uvs.Add(new Vector2(length, 0f));
                 uvs.Add(new Vector2(length, up));

@@ -28,5 +28,5 @@ MonoBehaviour:
   beltChangeTime: 5
   projectile: {fileID: 11400000, guid: edfc9befa49505442ae029074bb4332e, type: 2}
   muzzleVelocity: 850
-  impactImpulse: 0.18
+  impactImpulse: 0
   shakeForce: 0.02
