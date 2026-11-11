@@ -60,7 +60,7 @@ namespace PolishTanks.Tank
                 Debug.Log($"[Debug] {name}: repair crew working on {repair.Current} ({repair.RemainingSeconds:F0} s).", this);
             else if (wasRepairing)
                 Debug.Log(repair.HasWork
-                    ? $"[Debug] {name}: repair called off (driving, firing or the repair key)."
+                    ? $"[Debug] {name}: repair called off with the repair key."
                     : $"[Debug] {name}: repair finished.", this);
             wasRepairing = repair.IsRepairing;
         }

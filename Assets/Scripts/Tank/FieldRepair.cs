@@ -7,7 +7,7 @@ namespace PolishTanks.Tank
     /// <summary>
     /// Field repair: the crew patches destroyed parts one by one, most urgent first, back to half their normal effect.
     /// Started and stopped from outside (the player's repair key); the driver and gunner keep still while it runs,
-    /// which <see cref="TankInput"/> enforces. Stops by itself when nothing destroyed is left or the tank is knocked out.
+    /// which <see cref="TankInput"/> enforces, and only the repair key calls it off. Stops by itself when nothing destroyed is left or the tank is knocked out.
     /// </summary>
     [RequireComponent(typeof(ModuleDamage), typeof(TankController))]
     public class FieldRepair : MonoBehaviour

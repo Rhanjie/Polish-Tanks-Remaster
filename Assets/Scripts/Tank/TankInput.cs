@@ -7,15 +7,13 @@ namespace PolishTanks.Tank
 {
     /// <summary>
     /// Feeds the injected player input into the tank components.
-    /// The repair key starts or stops a <see cref="FieldRepair"/>; while it runs the tank stays put and holds fire,
-    /// and driving or firing calls it off. A drive key already held when the repair starts is ignored until released.
+    /// The repair key starts or stops a <see cref="FieldRepair"/>; while it runs the tank stays put and holds fire
+    /// (the turret still aims), and only the repair key calls it off.
     /// Disable it to drive the tank from code (tests, AI).
     /// </summary>
     [RequireComponent(typeof(TankMovement))]
     public class TankInput : MonoBehaviour
     {
-        private const float MoveDeadZone = 0.2f;
-
         [Inject] private IPlayerInput input;
         [Inject] private IGameCamera gameCamera;
 
@@ -24,7 +22,6 @@ namespace PolishTanks.Tank
         private TankGun gun;
         private TankGun coaxialGun;
         private FieldRepair repair;
-        private bool moveHeldSinceRepairStart;
 
         private void Awake()
         {
@@ -70,19 +67,8 @@ namespace PolishTanks.Tank
             if (repair == null)
                 return false;
 
-            var moving = input.Move.sqrMagnitude > MoveDeadZone * MoveDeadZone;
             if (input.RepairPressedThisFrame)
-            {
                 repair.Toggle();
-                moveHeldSinceRepairStart = moving;
-                return repair.IsRepairing;
-            }
-
-            if (!moving)
-                moveHeldSinceRepairStart = false;
-            var drives = moving && !moveHeldSinceRepairStart;
-            if (repair.IsRepairing && (drives || input.FirePressedThisFrame || input.SecondaryFirePressedThisFrame))
-                repair.Cancel();
             return repair.IsRepairing;
         }
 

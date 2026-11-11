@@ -12,7 +12,7 @@ using UnityEngine.TestTools;
 
 namespace PolishTanks.Tests.PlayMode
 {
-    /// <summary>The repair key on a tank wired in code: it starts and stops a field repair and driving calls it off.</summary>
+    /// <summary>The repair key on a tank wired in code: it starts and stops a field repair, and driving or firing neither moves the tank nor calls the repair off.</summary>
     public class FieldRepairTests
     {
         private TankRig rig;
@@ -84,16 +84,20 @@ namespace PolishTanks.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator Update_MoveInputWhileRepairing_CancelsRepair()
+        public IEnumerator Update_DriveAndFireWhileRepairing_KeepRepairingAndTankStill()
         {
             damage.Break(VehiclePart.LeftTrack);
             yield return PressRepairUntil(true);
+            var start = tank.Root.transform.position;
 
             input.Move = new Vector2(0f, 1f);
-            yield return null;
-            yield return null;
+            input.FireHeld = true;
+            input.FirePressedThisFrame = true;
+            for (var i = 0; i < 20; i++)
+                yield return new WaitForFixedUpdate();
 
-            Assert.That(repair.IsRepairing, Is.False);
+            Assert.That(repair.IsRepairing, Is.True);
+            Assert.That(Vector3.Distance(tank.Root.transform.position, start), Is.LessThan(0.01f));
         }
 
         [UnityTest]
@@ -105,19 +109,6 @@ namespace PolishTanks.Tests.PlayMode
             yield return PressRepairUntil(false);
 
             Assert.That(repair.IsRepairing, Is.False);
-        }
-
-        [UnityTest]
-        public IEnumerator Update_DriveKeyHeldWhenRepairStarts_KeepsRepairing()
-        {
-            damage.Break(VehiclePart.LeftTrack);
-            input.Move = new Vector2(0f, 1f);
-
-            yield return PressRepairUntil(true);
-            yield return null;
-            yield return null;
-
-            Assert.That(repair.IsRepairing, Is.True);
         }
     }
 }
