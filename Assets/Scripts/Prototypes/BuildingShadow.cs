@@ -5,7 +5,7 @@ namespace PolishTanks.Prototypes
 {
     /// <summary>
     /// Ground shadow of a building: the footprint swept along the sun direction by its height.
-    /// Rebuilt only when the building or the sun settings change.
+    /// Rebuilt only when the building, its rotation or the sun settings change. The sun direction is in world space.
     /// </summary>
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class BuildingShadow : MonoBehaviour
@@ -25,6 +25,7 @@ namespace PolishTanks.Prototypes
         private Vector2 builtSun;
         private float builtLength = -1f;
         private Color builtColor;
+        private Quaternion builtRotation;
 
         private void OnEnable()
         {
@@ -54,7 +55,8 @@ namespace PolishTanks.Prototypes
                 || !Mathf.Approximately(building.Height, builtHeight)
                 || sunDirection != builtSun
                 || !Mathf.Approximately(shadowLength, builtLength)
-                || color != builtColor;
+                || color != builtColor
+                || transform.rotation != builtRotation;
         }
 
         private void Rebuild()
@@ -63,7 +65,7 @@ namespace PolishTanks.Prototypes
                 return;
 
             var local = new Rect(-building.Size * 0.5f, building.Size);
-            var offset = HeightProjection.ShadowOffset(sunDirection, building.Height, shadowLength);
+            Vector2 offset = transform.InverseTransformVector(HeightProjection.ShadowOffset(sunDirection, building.Height, shadowLength));
             HeightProjection.ExtrudedRectHull(local, offset, hull);
 
             vertices.Clear();
@@ -92,6 +94,7 @@ namespace PolishTanks.Prototypes
             builtSun = sunDirection;
             builtLength = shadowLength;
             builtColor = color;
+            builtRotation = transform.rotation;
         }
     }
 }
