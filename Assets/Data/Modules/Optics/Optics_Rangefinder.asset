@@ -20,3 +20,5 @@ MonoBehaviour:
   tier: 3
   viewRange: 13
   accuracyMultiplier: 0.7
+  visionBlocks: 4
+  blockBreakChance: 0.25
