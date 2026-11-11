@@ -104,6 +104,13 @@ namespace PolishTanks.Damage
             return true;
         }
 
+        public void CopyConditionsFrom(VehicleDamageModel other)
+        {
+            foreach (var id in parts)
+                if (other.Has(id))
+                    conditions[id] = other.ConditionOf(id);
+        }
+
         private void Add(PartId id)
         {
             parts.Add(id);

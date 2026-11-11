@@ -11,7 +11,8 @@ namespace PolishTanks.Tank
     /// <summary>
     /// Knocks out tank parts when hits land, using the break chances from the fitted modules, and pushes the result
     /// into the drive and turret. A track snapping at speed drags the hull round toward the dead side; a destroyed
-    /// engine stops the tank and starts a fire that eats hit points until it burns out.
+    /// engine stops the tank and starts a fire that eats hit points until it burns out. Rounds below the settings'
+    /// minimum calibre never damage parts. A loadout with a different part layout keeps the damage of shared parts.
     /// </summary>
     [RequireComponent(typeof(TankController), typeof(Damageable), typeof(TankMovement))]
     public class ModuleDamage : MonoBehaviour
@@ -36,6 +37,7 @@ namespace PolishTanks.Tank
 
         public event Action<PartId, PartCondition> PartChanged;
         public event Action<bool> FireChanged;
+        public event Action LayoutChanged;
 
         public VehicleDamageModel Model { get; private set; }
         public bool IsBurning => fire.IsBurning;
@@ -126,16 +128,24 @@ namespace PolishTanks.Tank
             chances = stats.PartChances;
             if (Model != null && SameLayout(Model, chances))
                 return;
-            if (Model != null)
-                Model.Changed -= OnPartChanged;
+            var previous = Model;
             Model = new VehicleDamageModel(chances);
+            if (previous != null)
+            {
+                previous.Changed -= OnPartChanged;
+                Model.CopyConditionsFrom(previous);
+            }
             Model.Changed += OnPartChanged;
             PushEffects();
+            if (previous != null)
+                LayoutChanged?.Invoke();
         }
 
         private void OnHit(PenetrationResult result, HitOutcome outcome, float dealt)
         {
             if (Model == null || damageable.IsDead || (outcome != HitOutcome.Penetrated && outcome != HitOutcome.Blocked))
+                return;
+            if (damageable.LastCaliber < settings.MinCaliber)
                 return;
 
             var leftSide = Vector2.Dot(damageable.LastFace, transform.right) < 0f;
