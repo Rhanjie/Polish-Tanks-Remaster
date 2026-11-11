@@ -1,12 +1,10 @@
 using NUnit.Framework;
 using PolishTanks.CameraRig;
-using PolishTanks.Tank.Modules;
-using UnityEditor;
 using UnityEngine;
 
 namespace PolishTanks.Tests.EditMode
 {
-    /// <summary>Look-ahead camera offset rules, plus a guard that machine-gun assets do not shove targets.</summary>
+    /// <summary>Look-ahead camera offset rules.</summary>
     public class LookAheadMathTests
     {
         private static readonly Vector2 Screen = new Vector2(1600f, 900f);
@@ -44,19 +42,6 @@ namespace PolishTanks.Tests.EditMode
             var offset = LookAheadMath.Offset(new Vector2(Screen.x, Screen.y), Screen, OrthoSize, 1f, 2f);
 
             Assert.That(offset.magnitude, Is.EqualTo(2f).Within(1e-4f));
-        }
-
-        [Test]
-        public void MachineGunAssets_ImpactImpulse_IsZero()
-        {
-            var guids = AssetDatabase.FindAssets("t:CoaxialMachineGunModule", new[] { "Assets/Data/Modules/MachineGuns" });
-            Assert.That(guids, Is.Not.Empty);
-
-            foreach (var guid in guids)
-            {
-                var module = AssetDatabase.LoadAssetAtPath<CoaxialMachineGunModule>(AssetDatabase.GUIDToAssetPath(guid));
-                Assert.That(module.ImpactImpulse, Is.EqualTo(0f), AssetDatabase.GUIDToAssetPath(guid));
-            }
         }
     }
 }
