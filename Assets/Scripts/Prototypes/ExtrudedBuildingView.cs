@@ -10,7 +10,9 @@ namespace PolishTanks.Prototypes
     /// camera center in proportion to height, walls are rebuilt every frame between footprint and
     /// roof, and the whole building fades when it hides the tracked target. The building may be rotated: the lean is
     /// worked out in world space and turned into the building's own space for the walls.
+    /// Also runs in the editor so the scene shows real sizes; there the lean comes from the main camera.
     /// </summary>
+    [ExecuteAlways]
     [DefaultExecutionOrder(200)]
     public class ExtrudedBuildingView : MonoBehaviour
     {
@@ -58,7 +60,7 @@ namespace PolishTanks.Prototypes
         {
             if (building == null)
                 building = GetComponentInParent<Building>();
-            mesh = new Mesh { name = "Building Walls" };
+            mesh = new Mesh { name = "Building Walls", hideFlags = HideFlags.DontSave };
             mesh.MarkDynamic();
             if (walls != null)
                 walls.sharedMesh = mesh;
@@ -66,22 +68,29 @@ namespace PolishTanks.Prototypes
 
         private void OnDisable()
         {
-            if (mesh != null)
+            if (mesh == null)
+                return;
+            if (Application.isPlaying)
                 Destroy(mesh);
+            else
+                DestroyImmediate(mesh);
         }
 
         private void LateUpdate()
         {
             if (building == null || roof == null || walls == null)
                 return;
-            if (gameCamera == null)
+            if (!TryGetViewCenter(out var viewCenter))
                 return;
 
             Vector2 basePosition = building.transform.position;
-            RoofOffset = HeightProjection.RoofOffset(basePosition, gameCamera.Position, building.Height, perspective);
+            RoofOffset = HeightProjection.RoofOffset(basePosition, viewCenter, building.Height, perspective);
 
-            roof.transform.position = new Vector3(basePosition.x + RoofOffset.x, basePosition.y + RoofOffset.y, roof.transform.position.z);
-            roof.size = building.Size;
+            var roofPosition = new Vector3(basePosition.x + RoofOffset.x, basePosition.y + RoofOffset.y, roof.transform.position.z);
+            if ((roof.transform.position - roofPosition).sqrMagnitude > 1e-6f)
+                roof.transform.position = roofPosition;
+            if (roof.size != building.Size)
+                roof.size = building.Size;
             localRoofOffset = walls.transform.InverseTransformVector(RoofOffset);
 
             FillCorners();
@@ -89,12 +98,33 @@ namespace PolishTanks.Prototypes
             BuildWalls();
 
             var roofColor = roof.color;
-            roofColor.a = alpha;
-            roof.color = roofColor;
+            if (!Mathf.Approximately(roofColor.a, alpha))
+            {
+                roofColor.a = alpha;
+                roof.color = roofColor;
+            }
+        }
+
+        private bool TryGetViewCenter(out Vector2 center)
+        {
+            if (gameCamera != null)
+            {
+                center = gameCamera.Position;
+                return true;
+            }
+            var main = Application.isPlaying ? null : Camera.main;
+            center = main != null ? (Vector2)main.transform.position : Vector2.zero;
+            return main != null;
         }
 
         private void UpdateFade()
         {
+            if (!Application.isPlaying)
+            {
+                IsOccluding = false;
+                alpha = 1f;
+                return;
+            }
             IsOccluding = occlusionTarget != null && Covers(occlusionTarget.position);
             var target = IsOccluding ? fadedAlpha : 1f;
             alpha = Mathf.MoveTowards(alpha, target, fadeSpeed * Time.deltaTime);
