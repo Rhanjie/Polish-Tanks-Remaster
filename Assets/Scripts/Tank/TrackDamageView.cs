@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using PolishTanks.Damage;
 using PolishTanks.Weapons;
 using Reflex.Attributes;
@@ -8,7 +7,7 @@ namespace PolishTanks.Tank
 {
     /// <summary>
     /// Temporary look for thrown tracks until proper art exists. When a track snaps, sparks fly off that side and
-    /// a segmented strip is left lying on the ground behind that side, as if it unrolled, fading after a while. On the hull the track
+    /// the loose end hangs out a little behind the hull, under it, until the track is patched. On the hull the track
     /// is covered by a pulsing red strip while it is out and an orange one once it is patched in the field.
     /// </summary>
     [RequireComponent(typeof(ModuleDamage))]
@@ -18,40 +17,44 @@ namespace PolishTanks.Tank
         private const float SegmentLength = 0.25f;
         private const float HullOverlayZ = -0.01f;
         private const int HullOrder = 10;
-        private const int GroundOrder = 9;
+        private const int UnderHullOrder = 9;
         private const float PulseSpeed = 6f;
+        private const float LooseEndLength = 0.45f;
+        private const float LooseEndOverhang = 0.2f;
+        private const float LooseEndAngle = 6f;
 
         private static Sprite segments;
 
         [SerializeField] private PooledEffect snapEffect;
         [SerializeField] private Color destroyedColor = new Color(0.85f, 0.1f, 0.05f, 0.75f);
         [SerializeField] private Color patchedColor = new Color(1f, 0.55f, 0.1f, 0.6f);
-        [SerializeField] private Color groundColor = new Color(0.2f, 0.19f, 0.17f, 1f);
-        [SerializeField, Min(1f)] private float groundLifetime = 30f;
-        [SerializeField, Min(0.1f)] private float groundFade = 5f;
+        [SerializeField] private Color looseEndColor = new Color(0.2f, 0.19f, 0.17f, 1f);
 
         [Inject] private IPoolService pools;
 
-        private readonly List<(SpriteRenderer renderer, float bornAt)> thrown = new List<(SpriteRenderer, float)>();
         private ModuleDamage damage;
         private TankController controller;
         private BoxCollider2D hullCollider;
         private SpriteRenderer leftOverlay;
         private SpriteRenderer rightOverlay;
+        private SpriteRenderer leftLooseEnd;
+        private SpriteRenderer rightLooseEnd;
 
         private void Awake()
         {
             damage = GetComponent<ModuleDamage>();
             hullCollider = GetComponent<BoxCollider2D>();
-            leftOverlay = CreateStrip("LeftTrackDamage", transform, HullOrder);
-            rightOverlay = CreateStrip("RightTrackDamage", transform, HullOrder);
+            controller = GetComponent<TankController>();
+            leftOverlay = CreateStrip("LeftTrackDamage", HullOrder);
+            rightOverlay = CreateStrip("RightTrackDamage", HullOrder);
+            leftLooseEnd = CreateStrip("LeftTrackLooseEnd", UnderHullOrder);
+            rightLooseEnd = CreateStrip("RightTrackLooseEnd", UnderHullOrder);
+            leftLooseEnd.color = looseEndColor;
+            rightLooseEnd.color = looseEndColor;
             damage.PartChanged += OnPartChanged;
             damage.LayoutChanged += Refresh;
-            controller = GetComponent<TankController>();
             controller.StatsApplied += OnStatsApplied;
         }
-
-        private void OnStatsApplied(Modules.TankStats _) => Refresh();
 
         private void OnDestroy()
         {
@@ -62,10 +65,6 @@ namespace PolishTanks.Tank
             }
             if (controller != null)
                 controller.StatsApplied -= OnStatsApplied;
-            foreach (var (renderer, _) in thrown)
-                if (renderer != null)
-                    Destroy(renderer.gameObject);
-            thrown.Clear();
         }
 
         private void Start() => Refresh();
@@ -73,69 +72,44 @@ namespace PolishTanks.Tank
         private void Update()
         {
             var pulse = 0.65f + 0.35f * Mathf.Sin(Time.time * PulseSpeed);
-            Tint(leftOverlay, VehiclePart.LeftTrack, pulse);
-            Tint(rightOverlay, VehiclePart.RightTrack, pulse);
-            FadeThrownTracks();
+            Show(leftOverlay, leftLooseEnd, VehiclePart.LeftTrack, pulse);
+            Show(rightOverlay, rightLooseEnd, VehiclePart.RightTrack, pulse);
         }
+
+        private void OnStatsApplied(Modules.TankStats _) => Refresh();
 
         private void OnPartChanged(PartId id, PartCondition condition)
         {
             if (id.Part != VehiclePart.LeftTrack && id.Part != VehiclePart.RightTrack)
                 return;
-            Refresh();
             if (condition == PartCondition.Destroyed)
-                Snap(id.Part == VehiclePart.LeftTrack);
+                Sparks(id.Part == VehiclePart.LeftTrack);
         }
 
         private void Refresh()
         {
             var (width, length, offset) = TrackLayout();
-            Place(leftOverlay, -offset, width, length);
-            Place(rightOverlay, offset, width, length);
+            PlaceOverlay(leftOverlay, -offset, width, length);
+            PlaceOverlay(rightOverlay, offset, width, length);
+            PlaceLooseEnd(leftLooseEnd, -1f, offset, width, length);
+            PlaceLooseEnd(rightLooseEnd, 1f, offset, width, length);
         }
 
-        private void Snap(bool left)
+        private void Sparks(bool left)
         {
-            var (width, length, offset) = TrackLayout();
+            if (pools == null || snapEffect == null)
+                return;
+            var (_, _, offset) = TrackLayout();
             var side = left ? -1f : 1f;
-            Vector2 outward = transform.right * side;
             Vector2 trackCenter = transform.TransformPoint(new Vector3(side * offset, 0f, 0f));
-
-            if (pools != null && snapEffect != null)
-                pools.For(snapEffect, 2).Get(trackCenter, Quaternion.LookRotation(Vector3.forward, outward));
-
-            var strip = CreateStrip("ThrownTrack", null, GroundOrder);
-            Vector2 backward = -transform.up;
-            strip.transform.SetPositionAndRotation(trackCenter + outward * (width * 0.6f) + backward * (length * 0.75f),
-                transform.rotation * Quaternion.Euler(0f, 0f, Random.Range(-8f, 8f)));
-            strip.size = new Vector2(width, length * 0.85f);
-            strip.color = groundColor;
-            thrown.Add((strip, Time.time));
+            pools.For(snapEffect, 2).Get(trackCenter, Quaternion.LookRotation(Vector3.forward, transform.right * side));
         }
 
-        private void FadeThrownTracks()
-        {
-            for (var i = thrown.Count - 1; i >= 0; i--)
-            {
-                var (renderer, bornAt) = thrown[i];
-                var left = groundLifetime - (Time.time - bornAt);
-                if (renderer == null || left <= 0f)
-                {
-                    if (renderer != null)
-                        Destroy(renderer.gameObject);
-                    thrown.RemoveAt(i);
-                    continue;
-                }
-                var color = groundColor;
-                color.a *= Mathf.Clamp01(left / groundFade);
-                renderer.color = color;
-            }
-        }
-
-        private void Tint(SpriteRenderer overlay, VehiclePart part, float pulse)
+        private void Show(SpriteRenderer overlay, SpriteRenderer looseEnd, VehiclePart part, float pulse)
         {
             var condition = damage.Model != null ? damage.Model.ConditionOf(new PartId(part)) : PartCondition.Intact;
             overlay.enabled = condition != PartCondition.Intact;
+            looseEnd.enabled = condition == PartCondition.Destroyed;
             if (!overlay.enabled)
                 return;
             var color = condition == PartCondition.Destroyed ? destroyedColor : patchedColor;
@@ -151,21 +125,30 @@ namespace PolishTanks.Tank
             return (width, size.y, (size.x - width) * 0.5f);
         }
 
-        private static void Place(SpriteRenderer strip, float x, float width, float length)
+        private static void PlaceOverlay(SpriteRenderer strip, float x, float width, float length)
         {
             strip.transform.localPosition = new Vector3(x, 0f, HullOverlayZ);
             strip.size = new Vector2(width, length);
         }
 
-        private static SpriteRenderer CreateStrip(string stripName, Transform parent, int order)
+        private static void PlaceLooseEnd(SpriteRenderer strip, float side, float offset, float width, float length)
+        {
+            var endLength = length * LooseEndLength;
+            var centerY = -length * 0.5f - length * LooseEndOverhang + endLength * 0.5f;
+            strip.transform.localPosition = new Vector3(side * offset, centerY, 0f);
+            strip.transform.localRotation = Quaternion.Euler(0f, 0f, side * LooseEndAngle);
+            strip.size = new Vector2(width, endLength);
+        }
+
+        private SpriteRenderer CreateStrip(string stripName, int order)
         {
             var go = new GameObject(stripName);
-            go.transform.SetParent(parent, false);
+            go.transform.SetParent(transform, false);
             var renderer = go.AddComponent<SpriteRenderer>();
             renderer.sprite = Segments;
             renderer.drawMode = SpriteDrawMode.Tiled;
             renderer.sortingOrder = order;
-            renderer.enabled = parent == null;
+            renderer.enabled = false;
             return renderer;
         }
 
