@@ -43,7 +43,8 @@
 }
 
 .vision-block {
-    width: 18px;
+    flex-grow: 1;
+    max-width: 18px;
     height: 11px;
     margin-left: 1px;
     margin-right: 1px;

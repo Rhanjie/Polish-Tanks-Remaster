@@ -17,7 +17,7 @@ namespace PolishTanks.UI
     [RequireComponent(typeof(UIDocument))]
     public class DamageHud : MonoBehaviour
     {
-        private const int MaxVisionBlocks = 4;
+        private const int MaxVisionBlocks = 6;
         private const string HiddenClass = "hud--hidden";
         private const string BurningClass = "fire--burning";
         private const string DimClass = "fire--dim";
@@ -43,6 +43,7 @@ namespace PolishTanks.UI
         private Label repairPart;
         private ModuleDamage damage;
         private FieldRepair fieldRepair;
+        private TankController controller;
         private float flashTimer;
         private bool flameDim;
 
@@ -100,7 +101,8 @@ namespace PolishTanks.UI
         {
             if (damage != null || playerTank == null)
                 return;
-            damage = playerTank.Controller.GetComponent<ModuleDamage>();
+            controller = playerTank.Controller;
+            damage = controller.GetComponent<ModuleDamage>();
             fieldRepair = playerTank.Controller.GetComponent<FieldRepair>();
             if (damage == null)
                 return;
@@ -109,6 +111,7 @@ namespace PolishTanks.UI
             damage.LayoutChanged += Refresh;
             if (fieldRepair != null)
                 fieldRepair.Changed += Refresh;
+            controller.Destroyed += OnTankDestroyed;
         }
 
         private void Unbind()
@@ -121,13 +124,18 @@ namespace PolishTanks.UI
             }
             if (fieldRepair != null)
                 fieldRepair.Changed -= Refresh;
+            if (controller != null)
+                controller.Destroyed -= OnTankDestroyed;
             damage = null;
+            controller = null;
             fieldRepair = null;
         }
 
         private void OnPartChanged(PartId _, PartCondition __) => Refresh();
 
         private void OnFireChanged(bool _) => Refresh();
+
+        private void OnTankDestroyed(TankController _) => Refresh();
 
         private void Refresh()
         {

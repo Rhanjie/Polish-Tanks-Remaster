@@ -9,6 +9,8 @@
                     <ui:VisualElement name="visionBlock1" class="vision-block part--intact" picking-mode="Ignore" />
                     <ui:VisualElement name="visionBlock2" class="vision-block part--intact" picking-mode="Ignore" />
                     <ui:VisualElement name="visionBlock3" class="vision-block part--intact" picking-mode="Ignore" />
+                    <ui:VisualElement name="visionBlock4" class="vision-block part--intact" picking-mode="Ignore" />
+                    <ui:VisualElement name="visionBlock5" class="vision-block part--intact" picking-mode="Ignore" />
                 </ui:VisualElement>
                 <ui:VisualElement name="turretRing" class="turret-ring part--intact" picking-mode="Ignore" />
                 <ui:VisualElement name="engine" class="engine part--intact" picking-mode="Ignore">
