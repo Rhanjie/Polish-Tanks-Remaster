@@ -121,7 +121,7 @@ namespace PolishTanks.Prototypes
             corners[2] = new Vector2(half.x, half.y);
             corners[3] = new Vector2(-half.x, half.y);
             for (var i = 0; i < 4; i++)
-                worldCorners[i] = walls.transform.TransformPoint(corners[i]);
+                worldCorners[i] = building.transform.TransformPoint(corners[i]);
         }
 
         private void BuildWalls()
