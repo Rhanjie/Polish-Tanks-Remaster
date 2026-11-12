@@ -16,8 +16,8 @@ using UnityEngine.UIElements;
 
 namespace PolishTanks.Tests.PlayMode
 {
-    /// <summary>The damage HUD on a UIDocument built in code (editor only, assets loaded through AssetDatabase) follows the damage of the injected player tank.</summary>
-    public class DamageHudTests
+    /// <summary>The tank HUD on a UIDocument built in code (editor only, assets loaded through AssetDatabase) follows the damage of the injected player tank.</summary>
+    public class TankHudTests
     {
         private TankRig rig;
         private WeaponFixture fixture;
@@ -56,12 +56,12 @@ namespace PolishTanks.Tests.PlayMode
             tank.Root.SetActive(true);
             tank.Controller.Apply(loadout);
 
-            hudObject = new GameObject("DamageHud");
+            hudObject = new GameObject("TankHud");
             hudObject.SetActive(false);
             document = hudObject.AddComponent<UIDocument>();
             document.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>("Assets/UI/HudPanelSettings.asset");
-            document.visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/DamageHud.uxml");
-            hudObject.AddComponent<DamageHud>();
+            document.visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/TankHud.uxml");
+            hudObject.AddComponent<TankHud>();
             GameObjectInjector.InjectRecursive(hudObject, container);
             hudObject.SetActive(true);
         }
@@ -76,17 +76,16 @@ namespace PolishTanks.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator PartChanged_LeftTrackBroken_MarksTrackDestroyedAndShowsPanel()
+        public IEnumerator PartChanged_LeftTrackBroken_MarksTrackDestroyed()
         {
             yield return null;
             var root = document.rootVisualElement;
-            Assume.That(root.Q("damageHud").ClassListContains("hud--hidden"), Is.True);
+            Assume.That(root.Q("leftTrack").ClassListContains(TankHudPresenter.IntactClass), Is.True);
 
             damage.Break(VehiclePart.LeftTrack);
             yield return null;
 
-            Assert.That(root.Q("leftTrack").ClassListContains(DamageHudPresenter.DestroyedClass), Is.True);
-            Assert.That(root.Q("damageHud").ClassListContains("hud--hidden"), Is.False);
+            Assert.That(root.Q("leftTrack").ClassListContains(TankHudPresenter.DestroyedClass), Is.True);
         }
     }
 }

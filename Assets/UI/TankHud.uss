@@ -1,0 +1,423 @@
+.hud {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.dial {
+    width: 280px;
+    height: 280px;
+    --dial-face: rgba(12, 14, 10, 0.86);
+    --dial-rim: rgba(200, 200, 180, 0.35);
+    --dial-track: rgba(255, 255, 255, 0.1);
+    --dial-tick: rgba(16, 18, 14, 0.9);
+    --dial-speed: rgb(130, 214, 236);
+    --dial-reverse: rgb(240, 190, 80);
+    --dial-ready: rgb(120, 214, 100);
+    --dial-loading: rgb(240, 150, 40);
+    --dial-belt: rgb(222, 218, 196);
+}
+
+.tank {
+    position: absolute;
+    left: 104px;
+    top: 58px;
+    width: 72px;
+    height: 144px;
+}
+
+.track {
+    position: absolute;
+    top: 6px;
+    bottom: 3px;
+    width: 15px;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.track--left {
+    left: 0;
+}
+
+.track--right {
+    right: 0;
+}
+
+.track.part--intact,
+.track.part--destroyed,
+.track.part--patched {
+    background-color: rgb(30, 30, 26);
+}
+
+.track-links {
+    flex-grow: 1;
+}
+
+.track-link {
+    flex-grow: 1;
+    margin-bottom: 2px;
+    background-color: rgb(118, 118, 106);
+    border-radius: 1px;
+    transition-duration: 0.35s;
+}
+
+.track.part--destroyed .track-link {
+    background-color: rgb(214, 40, 30);
+}
+
+.track.part--patched .track-link {
+    background-color: rgb(236, 140, 32);
+}
+
+.hud--pulse .track.part--destroyed .track-link {
+    opacity: 0.4;
+}
+
+.track-loose {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    bottom: -24px;
+    height: 32px;
+    background-color: rgb(58, 56, 48);
+    border-radius: 2px;
+    transform-origin: center top;
+    display: none;
+}
+
+.track-loose--left {
+    rotate: 14deg;
+}
+
+.track-loose--right {
+    rotate: -14deg;
+}
+
+.track.part--destroyed .track-loose {
+    display: flex;
+}
+
+.hull {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 0;
+    bottom: 0;
+    background-color: rgb(78, 84, 62);
+    border-width: 1px;
+    border-color: rgb(40, 44, 32);
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.vision-row {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    height: 10px;
+    padding: 2px;
+    flex-direction: row;
+    justify-content: space-around;
+    background-color: rgb(94, 100, 76);
+    border-radius: 2px;
+}
+
+.vision-block {
+    flex-grow: 1;
+    max-width: 8px;
+    margin-left: 1px;
+    margin-right: 1px;
+    border-radius: 1px;
+    transition-duration: 0.35s;
+}
+
+.vision-block.part--intact {
+    background-color: rgb(150, 180, 182);
+}
+
+.vision-block--absent {
+    display: none;
+}
+
+.engine {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    height: 38px;
+    padding: 5px 6px;
+    justify-content: space-around;
+    border-radius: 2px;
+    transition-duration: 0.35s;
+}
+
+.engine.part--intact {
+    background-color: rgb(62, 68, 48);
+}
+
+.grille {
+    height: 3px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 1px;
+}
+
+.fire {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(255, 90, 20);
+    transition-duration: 0.35s;
+    display: none;
+}
+
+.fire-core {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: rgb(255, 214, 60);
+}
+
+.fire--burning {
+    display: flex;
+}
+
+.hud--pulse .fire {
+    opacity: 0.35;
+    scale: 0.8 0.8;
+}
+
+.turret-ring {
+    position: absolute;
+    left: 15px;
+    top: 38px;
+    width: 42px;
+    height: 42px;
+    border-radius: 21px;
+    border-width: 3px;
+    transition-duration: 0.35s;
+}
+
+.turret-ring.part--intact,
+.turret-ring.part--destroyed,
+.turret-ring.part--patched {
+    background-color: rgb(98, 106, 78);
+}
+
+.turret-ring.part--intact {
+    border-color: rgb(52, 58, 40);
+}
+
+.turret-ring.part--destroyed {
+    border-color: rgb(214, 40, 30);
+}
+
+.turret-ring.part--patched {
+    border-color: rgb(236, 140, 32);
+}
+
+.hud--pulse .turret-ring.part--destroyed {
+    border-color: rgb(110, 30, 24);
+}
+
+.barrel {
+    position: absolute;
+    left: 15px;
+    bottom: 18px;
+    width: 6px;
+    height: 70px;
+    background-color: rgb(70, 76, 56);
+    border-width: 1px;
+    border-color: rgb(36, 40, 28);
+    border-radius: 2px;
+}
+
+.mantlet {
+    position: absolute;
+    left: 10px;
+    top: -4px;
+    width: 16px;
+    height: 9px;
+    background-color: rgb(84, 92, 66);
+    border-width: 1px;
+    border-color: rgb(36, 40, 28);
+    border-radius: 2px;
+}
+
+.cupola {
+    position: absolute;
+    left: 18px;
+    top: 16px;
+    width: 13px;
+    height: 13px;
+    border-radius: 7px;
+    background-color: rgb(70, 76, 56);
+    border-width: 2px;
+    border-color: rgb(46, 50, 36);
+}
+
+.part--intact {
+    background-color: rgb(150, 152, 140);
+}
+
+.part--destroyed {
+    background-color: rgb(214, 40, 30);
+}
+
+.part--patched {
+    background-color: rgb(236, 140, 32);
+}
+
+.hud--pulse .vision-block.part--destroyed,
+.hud--pulse .engine.part--destroyed {
+    opacity: 0.55;
+}
+
+.speed {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 16px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.speed-value {
+    padding: 0;
+    font-size: 28px;
+    -unity-font-style: bold;
+    color: rgb(236, 234, 222);
+}
+
+.speed-unit {
+    padding: 0;
+    margin-left: 3px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: rgb(170, 170, 158);
+}
+
+.side {
+    margin-left: 10px;
+    margin-bottom: 14px;
+}
+
+.popup {
+    min-width: 210px;
+    margin-top: 8px;
+    padding: 8px 10px;
+    background-color: rgba(14, 16, 12, 0.8);
+    border-width: 1px;
+    border-color: rgba(200, 200, 180, 0.35);
+    border-radius: 6px;
+}
+
+.repair {
+    display: none;
+}
+
+.repair--available {
+    display: flex;
+}
+
+.repair-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.repair-key {
+    min-width: 28px;
+    height: 28px;
+    font-size: 16px;
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-right: 8px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    color: rgb(240, 236, 220);
+    border-width: 1px;
+    border-color: rgb(240, 236, 220);
+    border-radius: 3px;
+}
+
+.repair-caption {
+    flex-grow: 1;
+    color: rgb(240, 236, 220);
+    font-size: 19px;
+}
+
+.repair-part {
+    margin-top: 4px;
+    color: rgb(190, 188, 176);
+    font-size: 17px;
+}
+
+.progress {
+    margin-top: 4px;
+    height: 8px;
+    background-color: rgba(240, 236, 220, 0.2);
+    border-radius: 3px;
+    display: none;
+}
+
+.progress--active {
+    display: flex;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0;
+    background-color: rgb(236, 140, 32);
+    border-radius: 3px;
+}
+
+.ammo-row {
+    flex-direction: row;
+    align-items: center;
+    height: 24px;
+}
+
+.ammo-swatch {
+    width: 4px;
+    height: 16px;
+    margin-right: 8px;
+    border-radius: 2px;
+}
+
+.ammo-swatch--gun {
+    background-color: rgb(120, 214, 100);
+}
+
+.ammo-swatch--belt {
+    background-color: rgb(222, 218, 196);
+}
+
+.ammo-swatch--loading {
+    background-color: rgb(240, 150, 40);
+}
+
+.ammo-name {
+    flex-grow: 1;
+    margin-right: 12px;
+    padding: 0;
+    font-size: 16px;
+    color: rgb(190, 188, 176);
+}
+
+.ammo-value {
+    padding: 0;
+    font-size: 17px;
+    -unity-font-style: bold;
+    color: rgb(240, 236, 220);
+}
