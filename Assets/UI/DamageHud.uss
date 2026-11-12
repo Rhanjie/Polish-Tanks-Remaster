@@ -17,70 +17,233 @@
 
 .tank {
     flex-direction: row;
-    height: 160px;
+    height: 180px;
+    margin-top: 28px;
+    margin-bottom: 22px;
 }
 
 .track {
     width: 26px;
-    border-radius: 4px;
+    padding: 3px;
+    border-radius: 5px;
+}
+
+.track.part--intact,
+.track.part--destroyed,
+.track.part--patched {
+    background-color: rgb(34, 34, 30);
+}
+
+.track-links {
+    flex-grow: 1;
+}
+
+.track-link {
+    flex-grow: 1;
+    margin-bottom: 2px;
+    background-color: rgb(118, 118, 106);
+    border-radius: 1px;
+    transition-duration: 0.35s;
+}
+
+.track.part--destroyed .track-link {
+    background-color: rgb(214, 40, 30);
+}
+
+.track.part--patched .track-link {
+    background-color: rgb(236, 140, 32);
+}
+
+.hud--pulse .track.part--destroyed .track-link {
+    opacity: 0.4;
+}
+
+.track-loose {
+    position: absolute;
+    left: 3px;
+    right: 3px;
+    bottom: -26px;
+    height: 36px;
+    background-color: rgb(58, 56, 48);
+    border-radius: 2px;
+    transform-origin: center top;
+    display: none;
+}
+
+.track-loose--left {
+    rotate: 12deg;
+}
+
+.track-loose--right {
+    rotate: -12deg;
+}
+
+.track.part--destroyed .track-loose {
+    display: flex;
 }
 
 .hull {
-    width: 96px;
-    margin-left: 4px;
-    margin-right: 4px;
+    width: 100px;
+    margin-left: 2px;
+    margin-right: 2px;
     padding: 6px;
-    justify-content: space-between;
-    align-items: center;
-    background-color: rgba(70, 74, 62, 0.9);
-    border-radius: 4px;
+    padding-top: 24px;
+    background-color: rgb(78, 84, 62);
+    border-width: 2px;
+    border-color: rgb(46, 50, 36);
+    border-radius: 6px;
 }
 
 .vision-row {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    height: 14px;
+    padding: 2px;
     flex-direction: row;
-    align-self: stretch;
-    justify-content: center;
+    justify-content: space-around;
+    background-color: rgb(92, 98, 74);
+    border-radius: 3px;
 }
 
 .vision-block {
     flex-grow: 1;
-    max-width: 18px;
-    height: 11px;
+    max-width: 13px;
     margin-left: 1px;
     margin-right: 1px;
     border-radius: 2px;
+    transition-duration: 0.35s;
+}
+
+.vision-block.part--intact {
+    background-color: rgb(150, 176, 176);
+}
+
+.vision-block--absent {
+    display: none;
+}
+
+.turret-area {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
 }
 
 .turret-ring {
-    width: 50px;
-    height: 50px;
-    border-radius: 25px;
+    width: 62px;
+    height: 62px;
+    border-radius: 31px;
+    border-width: 4px;
+    transition-duration: 0.35s;
 }
 
-.engine {
-    align-self: stretch;
-    height: 32px;
+.turret-ring.part--intact,
+.turret-ring.part--destroyed,
+.turret-ring.part--patched {
+    background-color: rgb(98, 106, 78);
+}
+
+.turret-ring.part--intact {
+    border-color: rgb(60, 66, 46);
+}
+
+.turret-ring.part--destroyed {
+    border-color: rgb(214, 40, 30);
+}
+
+.turret-ring.part--patched {
+    border-color: rgb(236, 140, 32);
+}
+
+.hud--pulse .turret-ring.part--destroyed {
+    border-color: rgb(110, 30, 24);
+}
+
+.barrel {
+    position: absolute;
+    left: 23px;
+    bottom: 27px;
+    width: 8px;
+    height: 100px;
+    background-color: rgb(70, 76, 56);
+    border-width: 1px;
+    border-color: rgb(40, 44, 32);
+    border-radius: 2px;
+}
+
+.mantlet {
+    position: absolute;
+    left: 17px;
+    top: -2px;
+    width: 20px;
+    height: 12px;
+    background-color: rgb(84, 92, 66);
+    border-width: 1px;
+    border-color: rgb(40, 44, 32);
     border-radius: 3px;
-    justify-content: center;
-    align-items: center;
 }
 
-.fire {
+.cupola {
+    position: absolute;
+    left: 28px;
+    top: 26px;
     width: 18px;
     height: 18px;
     border-radius: 9px;
-    background-color: rgb(255, 196, 40);
+    background-color: rgb(70, 76, 56);
     border-width: 2px;
-    border-color: rgb(255, 90, 20);
+    border-color: rgb(46, 50, 36);
+}
+
+.engine {
+    height: 42px;
+    margin-top: 4px;
+    padding: 5px 8px;
+    justify-content: space-around;
+    border-radius: 3px;
+    transition-duration: 0.35s;
+}
+
+.engine.part--intact {
+    background-color: rgb(62, 68, 48);
+}
+
+.grille {
+    height: 3px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 1px;
+}
+
+.fire {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(255, 90, 20);
+    transition-duration: 0.35s;
     display: none;
+}
+
+.fire-core {
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    background-color: rgb(255, 214, 60);
 }
 
 .fire--burning {
     display: flex;
 }
 
-.fire--dim {
-    opacity: 0.2;
+.hud--pulse .fire {
+    opacity: 0.35;
+    scale: 0.8 0.8;
 }
 
 .part--intact {
@@ -88,15 +251,16 @@
 }
 
 .part--destroyed {
-    background-color: rgb(206, 44, 36);
+    background-color: rgb(214, 40, 30);
 }
 
 .part--patched {
     background-color: rgb(236, 140, 32);
 }
 
-.vision-block--absent {
-    display: none;
+.hud--pulse .vision-block.part--destroyed,
+.hud--pulse .engine.part--destroyed {
+    opacity: 0.55;
 }
 
 .repair {
@@ -130,6 +294,7 @@
 }
 
 .repair-caption {
+    flex-grow: 1;
     color: rgb(240, 236, 220);
     font-size: 19px;
 }

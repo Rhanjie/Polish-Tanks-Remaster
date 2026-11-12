@@ -9,9 +9,10 @@ using UnityEngine.UIElements;
 namespace PolishTanks.UI
 {
     /// <summary>
-    /// Damage panel for the player's tank: a top-down icon whose tracks, engine, turret ring and vision blocks turn
-    /// red when destroyed and orange when patched, a flashing flame while the engine burns, and the repair key with
-    /// what pressing it does now plus the progress of the part being patched. <see cref="DamageHudPresenter"/> decides
+    /// Damage panel for the player's tank: a top-down drawing of the tank whose tracks, engine deck, turret ring and
+    /// vision blocks pulse red when destroyed and turn orange when patched. A thrown track also hangs a loose end out
+    /// behind the hull, and a flame flickers on the engine deck while it burns. Below sit the repair key, what pressing
+    /// it does now and the progress of the part being patched. <see cref="DamageHudPresenter"/> decides
     /// what to show; this component only reads the tank and writes to the UI Toolkit tree.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
@@ -20,13 +21,15 @@ namespace PolishTanks.UI
         private const int MaxVisionBlocks = 6;
         private const string HiddenClass = "hud--hidden";
         private const string BurningClass = "fire--burning";
-        private const string DimClass = "fire--dim";
+        private const string PulseClass = "hud--pulse";
+        private const string TrackLinkClass = "track-link";
+        private const int TrackLinks = 14;
         private const string AbsentBlockClass = "vision-block--absent";
         private const string RepairAvailableClass = "repair--available";
         private const string ProgressActiveClass = "progress--active";
 
-        [Tooltip("Seconds between flame flashes while the engine burns.")]
-        [SerializeField, Min(0.05f)] private float fireFlashInterval = 0.3f;
+        [Tooltip("Seconds between pulse steps of destroyed parts and the engine fire.")]
+        [SerializeField, Min(0.05f)] private float pulseInterval = 0.35f;
 
         [Inject] private PlayerTank playerTank;
         [Inject] private IPlayerInput input;
@@ -44,8 +47,7 @@ namespace PolishTanks.UI
         private ModuleDamage damage;
         private FieldRepair fieldRepair;
         private TankController controller;
-        private float flashTimer;
-        private bool flameDim;
+        private float pulseTimer;
 
         private void OnEnable()
         {
@@ -60,6 +62,8 @@ namespace PolishTanks.UI
             repairPart = tree.Q<Label>("repairPart");
             for (var i = 0; i < MaxVisionBlocks; i++)
                 visionBlocks[i] = tree.Q("visionBlock" + i);
+            AddTrackLinks(tree.Q("leftTrackLinks"));
+            AddTrackLinks(tree.Q("rightTrackLinks"));
 
             partElements.Clear();
             partElements[new PartId(VehiclePart.Engine)] = tree.Q("engine");
@@ -92,7 +96,7 @@ namespace PolishTanks.UI
                     return;
             }
 
-            UpdateFlame();
+            Pulse();
             if (fieldRepair != null && fieldRepair.IsRepairing)
                 progressFill.style.width = Length.Percent(fieldRepair.Progress * 100f);
         }
@@ -174,25 +178,25 @@ namespace PolishTanks.UI
             progressFill.style.width = Length.Percent(repairing ? fieldRepair.Progress * 100f : 0f);
         }
 
-        private void UpdateFlame()
+        private void Pulse()
         {
-            if (!damage.IsBurning)
-            {
-                if (flameDim)
-                    SetFlameDim(false);
+            pulseTimer += Time.deltaTime;
+            if (pulseTimer < pulseInterval)
                 return;
-            }
-            flashTimer += Time.deltaTime;
-            if (flashTimer < fireFlashInterval)
-                return;
-            flashTimer = 0f;
-            SetFlameDim(!flameDim);
+            pulseTimer = 0f;
+            root.ToggleInClassList(PulseClass);
         }
 
-        private void SetFlameDim(bool dim)
+        private static void AddTrackLinks(VisualElement track)
         {
-            flameDim = dim;
-            fire.EnableInClassList(DimClass, dim);
+            if (track == null || track.childCount > 0)
+                return;
+            for (var i = 0; i < TrackLinks; i++)
+            {
+                var link = new VisualElement { pickingMode = PickingMode.Ignore };
+                link.AddToClassList(TrackLinkClass);
+                track.Add(link);
+            }
         }
 
         private static void ApplyCondition(VisualElement element, PartCondition condition)
