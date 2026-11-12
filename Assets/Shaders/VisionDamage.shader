@@ -86,7 +86,7 @@ Shader "Hidden/Polish Tanks/Vision Damage"
             {
                 float s = sin(_VisionHull.x);
                 float c = cos(_VisionHull.x);
-                float2 glass = float2(c * offset.x - s * offset.y, s * offset.x + c * offset.y) * CrackScale;
+                float2 glass = float2(c * offset.x + s * offset.y, c * offset.y - s * offset.x) * CrackScale;
                 float2 cell = floor(glass);
                 float2 local = frac(glass);
                 float nearest = 8.0;

@@ -22,6 +22,9 @@ namespace PolishTanks.Rendering
 
         public override void Create()
         {
+            CoreUtils.Destroy(material);
+            material = null;
+            pass = null;
             if (shader == null)
                 return;
             material = CoreUtils.CreateEngineMaterial(shader);
