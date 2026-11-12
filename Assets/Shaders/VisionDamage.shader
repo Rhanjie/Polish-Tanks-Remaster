@@ -1,9 +1,8 @@
-// Full-screen pass for VisionDamageFeature. Every damaged vision block spoils a few irregular patches fixed on
-// the screen, placed from the block index and a per-tank seed. A destroyed block makes its patches fully opaque
-// grey static; a field-repaired one leaves them translucent, blurred and hazy. Each patch has a shattered-glass
-// impact in its middle: radial cracks, broken polygonal rings and shards that shift the image behind them.
-// Losing every block also veils the rest of the screen. A small circle around the player's tank stays clear,
-// and while the engine burns the screen edges pulse red.
+// Full-screen pass for VisionDamageFeature. The screen is split into fixed, irregular cells, each owned by one
+// vision block, so together the blocks cover the whole view and neighbouring cells belong to different blocks.
+// A destroyed block turns its cells into opaque grey static; a field-repaired one leaves them clear but
+// shattered: radial cracks, broken polygonal rings and shards that shift the image, with a slight blur. Cell
+// layout comes from a per-tank seed. While the engine burns the screen edges pulse red.
 Shader "Hidden/Polish Tanks/Vision Damage"
 {
     SubShader
@@ -25,13 +24,13 @@ Shader "Hidden/Polish Tanks/Vision Damage"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
-            float4 _VisionCenter;
+            float _VisionAspect;
             float4 _VisionParams;
             float4 _VisionLossA;
             float4 _VisionLossB;
 
             static const int MaxBlocks = 6;
-            static const int SpotsPerBlock = 3;
+            static const float CellsPerHeight = 3.0;
             static const float CrackRays = 9.0;
             static const float LineWidth = 0.0017;
             static const float BlurRadius = 0.012;
@@ -137,82 +136,97 @@ Shader "Hidden/Polish Tanks/Vision Damage"
                 return sum / 9.0;
             }
 
+            float BlockOf(float2 cell, int blocks)
+            {
+                float stride = blocks > 2 ? 2.0 : 1.0;
+                float order = cell.x + cell.y * stride;
+                return order - blocks * floor(order / blocks);
+            }
+
             float4 Frag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 float2 uv = input.texcoord;
-                float aspect = _VisionCenter.z;
+                float aspect = _VisionAspect;
                 float2 scale = float2(aspect, 1.0);
-                float2 position = uv * scale;
                 float seed = _VisionParams.x;
                 int blocks = min((int)_VisionParams.y, MaxBlocks);
                 float alarm = _VisionParams.z;
                 float2 pixel = uv * _ScreenParams.xy;
                 float frame = floor(_Time.y * 24.0);
-                float spotScale = sqrt(4.0 / max(blocks, 1));
 
-                float cover = 0.0;
+                float3 color;
                 float crack = 0.0;
-                float meanAlpha = 0.0;
                 float2 shift = 0.0;
+                float loss = 0.0;
+                float glass = 0.0;
 
-                [loop]
-                for (int b = 0; b < blocks; b++)
+                if (blocks > 0)
                 {
-                    float loss = BlockLoss(b);
-                    float alpha = pow(loss, 1.3);
-                    meanAlpha += alpha / blocks;
-                    if (loss < 0.001)
-                        continue;
-                    float glass = saturate(loss * 2.0);
+                    float2 position = uv * scale;
+                    float2 warp = float2(
+                        sin(position.y * 5.1 + seed) * 0.035 + sin(position.y * 11.3 + seed * 2.0) * 0.015,
+                        sin(position.x * 4.7 + seed * 1.3) * 0.035 + sin(position.x * 12.1 + seed * 0.7) * 0.015);
+                    float2 grid = (position + warp) * CellsPerHeight;
+                    float2 cell = floor(grid);
+                    float2 local = frac(grid);
 
+                    float nearest = 8.0;
+                    float second = 8.0;
+                    float2 owner = cell;
+                    float2 runnerUp = cell;
+                    float2 impact = 0.5;
                     [unroll]
-                    for (int s = 0; s < SpotsPerBlock; s++)
+                    for (int y = -1; y <= 1; y++)
                     {
-                        float2 id = float2(b * 7.13 + s * 1.71, seed);
-                        float2 centre = float2(lerp(0.08, 0.92, Hash(id + 0.11)), lerp(0.1, 0.9, Hash(id + 0.37))) * scale;
-                        float radius = lerp(0.15, 0.25, Hash(id + 0.73)) * spotScale;
-                        float2 offset = position - centre;
-                        float dist = length(offset);
-                        if (dist > radius * 1.8)
-                            continue;
+                        [unroll]
+                        for (int x = -1; x <= 1; x++)
+                        {
+                            float2 neighbour = cell + float2(x, y);
+                            float2 centre = float2(x, y) + 0.15 + 0.7 * Hash2(neighbour + seed);
+                            float2 toCentre = centre - local;
+                            float gap = dot(toCentre, toCentre);
+                            if (gap < nearest)
+                            {
+                                second = nearest;
+                                runnerUp = owner;
+                                nearest = gap;
+                                owner = neighbour;
+                                impact = centre;
+                            }
+                            else if (gap < second)
+                            {
+                                second = gap;
+                                runnerUp = neighbour;
+                            }
+                        }
+                    }
 
-                        float angle = atan2(offset.y, offset.x);
-                        float wobble = 1.0
-                            + 0.2 * sin(3.0 * angle + Hash(id + 1.1) * TWO_PI)
-                            + 0.12 * sin(5.0 * angle + Hash(id + 2.3) * TWO_PI)
-                            + 0.06 * sin(11.0 * angle + Hash(id + 3.7) * TWO_PI)
-                            + 0.035 * sin(19.0 * angle + Hash(id + 4.9) * TWO_PI)
-                            + 0.02 * sin(31.0 * angle + Hash(id + 6.1) * TWO_PI);
-                        float edge = radius * wobble;
-                        float mask = 1.0 - smoothstep(edge * 0.62, edge, dist);
-                        cover = max(cover, mask * alpha);
+                    float own = BlockLoss((int)BlockOf(owner, blocks));
+                    float other = BlockLoss((int)BlockOf(runnerUp, blocks));
+                    float border = (sqrt(second) - sqrt(nearest)) / CellsPerHeight;
+                    loss = lerp((own + other) * 0.5, own, smoothstep(0.0, 0.025, border));
+                    glass = saturate(own * 2.0);
 
+                    if (own > 0.001)
+                    {
                         float2 shard;
-                        crack = max(crack, Cracks(id, offset, radius, shard) * glass);
-                        shift += shard * glass;
+                        float2 offset = (local - impact) / CellsPerHeight;
+                        crack = Cracks(owner + seed * 0.37, offset, 0.75 / CellsPerHeight, shard) * glass;
+                        shift = shard * glass;
                     }
                 }
 
-                cover = max(cover, pow(meanAlpha, 3.0) * 0.9);
-
-                float reach = smoothstep(_VisionCenter.w, _VisionCenter.w * 1.7, length((uv - _VisionCenter.xy) * scale));
-                cover *= reach;
-                crack *= reach;
-                shift *= reach;
-
                 float2 sampleUv = uv + shift / scale;
-                float3 color;
-                if (cover > 0.001)
+                if (loss > 0.001)
                 {
                     float rotation = Grain(pixel, frame + 7.0) * TWO_PI;
-                    float3 blurred = Blur(sampleUv, BlurRadius * cover, aspect, rotation);
-                    float luma = dot(blurred, float3(0.299, 0.587, 0.114));
-                    float3 hazy = lerp(blurred, luma.xxx, 0.6) * 0.75 + 0.06;
+                    float blur = saturate(loss * 2.0) * 0.35 + smoothstep(0.5, 1.0, loss) * 0.65;
+                    color = Blur(sampleUv, BlurRadius * blur, aspect, rotation);
+                    float luma = dot(color, float3(0.299, 0.587, 0.114));
+                    color = lerp(color, luma.xxx * 0.9 + 0.04, saturate(loss * 2.0) * 0.15);
                     float3 noise = StaticGrey + (Grain(pixel, frame) - 0.5) * 0.2;
-                    float3 damaged = lerp(hazy, noise, cover);
-                    float3 scene = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_LinearClamp, sampleUv, 0).rgb;
-                    color = lerp(scene, damaged, cover);
+                    color = lerp(color, noise, smoothstep(0.5, 1.0, loss));
                 }
                 else
                 {

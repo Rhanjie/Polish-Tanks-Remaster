@@ -7,20 +7,16 @@ namespace PolishTanks.Tank
 {
     /// <summary>
     /// Feeds the vision damage screen effect from the player's tank: eases each vision block's loss and the fire
-    /// alarm toward the tank's current damage and publishes them with the tank's position. A random seed picked on
-    /// wake decides where on the screen each block's damage lands. Once the tank
-    /// is knocked out the view clears again. Disabling the component switches the effect off, so the editor never
+    /// alarm toward the tank's current damage and publishes them. A random seed picked on wake decides which cells
+    /// of the screen belong to which block. Once the tank is knocked out the view clears again. Disabling the component switches the effect off, so the editor never
     /// keeps a darkened view after Play Mode.
     /// </summary>
     public class VisionDamageView : MonoBehaviour
     {
-        [Tooltip("World units around the tank that stay mostly visible even with every vision block gone.")]
-        [SerializeField, Min(0f)] private float clearRadius = 1.6f;
-
-        [Tooltip("How fast a block's patches spoil when it breaks (full loss per second).")]
+        [Tooltip("How fast a block's cells spoil when it breaks (full loss per second).")]
         [SerializeField, Min(0.01f)] private float worsenRate = 6f;
 
-        [Tooltip("How fast a block's patches clear after a repair (full loss per second).")]
+        [Tooltip("How fast a block's cells clear after a repair (full loss per second).")]
         [SerializeField, Min(0.01f)] private float recoverRate = 1.2f;
 
         [Inject] private PlayerTank playerTank;
@@ -48,7 +44,7 @@ namespace PolishTanks.Tank
                 impairment.Aim(damage.Model, damage.IsBurning);
             impairment.Step(Time.deltaTime, worsenRate, recoverRate);
 
-            VisionDamageState.Publish(controller.transform.position, clearRadius, seed, impairment);
+            VisionDamageState.Publish(seed, impairment);
         }
 
         private bool Bind()

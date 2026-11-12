@@ -7,9 +7,10 @@ using UnityEngine.Rendering.Universal;
 namespace PolishTanks.Rendering
 {
     /// <summary>
-    /// Renderer feature that spoils the game view where broken vision blocks are: each one covers a few patches of
-    /// the screen with cracked glass, blur and grey static, opaque once the block is destroyed, plus a red pulse at
-    /// the screen edges while the engine burns. Reads <see cref="VisionDamageState"/> and only adds its pass to game cameras while
+    /// Renderer feature that spoils the game view where broken vision blocks are. The screen is split into fixed
+    /// cells shared out between the blocks, so all of them together cover it whole: a destroyed block turns its
+    /// cells into opaque grey static, a field-repaired one leaves shattered glass over them. The screen edges pulse
+    /// red while the engine burns. Reads <see cref="VisionDamageState"/> and only adds its pass to game cameras while
     /// the state is active, so an undamaged tank costs nothing.
     /// </summary>
     public class VisionDamageFeature : ScriptableRendererFeature
@@ -46,7 +47,7 @@ namespace PolishTanks.Rendering
 
         private sealed class VisionDamagePass : ScriptableRenderPass
         {
-            private static readonly int CenterId = Shader.PropertyToID("_VisionCenter");
+            private static readonly int AspectId = Shader.PropertyToID("_VisionAspect");
             private static readonly int ParamsId = Shader.PropertyToID("_VisionParams");
             private static readonly int LossAId = Shader.PropertyToID("_VisionLossA");
             private static readonly int LossBId = Shader.PropertyToID("_VisionLossB");
@@ -81,9 +82,7 @@ namespace PolishTanks.Rendering
 
             private void Apply(Camera camera)
             {
-                var viewport = camera.WorldToViewportPoint(VisionDamageState.Position);
-                var clearRadius = VisionDamageState.ClearRadius / (2f * camera.orthographicSize);
-                material.SetVector(CenterId, new Vector4(viewport.x, viewport.y, camera.aspect, clearRadius));
+                material.SetFloat(AspectId, camera.aspect);
                 material.SetVector(ParamsId, new Vector4(VisionDamageState.Seed, VisionDamageState.Blocks, VisionDamageState.FireAlarm, 0f));
                 material.SetVector(LossAId, VisionDamageState.LossA);
                 material.SetVector(LossBId, VisionDamageState.LossB);
