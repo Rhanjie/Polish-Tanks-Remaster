@@ -42,6 +42,7 @@ namespace PolishTanks.Tank
         public float ReloadProgress => reload?.Progress ?? 1f;
         public int RoundsInMagazine => magazine?.Rounds ?? 0;
         public bool IsChangingMagazine => magazine != null && magazine.IsReloading;
+        public float MagazineReloadProgress => magazine?.ReloadProgress ?? 1f;
 
         public Vector2 LastShotDirection { get; private set; }
 
