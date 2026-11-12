@@ -24,7 +24,7 @@ namespace PolishTanks.Tank
         public PartId? Current => crew != null ? crew.Current : null;
         public float Progress => crew != null ? crew.Progress : 0f;
         public float RemainingSeconds => crew != null ? Mathf.Max(0f, crew.Duration - crew.Elapsed) : 0f;
-        public bool HasWork => damage != null && RepairQueue.Next(damage.Model).HasValue;
+        public bool HasWork => damage != null && !controller.IsDestroyed && RepairQueue.Next(damage.Model).HasValue;
 
         public void Toggle()
         {

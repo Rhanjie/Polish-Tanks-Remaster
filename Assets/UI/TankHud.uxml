@@ -1,0 +1,69 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:hud="PolishTanks.UI">
+    <ui:Style src="TankHud.uss" />
+    <ui:VisualElement name="tankHud" class="hud" picking-mode="Ignore">
+        <hud:HudDial name="dial" class="dial">
+            <ui:VisualElement name="tank" class="tank" picking-mode="Ignore">
+                <ui:VisualElement name="leftTrack" class="track track--left part--intact" picking-mode="Ignore">
+                    <ui:VisualElement class="track-loose track-loose--left" picking-mode="Ignore" />
+                    <ui:VisualElement name="leftTrackLinks" class="track-links" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="rightTrack" class="track track--right part--intact" picking-mode="Ignore">
+                    <ui:VisualElement class="track-loose track-loose--right" picking-mode="Ignore" />
+                    <ui:VisualElement name="rightTrackLinks" class="track-links" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="hull" class="hull" picking-mode="Ignore">
+                    <ui:VisualElement name="visionRow" class="vision-row" picking-mode="Ignore">
+                        <ui:VisualElement name="visionBlock0" class="vision-block part--intact" picking-mode="Ignore" />
+                        <ui:VisualElement name="visionBlock1" class="vision-block part--intact" picking-mode="Ignore" />
+                        <ui:VisualElement name="visionBlock2" class="vision-block part--intact" picking-mode="Ignore" />
+                        <ui:VisualElement name="visionBlock3" class="vision-block part--intact" picking-mode="Ignore" />
+                        <ui:VisualElement name="visionBlock4" class="vision-block part--intact" picking-mode="Ignore" />
+                        <ui:VisualElement name="visionBlock5" class="vision-block part--intact" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="engine" class="engine part--intact" picking-mode="Ignore">
+                        <ui:VisualElement class="grille" picking-mode="Ignore" />
+                        <ui:VisualElement class="grille" picking-mode="Ignore" />
+                        <ui:VisualElement class="grille" picking-mode="Ignore" />
+                        <ui:VisualElement class="grille" picking-mode="Ignore" />
+                        <ui:VisualElement name="fire" class="fire" picking-mode="Ignore">
+                            <ui:VisualElement class="fire-core" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="turretRing" class="turret-ring part--intact" picking-mode="Ignore">
+                    <ui:VisualElement class="barrel" picking-mode="Ignore" />
+                    <ui:VisualElement class="mantlet" picking-mode="Ignore" />
+                    <ui:VisualElement class="cupola" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="speed" picking-mode="Ignore">
+                <ui:Label name="speedValue" class="speed-value" text="0" picking-mode="Ignore" />
+                <ui:Label class="speed-unit" text="km/h" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </hud:HudDial>
+        <ui:VisualElement class="side" picking-mode="Ignore">
+            <ui:VisualElement name="repair" class="popup repair" picking-mode="Ignore">
+                <ui:VisualElement class="repair-row" picking-mode="Ignore">
+                    <ui:Label name="repairKey" class="repair-key" text="R" picking-mode="Ignore" />
+                    <ui:Label name="repairCaption" class="repair-caption" text="Naprawa" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="repairPart" class="repair-part" text="" picking-mode="Ignore" />
+                <ui:VisualElement name="progress" class="progress" picking-mode="Ignore">
+                    <ui:VisualElement name="progressFill" class="progress-fill" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="ammo" class="popup ammo" picking-mode="Ignore">
+                <ui:VisualElement class="ammo-row" picking-mode="Ignore">
+                    <ui:VisualElement class="ammo-swatch ammo-swatch--gun" picking-mode="Ignore" />
+                    <ui:Label class="ammo-name" text="Działo" picking-mode="Ignore" />
+                    <ui:Label name="gunState" class="ammo-value" text="Gotowe" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="ammo-row" picking-mode="Ignore">
+                    <ui:VisualElement class="ammo-swatch ammo-swatch--belt" picking-mode="Ignore" />
+                    <ui:Label class="ammo-name" text="KM" picking-mode="Ignore" />
+                    <ui:Label name="beltState" class="ammo-value" text="150/150" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
