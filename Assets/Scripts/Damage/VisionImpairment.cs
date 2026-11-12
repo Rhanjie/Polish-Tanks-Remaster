@@ -3,9 +3,8 @@ using UnityEngine;
 namespace PolishTanks.Damage
 {
     /// <summary>
-    /// How badly the crew's view is spoiled, block by block, eased over time for the screen effect. Each vision
-    /// block owns one equal sector around the hull; its loss is 1 when destroyed, 0.5 when field-repaired and 0 when
-    /// intact. Losses rise fast (glass shatters at once) and fall slower (the crew clears the view piece by piece).
+    /// How badly the crew's view is spoiled, block by block, eased over time for the screen effect. A block's loss
+    /// is 1 when destroyed, 0.5 when field-repaired and 0 when intact. Losses rise fast (glass shatters at once) and fall slower (the crew clears the view piece by piece).
     /// The fire alarm eases the same way while the engine burns.
     /// </summary>
     public sealed class VisionImpairment

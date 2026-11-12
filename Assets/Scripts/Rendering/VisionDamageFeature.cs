@@ -7,9 +7,9 @@ using UnityEngine.Rendering.Universal;
 namespace PolishTanks.Rendering
 {
     /// <summary>
-    /// Renderer feature that spoils the game view in the sectors of broken vision blocks: blur, grain, cracked
-    /// glass and darkness, all turning with the hull around the player's tank, plus a red pulse at the screen edges
-    /// while the engine burns. Reads <see cref="VisionDamageState"/> and only adds its pass to game cameras while
+    /// Renderer feature that spoils the game view where broken vision blocks are: each one covers a few patches of
+    /// the screen with cracked glass, blur and grey static, opaque once the block is destroyed, plus a red pulse at
+    /// the screen edges while the engine burns. Reads <see cref="VisionDamageState"/> and only adds its pass to game cameras while
     /// the state is active, so an undamaged tank costs nothing.
     /// </summary>
     public class VisionDamageFeature : ScriptableRendererFeature
@@ -47,7 +47,7 @@ namespace PolishTanks.Rendering
         private sealed class VisionDamagePass : ScriptableRenderPass
         {
             private static readonly int CenterId = Shader.PropertyToID("_VisionCenter");
-            private static readonly int HullId = Shader.PropertyToID("_VisionHull");
+            private static readonly int ParamsId = Shader.PropertyToID("_VisionParams");
             private static readonly int LossAId = Shader.PropertyToID("_VisionLossA");
             private static readonly int LossBId = Shader.PropertyToID("_VisionLossB");
 
@@ -83,9 +83,8 @@ namespace PolishTanks.Rendering
             {
                 var viewport = camera.WorldToViewportPoint(VisionDamageState.Position);
                 var clearRadius = VisionDamageState.ClearRadius / (2f * camera.orthographicSize);
-                var hull = (VisionDamageState.HullDegrees - camera.transform.eulerAngles.z) * Mathf.Deg2Rad;
                 material.SetVector(CenterId, new Vector4(viewport.x, viewport.y, camera.aspect, clearRadius));
-                material.SetVector(HullId, new Vector4(hull, VisionDamageState.Blocks, VisionDamageState.FireAlarm, 0f));
+                material.SetVector(ParamsId, new Vector4(VisionDamageState.Seed, VisionDamageState.Blocks, VisionDamageState.FireAlarm, 0f));
                 material.SetVector(LossAId, VisionDamageState.LossA);
                 material.SetVector(LossBId, VisionDamageState.LossB);
             }
