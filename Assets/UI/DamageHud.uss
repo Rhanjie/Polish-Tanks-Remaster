@@ -137,7 +137,7 @@
 .repair-part {
     margin-top: 4px;
     color: rgb(190, 188, 176);
-    font-size: 15px;
+    font-size: 17px;
 }
 
 .progress {
