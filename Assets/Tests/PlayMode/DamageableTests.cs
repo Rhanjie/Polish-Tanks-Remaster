@@ -28,7 +28,8 @@ namespace PolishTanks.Tests.PlayMode
         [TearDown]
         public void TearDown() => fixture.Dispose();
 
-        private Damageable CreateTarget(float hitPoints, ArmorProfile armor, bool removeOnDeath = true, float zRotation = 0f)
+        private Damageable CreateTarget(float hitPoints, ArmorProfile armor, bool removeOnDeath = true, float zRotation = 0f,
+            float y = 3f)
         {
             var profile = fixture.Track(ScriptableObject.CreateInstance<DamageableProfile>());
             TankRig.SetField(profile, "hitPoints", hitPoints);
@@ -37,7 +38,7 @@ namespace PolishTanks.Tests.PlayMode
 
             var go = fixture.Track(new GameObject("Target"));
             go.SetActive(false);
-            go.transform.position = new Vector3(0f, 3f, 0f);
+            go.transform.position = new Vector3(0f, y, 0f);
             go.transform.rotation = Quaternion.Euler(0f, 0f, zRotation);
             go.AddComponent<BoxCollider2D>().size = Vector2.one;
             var damageable = go.AddComponent<Damageable>();
@@ -47,7 +48,7 @@ namespace PolishTanks.Tests.PlayMode
             return damageable;
         }
 
-        private void Shoot(float damage, float penetration)
+        private Projectile Shoot(float damage, float penetration)
         {
             Physics2D.SyncTransforms();
             var projectile = fixture.Pools.For(prefab).Get(Vector2.zero, Quaternion.identity);
@@ -60,6 +61,7 @@ namespace PolishTanks.Tests.PlayMode
                 PenetrationMax = penetration,
             });
             projectile.Step(Step);
+            return projectile;
         }
 
         [Test]
@@ -100,6 +102,34 @@ namespace PolishTanks.Tests.PlayMode
             Shoot(damage: 1f, penetration: 100f);
 
             Assert.That(target.LastResult.Side, Is.EqualTo(HitSide.Rear));
+        }
+
+        [Test]
+        public void Shot_WithTwiceTheArmor_PassesThroughIntoTheTargetBehind()
+        {
+            var first = CreateTarget(100f, new ArmorProfile(10f, 10f, 10f), removeOnDeath: false);
+            var second = CreateTarget(100f, new ArmorProfile(25f, 25f, 25f), removeOnDeath: false, y: 6f);
+
+            var projectile = Shoot(damage: 30f, penetration: 50f);
+            projectile.Step(Step);
+
+            Assert.That(first.HitPoints, Is.EqualTo(70f).Within(1e-4f));
+            Assert.That(second.LastResult.Penetration, Is.EqualTo(30f).Within(1e-4f));
+            Assert.That(second.HitPoints, Is.EqualTo(70f).Within(1e-4f));
+        }
+
+        [Test]
+        public void Shot_WithLessThanTwiceTheArmor_StopsInTheFirstTarget()
+        {
+            var first = CreateTarget(100f, new ArmorProfile(10f, 10f, 10f), removeOnDeath: false);
+            var second = CreateTarget(100f, new ArmorProfile(1f, 1f, 1f), removeOnDeath: false, y: 6f);
+
+            var projectile = Shoot(damage: 30f, penetration: 19f);
+            projectile.Step(Step);
+
+            Assert.That(first.HitPoints, Is.EqualTo(70f).Within(1e-4f));
+            Assert.That(projectile.IsSpawned, Is.False);
+            Assert.That(second.HitPoints, Is.EqualTo(100f));
         }
 
         [Test]
