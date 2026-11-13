@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Combat.DamageableProfile
   hitPoints: 60
   armor:
-    front: 6
-    side: 6
-    rear: 6
+    front: 3
+    side: 3
+    rear: 3
   destroyedEffect: {fileID: 210976013046461783, guid: 50113c86e85e2314d99f85a212442de3, type: 3}
   surface: 1
   removeOnDeath: 1
