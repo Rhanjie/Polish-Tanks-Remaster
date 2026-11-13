@@ -25124,6 +25124,88 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8791731851694367053, guid: f489ba0b66045974f890828080260c99, type: 3}
   m_PrefabInstance: {fileID: 1137617388}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1137745178
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_Name
+      value: Sentry West
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3033694629029787339, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1137745180}
+  m_SourcePrefab: {fileID: 100100000, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+--- !u!1 &1137745179 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+  m_PrefabInstance: {fileID: 1137745178}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1137745180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137745179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e4cf1b75332fc42be361e6f46dd671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Prototypes.SentryTank
+  aimJitter: 6
+  aimTolerance: 2
+  burstSeconds: 1.2
+  burstPause: 3
 --- !u!1 &1137976182
 GameObject:
   m_ObjectHideFlags: 0
@@ -27714,6 +27796,88 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8791731851694367053, guid: f489ba0b66045974f890828080260c99, type: 3}
   m_PrefabInstance: {fileID: 1257456609}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1260759391
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_Name
+      value: Sentry East
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3033694629029787339, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1260759393}
+  m_SourcePrefab: {fileID: 100100000, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+--- !u!1 &1260759392 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+  m_PrefabInstance: {fileID: 1260759391}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1260759393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1260759392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e4cf1b75332fc42be361e6f46dd671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Prototypes.SentryTank
+  aimJitter: 6
+  aimTolerance: 2
+  burstSeconds: 1.2
+  burstPause: 3
 --- !u!1 &1264481995
 GameObject:
   m_ObjectHideFlags: 0
@@ -49574,3 +49738,5 @@ SceneRoots:
   - {fileID: 1720157936}
   - {fileID: 1853978863}
   - {fileID: 1320683139}
+  - {fileID: 1137745178}
+  - {fileID: 1260759391}
