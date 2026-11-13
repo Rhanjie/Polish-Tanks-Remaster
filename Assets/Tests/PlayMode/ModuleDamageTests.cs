@@ -113,6 +113,19 @@ namespace PolishTanks.Tests.PlayMode
             Assert.That(damage.Model.ConditionOf(new PartId(VehiclePart.LeftTrack)), Is.EqualTo(PartCondition.Intact));
         }
 
+        [Test]
+        public void OnHit_MachineGunBulletWithCertainBlindChance_BlindsViewWithoutDamagingParts()
+        {
+            TankRig.SetField(damage, "settings", rig.Create<ModuleDamageSettings>(
+                ("smallArmsBlockDamageChance", 0f), ("smallArmsBlindChance", 1f)));
+
+            ShootLeftSide(7.92f);
+
+            Assert.That(damage.Visibility, Is.LessThan(1f));
+            Assert.That(damage.Model.ConditionOf(new PartId(VehiclePart.LeftTrack)), Is.EqualTo(PartCondition.Intact));
+            Assert.That(damage.Model.ConditionOf(new PartId(VehiclePart.VisionBlock, 0)), Is.EqualTo(PartCondition.Intact));
+        }
+
         [UnityTest]
         public IEnumerator Break_Engine_StartsFireThatCostsHitPoints()
         {
