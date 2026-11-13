@@ -3,7 +3,7 @@ namespace PolishTanks.Damage
     /// <summary>
     /// Order a crew patches parts in, most urgent first: the engine (it also puts out a fire), a vision block when
     /// the crew is completely blind, the tracks, the turret ring and then the remaining vision blocks.
-    /// Only destroyed parts are picked; a field-repaired part waits for the workshop.
+    /// Only destroyed parts are picked; a damaged part waits for the workshop.
     /// </summary>
     public static class RepairQueue
     {

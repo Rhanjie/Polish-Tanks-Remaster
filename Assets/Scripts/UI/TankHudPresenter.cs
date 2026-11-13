@@ -12,12 +12,12 @@ namespace PolishTanks.UI
     {
         public const string IntactClass = "part--intact";
         public const string DestroyedClass = "part--destroyed";
-        public const string PatchedClass = "part--patched";
+        public const string DamagedClass = "part--damaged";
 
         public static string PartClass(PartCondition condition) => condition switch
         {
             PartCondition.Destroyed => DestroyedClass,
-            PartCondition.FieldRepaired => PatchedClass,
+            PartCondition.Damaged => DamagedClass,
             _ => IntactClass,
         };
 

@@ -5,9 +5,9 @@ using UnityEngine.InputSystem;
 namespace PolishTanks.Tank
 {
     /// <summary>
-    /// Temporary playtest helper: number keys break the player's own parts so every damage effect can be tried
-    /// without an enemy. 1 engine, 2 left track, 3 right track, 4 turret ring, 5 a vision block,
-    /// 6 field-repairs everything broken at once. Until the HUD exists it also logs what the field repair crew
+    /// Temporary playtest helper: number keys hit the player's own parts so every damage effect can be tried
+    /// without an enemy. Each press moves a part one step toward destroyed. 1 engine, 2 left track, 3 right track,
+    /// 4 turret ring, 5 a random vision block, 6 field-repairs everything destroyed at once, 7 blinds a random block. Until the HUD exists it also logs what the field repair crew
     /// is doing. Only the tank driven by <see cref="TankInput"/> listens.
     /// </summary>
     [RequireComponent(typeof(ModuleDamage))]
@@ -50,6 +50,7 @@ namespace PolishTanks.Tank
             if (keyboard.digit4Key.wasPressedThisFrame) Break(VehiclePart.TurretRing);
             if (keyboard.digit5Key.wasPressedThisFrame) Break(VehiclePart.VisionBlock);
             if (keyboard.digit6Key.wasPressedThisFrame) RepairAll();
+            if (keyboard.digit7Key.wasPressedThisFrame) damage.Blind(Random.Range(0, damage.Model.VisionBlocks));
             if (keyboard.rKey.wasPressedThisFrame && repair != null && !repair.IsRepairing && !repair.HasWork)
                 Debug.Log($"[Debug] {name}: repair key pressed, nothing destroyed to patch.", this);
         }
@@ -67,16 +68,13 @@ namespace PolishTanks.Tank
 
         private void OnPartChanged(PartId id, PartCondition condition)
         {
-            if (condition == PartCondition.FieldRepaired)
-                Debug.Log($"[Debug] {name}: {id} patched to half strength. Visibility {damage.Model.Visibility:P0}.", this);
+            Debug.Log($"[Debug] {name}: {id} is now {condition}. Visibility {damage.Model.Visibility:P0}.", this);
         }
 
         private void Break(VehiclePart part)
         {
-            var broken = damage.Break(part);
-            Debug.Log(broken.HasValue
-                ? $"[Debug] {name}: {broken.Value} destroyed. Visibility {damage.Model.Visibility:P0}."
-                : $"[Debug] {name}: no intact {part} left.", this);
+            if (!damage.Break(part).HasValue)
+                Debug.Log($"[Debug] {name}: the hit on {part} found nothing left to break.", this);
         }
 
         private void RepairAll()

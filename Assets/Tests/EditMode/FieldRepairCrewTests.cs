@@ -14,8 +14,6 @@ namespace PolishTanks.Tests.EditMode
         private FieldRepairCrew crew;
         private List<PartId> patched;
 
-        private static float First() => 0f;
-
         [SetUp]
         public void SetUp()
         {
@@ -39,7 +37,7 @@ namespace PolishTanks.Tests.EditMode
         [Test]
         public void Tick_BeforePartDurationElapsed_DoesNotPatch()
         {
-            model.Break(VehiclePart.Engine, First);
+            TestDamage.Destroy(model, VehiclePart.Engine);
             crew.Start(model);
 
             crew.Tick(model, 1.9f, Patch);
@@ -50,7 +48,7 @@ namespace PolishTanks.Tests.EditMode
         [Test]
         public void Tick_PartDurationElapsed_PatchesThatPart()
         {
-            model.Break(VehiclePart.Engine, First);
+            TestDamage.Destroy(model, VehiclePart.Engine);
             crew.Start(model);
 
             crew.Tick(model, 2f, Patch);
@@ -61,8 +59,8 @@ namespace PolishTanks.Tests.EditMode
         [Test]
         public void Tick_PartPatchedWithMoreDestroyed_MovesOnToNextPart()
         {
-            model.Break(VehiclePart.Engine, First);
-            model.Break(VehiclePart.LeftTrack, First);
+            TestDamage.Destroy(model, VehiclePart.Engine);
+            TestDamage.Destroy(model, VehiclePart.LeftTrack);
             crew.Start(model);
 
             crew.Tick(model, 2f, Patch);
@@ -73,7 +71,7 @@ namespace PolishTanks.Tests.EditMode
         [Test]
         public void Tick_LastPartPatched_CrewStopsWorking()
         {
-            model.Break(VehiclePart.Engine, First);
+            TestDamage.Destroy(model, VehiclePart.Engine);
             crew.Start(model);
 
             crew.Tick(model, 2f, Patch);
@@ -84,8 +82,8 @@ namespace PolishTanks.Tests.EditMode
         [Test]
         public void Tick_CurrentPartRepairedElsewhere_PicksNextWithoutPatching()
         {
-            model.Break(VehiclePart.Engine, First);
-            model.Break(VehiclePart.LeftTrack, First);
+            TestDamage.Destroy(model, VehiclePart.Engine);
+            TestDamage.Destroy(model, VehiclePart.LeftTrack);
             crew.Start(model);
             model.FieldRepair(Engine);
 
@@ -97,11 +95,11 @@ namespace PolishTanks.Tests.EditMode
         [Test]
         public void Tick_EngineBreaksWhileTrackIsBeingPatched_SwitchesToEngine()
         {
-            model.Break(VehiclePart.LeftTrack, First);
+            TestDamage.Destroy(model, VehiclePart.LeftTrack);
             crew.Start(model);
             crew.Tick(model, 0.5f, Patch);
 
-            model.Break(VehiclePart.Engine, First);
+            TestDamage.Destroy(model, VehiclePart.Engine);
             crew.Tick(model, 0.1f, Patch);
 
             Assert.That(crew.Current, Is.EqualTo(Engine));

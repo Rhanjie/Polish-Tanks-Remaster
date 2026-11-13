@@ -6,13 +6,17 @@ namespace PolishTanks.Damage
 {
     /// <summary>
     /// Condition of every damageable part on one vehicle and what it adds up to: engine power, track and turret
-    /// effectiveness and how much the crew can still see. Intact counts as 1, destroyed as 0 and field-repaired
-    /// as <see cref="FieldRepairEffectiveness"/>. Visibility is the mean of the vision blocks, so with four blocks
-    /// each loss costs a quarter and each field repair gives an eighth back.
+    /// effectiveness and how much the crew can still see. Each hit moves a part one step from intact to damaged to
+    /// destroyed. Intact counts as 1, destroyed as 0 and damaged as <see cref="DamagedEffectiveness"/>, which differs
+    /// per part. Visibility is the mean of the vision blocks. A hit on the vision blocks lands on any one of them,
+    /// so it can strike a block that is already gone and change nothing.
     /// </summary>
     public sealed class VehicleDamageModel
     {
-        public const float FieldRepairEffectiveness = 0.5f;
+        public const float DamagedEngine = 0.6f;
+        public const float DamagedTrack = 0.8f;
+        public const float DamagedTurretRing = 0.5f;
+        public const float DamagedVisionBlock = 0.5f;
 
         private readonly List<PartId> parts = new List<PartId>();
         private readonly Dictionary<PartId, PartCondition> conditions = new Dictionary<PartId, PartCondition>();
@@ -72,27 +76,40 @@ namespace PolishTanks.Damage
         public PartCondition ConditionOf(PartId id) =>
             conditions.TryGetValue(id, out var condition) ? condition : PartCondition.Intact;
 
-        public float Effectiveness(PartId id) => Effectiveness(ConditionOf(id));
+        public float Effectiveness(PartId id) => Effectiveness(id.Part, ConditionOf(id));
 
-        public static float Effectiveness(PartCondition condition) => condition switch
+        public static float Effectiveness(VehiclePart part, PartCondition condition) => condition switch
         {
             PartCondition.Destroyed => 0f,
-            PartCondition.FieldRepaired => FieldRepairEffectiveness,
+            PartCondition.Damaged => DamagedEffectiveness(part),
             _ => 1f,
+        };
+
+        public static float DamagedEffectiveness(VehiclePart part) => part switch
+        {
+            VehiclePart.Engine => DamagedEngine,
+            VehiclePart.LeftTrack => DamagedTrack,
+            VehiclePart.RightTrack => DamagedTrack,
+            VehiclePart.TurretRing => DamagedTurretRing,
+            _ => DamagedVisionBlock,
         };
 
         public PartId? Break(VehiclePart part, Func<float> random)
         {
             candidates.Clear();
             foreach (var id in parts)
-                if (id.Part == part && conditions[id] != PartCondition.Destroyed)
+                if (id.Part == part)
                     candidates.Add(id);
             if (candidates.Count == 0)
                 return null;
 
             var pick = Mathf.Min(candidates.Count - 1, (int)(random() * candidates.Count));
             var target = candidates[pick];
-            Set(target, PartCondition.Destroyed);
+            var condition = conditions[target];
+            if (condition == PartCondition.Destroyed)
+                return null;
+
+            Set(target, condition == PartCondition.Intact ? PartCondition.Damaged : PartCondition.Destroyed);
             return target;
         }
 
@@ -100,7 +117,7 @@ namespace PolishTanks.Damage
         {
             if (ConditionOf(id) != PartCondition.Destroyed || !Has(id))
                 return false;
-            Set(id, PartCondition.FieldRepaired);
+            Set(id, PartCondition.Damaged);
             return true;
         }
 

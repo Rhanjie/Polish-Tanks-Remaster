@@ -76,7 +76,7 @@ namespace PolishTanks.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator PartChanged_LeftTrackBroken_MarksTrackDestroyed()
+        public IEnumerator PartChanged_LeftTrackHit_MarksTrackDamaged()
         {
             yield return null;
             var root = document.rootVisualElement;
@@ -85,7 +85,7 @@ namespace PolishTanks.Tests.PlayMode
             damage.Break(VehiclePart.LeftTrack);
             yield return null;
 
-            Assert.That(root.Q("leftTrack").ClassListContains(TankHudPresenter.DestroyedClass), Is.True);
+            Assert.That(root.Q("leftTrack").ClassListContains(TankHudPresenter.DamagedClass), Is.True);
         }
     }
 }

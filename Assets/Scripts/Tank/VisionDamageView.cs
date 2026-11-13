@@ -7,7 +7,7 @@ namespace PolishTanks.Tank
 {
     /// <summary>
     /// Feeds the vision damage screen effect from the player's tank: eases each vision block's loss and the fire
-    /// alarm toward the tank's current damage and publishes them. A random seed picked on wake decides which cells
+    /// alarm toward the tank's current damage and blinding flashes and publishes them. A random seed picked on wake decides which cells
     /// of the screen belong to which block. Once the tank is knocked out the view clears again. Disabling the component switches the effect off, so the editor never
     /// keeps a darkened view after Play Mode.
     /// </summary>
@@ -41,7 +41,7 @@ namespace PolishTanks.Tank
             if (controller.IsDestroyed)
                 impairment.Clear();
             else
-                impairment.Aim(damage.Model, damage.IsBurning);
+                impairment.Aim(damage.Model, damage.IsBurning, damage.Blinding);
             impairment.Step(Time.deltaTime, worsenRate, recoverRate);
 
             VisionDamageState.Publish(seed, impairment);

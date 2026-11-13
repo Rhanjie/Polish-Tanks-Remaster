@@ -4,7 +4,8 @@ namespace PolishTanks.Damage
 {
     /// <summary>
     /// How badly the crew's view is spoiled, block by block, eased over time for the screen effect. A block's loss
-    /// is 1 when destroyed, 0.5 when field-repaired and 0 when intact. Losses rise fast (glass shatters at once) and fall slower (the crew clears the view piece by piece).
+    /// is 1 when destroyed, half when damaged and 0 when intact, or the strength of a blinding flash if that is worse.
+    /// Losses rise fast (glass shatters at once) and fall slower (the crew clears the view piece by piece).
     /// The fire alarm eases the same way while the engine burns.
     /// </summary>
     public sealed class VisionImpairment
@@ -35,12 +36,12 @@ namespace PolishTanks.Damage
 
         public float Loss(int block) => block >= 0 && block < MaxBlocks ? loss[block] : 0f;
 
-        public void Aim(VehicleDamageModel model, bool burning)
+        public void Aim(VehicleDamageModel model, bool burning, VisionBlinding blinding = null)
         {
             Blocks = model == null ? 0 : Mathf.Min(model.VisionBlocks, MaxBlocks);
             for (var i = 0; i < MaxBlocks; i++)
                 target[i] = i < Blocks
-                    ? 1f - model.Effectiveness(new PartId(VehiclePart.VisionBlock, i))
+                    ? Mathf.Max(1f - model.Effectiveness(new PartId(VehiclePart.VisionBlock, i)), blinding != null ? blinding.Amount(i) : 0f)
                     : 0f;
             fireTarget = burning ? 1f : 0f;
         }

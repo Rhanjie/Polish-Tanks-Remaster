@@ -13,8 +13,8 @@ namespace PolishTanks.Tests.EditMode
         public void Step_AfterBreakAndPatch_SpoilsOnlyThoseSectors()
         {
             var model = FourBlocks();
-            model.Break(VehiclePart.VisionBlock, () => 0f);
-            model.Break(VehiclePart.VisionBlock, () => 0f);
+            TestDamage.Destroy(model, VehiclePart.VisionBlock, 0);
+            TestDamage.Destroy(model, VehiclePart.VisionBlock, 1);
             model.FieldRepair(new PartId(VehiclePart.VisionBlock, 1));
             var impairment = new VisionImpairment();
 
@@ -31,7 +31,7 @@ namespace PolishTanks.Tests.EditMode
         public void Step_ViewSpoilsFasterThanItClears()
         {
             var model = FourBlocks();
-            var block = model.Break(VehiclePart.VisionBlock, () => 0f).Value;
+            var block = TestDamage.Destroy(model, VehiclePart.VisionBlock);
             var impairment = new VisionImpairment();
 
             impairment.Aim(model, false);
@@ -43,6 +43,21 @@ namespace PolishTanks.Tests.EditMode
 
             Assert.That(spoiled, Is.EqualTo(1f));
             Assert.That(impairment.Loss(block.Index), Is.EqualTo(0.8f).Within(1e-5f));
+        }
+
+        [Test]
+        public void Aim_BlindedIntactBlock_LosesTheFlashStrength()
+        {
+            var model = FourBlocks();
+            var blinding = new VisionBlinding();
+            blinding.Flash(2, 1f, 0.8f);
+            var impairment = new VisionImpairment();
+
+            impairment.Aim(model, false, blinding);
+            impairment.Step(10f, 1f, 1f);
+
+            Assert.That(impairment.Loss(2), Is.EqualTo(0.8f).Within(1e-5f));
+            Assert.That(impairment.Loss(1), Is.Zero);
         }
 
         [Test]

@@ -47,7 +47,7 @@
 
 .track.part--intact,
 .track.part--destroyed,
-.track.part--patched {
+.track.part--damaged {
     background-color: rgb(30, 30, 26);
 }
 
@@ -67,7 +67,7 @@
     background-color: rgb(214, 40, 30);
 }
 
-.track.part--patched .track-link {
+.track.part--damaged .track-link {
     background-color: rgb(236, 140, 32);
 }
 
@@ -210,7 +210,7 @@
 
 .turret-ring.part--intact,
 .turret-ring.part--destroyed,
-.turret-ring.part--patched {
+.turret-ring.part--damaged {
     background-color: rgb(98, 106, 78);
 }
 
@@ -222,7 +222,7 @@
     border-color: rgb(214, 40, 30);
 }
 
-.turret-ring.part--patched {
+.turret-ring.part--damaged {
     border-color: rgb(236, 140, 32);
 }
 
@@ -274,7 +274,7 @@
     background-color: rgb(214, 40, 30);
 }
 
-.part--patched {
+.part--damaged {
     background-color: rgb(236, 140, 32);
 }
 

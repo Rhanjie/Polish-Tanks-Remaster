@@ -275,7 +275,7 @@ namespace PolishTanks.UI
             var active = TankHudPresenter.PartClass(condition);
             element.EnableInClassList(TankHudPresenter.IntactClass, active == TankHudPresenter.IntactClass);
             element.EnableInClassList(TankHudPresenter.DestroyedClass, active == TankHudPresenter.DestroyedClass);
-            element.EnableInClassList(TankHudPresenter.PatchedClass, active == TankHudPresenter.PatchedClass);
+            element.EnableInClassList(TankHudPresenter.DamagedClass, active == TankHudPresenter.DamagedClass);
         }
     }
 }
