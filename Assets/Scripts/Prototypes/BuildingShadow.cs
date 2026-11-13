@@ -13,7 +13,7 @@ namespace PolishTanks.Prototypes
     public class BuildingShadow : MonoBehaviour
     {
         [SerializeField] private Building building;
-        [SerializeField] private Vector2 sunDirection = new Vector2(0.6f, -0.8f);
+        [SerializeField] private Vector2 sunDirection = Rendering.SunLight.Direction;
         [SerializeField, Min(0f)] private float shadowLength = 0.45f;
         [SerializeField] private Color color = new Color(0f, 0f, 0f, 0.35f);
 
