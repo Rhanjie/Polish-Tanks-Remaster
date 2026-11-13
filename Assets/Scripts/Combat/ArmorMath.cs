@@ -14,6 +14,7 @@ namespace PolishTanks.Combat
     {
         public const float FrontRearHalfArc = 45f;
         public const float MaxImpactAngle = 75f;
+        public const float OverpenetrationFactor = 2f;
 
         public static Vector2 SnapToFace(Vector2 localNormal)
         {
