@@ -43859,6 +43859,7 @@ GameObject:
   - component: {fileID: 1853978862}
   - component: {fileID: 1853978861}
   - component: {fileID: 1853978864}
+  - component: {fileID: 1853978865}
   m_Layer: 0
   m_Name: HUD
   m_TagString: Untagged
@@ -43932,6 +43933,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.VisionDamageView
   worsenRate: 6
   recoverRate: 1.2
+--- !u!114 &1853978865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1853978860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b533d4048124735449154b211c5b6359, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.PlayerHitShake
+  minCaliber: 20
+  referenceCaliber: 75
+  forceAtReference: 0.8
 --- !u!1001 &1858736276
 PrefabInstance:
   m_ObjectHideFlags: 0
