@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26008d2760091c24a99d88e912fb14e8, type: 3}
+  m_Name: Damageable_Barrel
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Combat.DamageableProfile
+  hitPoints: 250
+  armor:
+    front: 10
+    side: 10
+    rear: 10
+  destroyedEffect: {fileID: 210976013046461783, guid: 50113c86e85e2314d99f85a212442de3, type: 3}
+  surface: 0
+  removeOnDeath: 1
