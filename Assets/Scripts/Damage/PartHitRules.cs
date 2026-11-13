@@ -10,6 +10,8 @@ namespace PolishTanks.Damage
     /// even when the shell does not get through (scaled down). Everything else needs a penetration:
     /// the engine from the rear, vision blocks from the front, the turret ring from any side.
     /// Each part rolls on its own, so one shell can do several kinds of damage.
+    /// Machine-gun bullets roll separately: on the front or side they can damage a vision block or, more often,
+    /// blind one for a moment.
     /// </summary>
     public static class PartHitRules
     {
@@ -34,6 +36,17 @@ namespace PolishTanks.Damage
                 result.Add(VehiclePart.VisionBlock);
             if (chances.HasTurretRing && Hits(chances.TurretRingJam, random))
                 result.Add(VehiclePart.TurretRing);
+        }
+
+        public static SmallArmsEffect RollSmallArms(HitSide side, in PartDamageChances chances,
+            float blockDamageChance, float blindChance, Func<float> random)
+        {
+            if (side == HitSide.Rear || chances.VisionBlocks <= 0)
+                return SmallArmsEffect.None;
+            var roll = random();
+            if (roll < blockDamageChance)
+                return SmallArmsEffect.DamageBlock;
+            return roll < blockDamageChance + blindChance ? SmallArmsEffect.Blind : SmallArmsEffect.None;
         }
 
         private static bool Hits(float chance, Func<float> random) => chance > 0f && random() < chance;
