@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7425567102283966734}
   - component: {fileID: 8071527037367562480}
   - component: {fileID: 109643577362620114}
+  - component: {fileID: 1203476802697956357}
   m_Layer: 0
   m_Name: Barrel
   m_TagString: Untagged
@@ -188,6 +189,21 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.55
+--- !u!114 &1203476802697956357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3286670493697861118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1964d2133a3dd048ab8426c23eceae8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Rendering.DropShadow
+  height: 0.4
+  color: {r: 0, g: 0, b: 0, a: 0.45}
+  sortingOrder: -50
 --- !u!1 &4832190368451815681
 GameObject:
   m_ObjectHideFlags: 0

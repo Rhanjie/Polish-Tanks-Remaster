@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7366628835698055403}
   - component: {fileID: 141026634532790984}
   - component: {fileID: 6874197503676617285}
+  - component: {fileID: 495796237879848686}
   m_Layer: 0
   m_Name: Crate_Wood
   m_TagString: Untagged
@@ -198,6 +199,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Combat.Damageable
   profile: {fileID: 11400000, guid: 0802d702a8c0e0344b1f49141c8fdf7d, type: 2}
+--- !u!114 &495796237879848686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608059658898826578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1964d2133a3dd048ab8426c23eceae8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Rendering.DropShadow
+  height: 0.45
+  color: {r: 0, g: 0, b: 0, a: 0.45}
+  sortingOrder: -50
 --- !u!1 &6637319971604174266
 GameObject:
   m_ObjectHideFlags: 0
