@@ -14,6 +14,7 @@ namespace PolishTanks.Weapons
     {
         private const float EmbeddedImpulseFactor = 3f;
         private const int MaxHitsPerStep = 4;
+        private const float PassThroughImpulseFactor = 0.5f;
         private const float DamagedTrailWidth = 0.5f;
         private const float DamagedTracerScale = 0.65f;
 
@@ -106,7 +107,8 @@ namespace PolishTanks.Weapons
             var direction = velocity / speed;
             var distance = speed * deltaTime;
 
-            for (var i = 0; i < MaxHitsPerStep && TryFindHit(position, direction, distance, out var hit); i++)
+            var hits = 0;
+            while (TryFindHit(position, direction, distance, out var hit))
             {
                 transform.position = hit.centroid;
                 var result = Impact(hit, direction);
@@ -116,6 +118,11 @@ namespace PolishTanks.Weapons
                     return;
                 distance -= hit.distance;
                 position = hit.centroid;
+                if (++hits >= MaxHitsPerStep)
+                {
+                    distance = 0f;
+                    break;
+                }
             }
 
             transform.position = position + direction * distance;
@@ -173,6 +180,7 @@ namespace PolishTanks.Weapons
 
             if (response.Outcome == HitOutcome.Penetrated && response.PassesThrough)
             {
+                Push(hit, direction, shot.Impulse * PassThroughImpulseFactor);
                 PassThrough(hit, response.ResidualPenetration);
                 return ImpactResult.PassedThrough;
             }
