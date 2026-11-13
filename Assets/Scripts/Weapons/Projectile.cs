@@ -7,11 +7,14 @@ namespace PolishTanks.Weapons
     /// <summary>
     /// A pooled shell or bullet. It has no collider of its own: each frame it sweeps a circle
     /// along its path, so fast shots can't tunnel through thin objects. It can glance off once, flying on
-    /// with reduced power; after that any hit that fails to penetrate breaks it up.
+    /// with reduced power; after that any hit that fails to penetrate breaks it up. A target that lets it pass
+    /// through is ignored from then on and the shot carries on with the penetration it has left.
     /// </summary>
     public class Projectile : PooledBehaviour
     {
         private const float EmbeddedImpulseFactor = 3f;
+        private const int MaxHitsPerStep = 4;
+        private const float PassThroughImpulseFactor = 0.5f;
         private const float DamagedTrailWidth = 0.5f;
         private const float DamagedTracerScale = 0.65f;
 
@@ -27,7 +30,8 @@ namespace PolishTanks.Weapons
         private ProjectileShot shot;
         private Vector2 velocity;
         private float lifeLeft;
-        private Collider2D bouncedOff;
+        private readonly List<Collider2D> ignoredColliders = new List<Collider2D>(4);
+        private readonly List<Rigidbody2D> ignoredBodies = new List<Rigidbody2D>(4);
         private Transform tracer;
         private Vector3 tracerScale;
         private float trailWidth = 1f;
@@ -80,7 +84,8 @@ namespace PolishTanks.Weapons
                 trail.Clear();
             }
             shot = default;
-            bouncedOff = null;
+            ignoredColliders.Clear();
+            ignoredBodies.Clear();
             velocity = Vector2.zero;
         }
 
@@ -102,15 +107,25 @@ namespace PolishTanks.Weapons
             var direction = velocity / speed;
             var distance = speed * deltaTime;
 
-            if (TryFindHit(position, direction, distance, out var hit))
+            var hits = 0;
+            while (TryFindHit(position, direction, distance, out var hit))
             {
                 transform.position = hit.centroid;
-                if (!Impact(hit, direction))
+                var result = Impact(hit, direction);
+                if (result == ImpactResult.Stopped)
                     ReturnToPool();
-                return;
+                if (result != ImpactResult.PassedThrough)
+                    return;
+                distance -= hit.distance;
+                position = hit.centroid;
+                if (++hits >= MaxHitsPerStep)
+                {
+                    distance = 0f;
+                    break;
+                }
             }
 
-            transform.position = position + velocity * deltaTime;
+            transform.position = position + direction * distance;
             lifeLeft -= deltaTime;
             if (lifeLeft <= 0f)
                 ReturnToPool();
@@ -128,7 +143,8 @@ namespace PolishTanks.Weapons
             {
                 if (!shot.Ricocheted && shot.Shooter != null && hit.rigidbody == shot.Shooter)
                     continue;
-                if (bouncedOff != null && hit.collider == bouncedOff)
+                if (ignoredColliders.Contains(hit.collider)
+                    || (hit.rigidbody != null && ignoredBodies.Contains(hit.rigidbody)))
                     continue;
                 if (!found || hit.distance < nearest.distance)
                 {
@@ -139,7 +155,7 @@ namespace PolishTanks.Weapons
             return found;
         }
 
-        private bool Impact(RaycastHit2D hit, Vector2 direction)
+        private ImpactResult Impact(RaycastHit2D hit, Vector2 direction)
         {
             var canBounce = !shot.Ricocheted && hit.distance > 0f;
             var info = new ProjectileHit(hit.point, hit.normal, direction, shot.Damage, shot.Impulse, shot.Shooter,
@@ -162,6 +178,13 @@ namespace PolishTanks.Weapons
             if (response.Outcome == HitOutcome.Ricochet && !canBounce)
                 response = new HitResponse(HitOutcome.Blocked, response.Normal, response.Material);
 
+            if (response.Outcome == HitOutcome.Penetrated && response.PassesThrough)
+            {
+                Push(hit, direction, shot.Impulse * PassThroughImpulseFactor);
+                PassThrough(hit, response.ResidualPenetration);
+                return ImpactResult.PassedThrough;
+            }
+
             var glancing = response.Outcome == HitOutcome.Ricochet;
             var embedded = response.Outcome == HitOutcome.Blocked && response.Material == SurfaceMaterial.Metal;
             var impulse = glancing ? shot.Impulse * RicochetMath.RetainedPower
@@ -172,14 +195,29 @@ namespace PolishTanks.Weapons
             if (glancing)
             {
                 Bounce(hit, direction, response.Normal, response.Material);
-                return true;
+                return ImpactResult.Bounced;
             }
 
             var brokeUp = response.Outcome == HitOutcome.Blocked || (shot.Ricocheted && response.Outcome != HitOutcome.Penetrated);
             var onMetal = response.Material == SurfaceMaterial.Metal;
             var effects = brokeUp && onMetal && shot.BlockedPool != null ? shot.BlockedPool : shot.ImpactPool;
             effects?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
-            return false;
+            return ImpactResult.Stopped;
+        }
+
+        private void PassThrough(RaycastHit2D hit, float residualPenetration)
+        {
+            shot.PenetrationMin = residualPenetration;
+            shot.PenetrationMax = residualPenetration;
+            Ignore(hit);
+            shot.ImpactPool?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
+        }
+
+        private void Ignore(RaycastHit2D hit)
+        {
+            ignoredColliders.Add(hit.collider);
+            if (hit.rigidbody != null)
+                ignoredBodies.Add(hit.rigidbody);
         }
 
         private void Push(RaycastHit2D hit, Vector2 direction, float impulse)
@@ -203,13 +241,20 @@ namespace PolishTanks.Weapons
             shot.Impulse *= RicochetMath.RetainedPower;
             shot.PenetrationMin *= RicochetMath.RetainedPower;
             shot.PenetrationMax *= RicochetMath.RetainedPower;
-            bouncedOff = hit.collider;
+            ignoredColliders.Add(hit.collider);
 
             ShowDamage(true);
             var rotation = Quaternion.LookRotation(Vector3.forward, outgoing);
             transform.SetPositionAndRotation(hit.centroid + normal.normalized * 0.02f, rotation);
             var effects = material == SurfaceMaterial.Metal || shot.OtherRicochetPool == null ? shot.RicochetPool : shot.OtherRicochetPool;
             effects?.Get(hit.point, rotation);
+        }
+
+        private enum ImpactResult
+        {
+            Stopped,
+            Bounced,
+            PassedThrough,
         }
     }
 }

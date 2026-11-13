@@ -69,5 +69,18 @@ namespace PolishTanks.Tests.EditMode
             Assert.That(rearPen.Penetrated, Is.True);
             Assert.That(rearPen.Penetration, Is.EqualTo(60f));
         }
+
+        [TestCase(20f, true, 0f)]
+        [TestCase(26f, true, 6f)]
+        [TestCase(19.9f, false, 0f)]
+        public void Overpenetration_NeedsTwiceTheEffectiveArmor_AndKeepsTheRest(float roll, bool passes, float residual)
+        {
+            var result = new PenetrationResult(HitSide.Front, 10f, roll);
+
+            Assert.That(result.Penetrated, Is.True);
+            Assert.That(result.Overpenetrated, Is.EqualTo(passes));
+            if (passes)
+                Assert.That(result.ResidualPenetration, Is.EqualTo(residual).Within(1e-4f));
+        }
     }
 }
