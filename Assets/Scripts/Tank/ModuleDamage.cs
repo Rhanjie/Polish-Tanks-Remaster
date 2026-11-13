@@ -158,13 +158,15 @@ namespace PolishTanks.Tank
 
         private void OnHit(PenetrationResult result, HitOutcome outcome, float dealt)
         {
-            if (Model == null || damageable.IsDead || (outcome != HitOutcome.Penetrated && outcome != HitOutcome.Blocked))
+            if (Model == null || damageable.IsDead || outcome == HitOutcome.Ignored)
                 return;
             if (damageable.LastCaliber < settings.MinCaliber)
             {
                 OnSmallArmsHit(result.Side);
                 return;
             }
+            if (outcome != HitOutcome.Penetrated && outcome != HitOutcome.Blocked)
+                return;
 
             var leftSide = Vector2.Dot(damageable.LastFace, transform.right) < 0f;
             PartHitRules.Roll(result.Side, leftSide, outcome == HitOutcome.Penetrated, chances,
