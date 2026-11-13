@@ -23,6 +23,7 @@ namespace PolishTanks.Tank
         private CinemachineCamera vcam;
         private float targetSize;
         private float zoomVelocity;
+        private bool hasView;
 
         private void Awake()
         {
@@ -47,7 +48,16 @@ namespace PolishTanks.Tank
                 tank.StatsApplied -= OnStatsApplied;
         }
 
-        private void OnStatsApplied(TankStats stats) => targetSize = stats.ViewRange * viewScale;
+        private void OnStatsApplied(TankStats stats)
+        {
+            targetSize = stats.ViewRange * viewScale;
+            if (hasView)
+                return;
+            hasView = true;
+            var lens = vcam.Lens;
+            lens.OrthographicSize = targetSize;
+            vcam.Lens = lens;
+        }
 
         private void LateUpdate()
         {

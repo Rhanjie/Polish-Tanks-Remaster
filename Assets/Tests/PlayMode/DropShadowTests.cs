@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using PolishTanks.Rendering;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace PolishTanks.Tests.PlayMode
     /// <summary>A sprite with a <see cref="DropShadow"/> whose sprite is swapped and hidden at run time.</summary>
     public class DropShadowTests
     {
+        private readonly List<Object> created = new List<Object>();
         private GameObject go;
         private Texture2D texture;
 
@@ -16,14 +18,22 @@ namespace PolishTanks.Tests.PlayMode
         public void TearDown()
         {
             Object.Destroy(go);
-            Object.Destroy(texture);
+            foreach (var obj in created)
+                Object.Destroy(obj);
+            created.Clear();
+            texture = null;
         }
 
         private Sprite CreateSprite(int width)
         {
             if (texture == null)
+            {
                 texture = new Texture2D(8, 8);
-            return Sprite.Create(texture, new Rect(0f, 0f, width, 8f), new Vector2(0.5f, 0.5f));
+                created.Add(texture);
+            }
+            var sprite = Sprite.Create(texture, new Rect(0f, 0f, width, 8f), new Vector2(0.5f, 0.5f));
+            created.Add(sprite);
+            return sprite;
         }
 
         [UnityTest]
