@@ -5,7 +5,10 @@ using UnityEngine;
 
 namespace PolishTanks.Tank
 {
-    /// <summary>Eases a Cinemachine camera's orthographic size to the player tank's optics view range.</summary>
+    /// <summary>
+    /// Eases a Cinemachine camera's orthographic size to the player tank's optics view range, scaled by a common
+    /// factor so the whole game sits further out without changing how the optics compare to each other.
+    /// </summary>
     [RequireComponent(typeof(CinemachineCamera))]
     public class OpticsCameraZoom : MonoBehaviour
     {
@@ -14,9 +17,13 @@ namespace PolishTanks.Tank
         [Tooltip("Seconds to get most of the way to a new view range.")]
         [SerializeField, Min(0.01f)] private float zoomTime = 0.5f;
 
+        [Tooltip("Multiplies every optics view range; above 1 pulls the camera further out.")]
+        [SerializeField, Min(0.1f)] private float viewScale = 1.25f;
+
         private CinemachineCamera vcam;
         private float targetSize;
         private float zoomVelocity;
+        private bool hasView;
 
         private void Awake()
         {
@@ -41,7 +48,16 @@ namespace PolishTanks.Tank
                 tank.StatsApplied -= OnStatsApplied;
         }
 
-        private void OnStatsApplied(TankStats stats) => targetSize = stats.ViewRange;
+        private void OnStatsApplied(TankStats stats)
+        {
+            targetSize = stats.ViewRange * viewScale;
+            if (hasView)
+                return;
+            hasView = true;
+            var lens = vcam.Lens;
+            lens.OrthographicSize = targetSize;
+            vcam.Lens = lens;
+        }
 
         private void LateUpdate()
         {
