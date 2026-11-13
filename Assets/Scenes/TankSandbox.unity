@@ -15132,6 +15132,7 @@ GameObject:
   - component: {fileID: 1853978863}
   - component: {fileID: 1853978862}
   - component: {fileID: 1853978861}
+  - component: {fileID: 1853978864}
   m_Layer: 0
   m_Name: HUD
   m_TagString: Untagged
@@ -15151,7 +15152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13dfd794e3d84d54da383f3a6bf28571, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.UI.DamageHud
-  fireFlashInterval: 0.3
+  pulseInterval: 0.35
+  kmhPerUnit: 6.3
 --- !u!114 &1853978862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15190,6 +15192,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1853978864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1853978860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa379bdde71be94bac8bb929c7692bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.VisionDamageView
+  clearRadius: 1.6
+  worsenRate: 6
+  recoverRate: 1.2
 --- !u!1001 &1858736276
 PrefabInstance:
   m_ObjectHideFlags: 0
