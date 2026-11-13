@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PolishTanks.Tests.EditMode
 {
-    /// <summary>Drive behaviour under a damaged <see cref="DriveCondition"/>: one track out, no drive at all and a field-patched track.</summary>
+    /// <summary>Drive behaviour under a damaged <see cref="DriveCondition"/>: one track out, no drive at all and weakened tracks.</summary>
     public class TrackedDriveModelConditionTests
     {
         private const float Dt = 0.02f;
@@ -53,13 +53,27 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
-        public void Step_FieldRepairedTracks_CapSpeedAtHalf()
+        public void Step_DamagedTracks_CapSpeedAtTheirEffectiveness()
         {
             var model = CreateModel(new DriveCondition(1f, 0.5f, 0.5f, Crawl));
 
             Run(model, 1f, 0f, 10f);
 
             Assert.That(model.Speed, Is.EqualTo(TankDriveSettings.Default.maxForwardSpeed * 0.5f).Within(1e-4f));
+        }
+
+        [TestCase(0.8f, 1f, 1f)]
+        [TestCase(1f, 0.8f, -1f)]
+        public void Step_OneTrackDamaged_PullsTowardItsSideOnlyWhileDriving(float left, float right, float direction)
+        {
+            var model = CreateModel(new DriveCondition(1f, left, right, Crawl, 0.12f));
+
+            Run(model, 1f, 0f, 2f);
+            var driving = model.AngularSpeed;
+            Run(model, 0f, 0f, 5f);
+
+            Assert.That(driving * direction, Is.GreaterThan(0f));
+            Assert.That(model.AngularSpeed, Is.EqualTo(0f));
         }
     }
 }

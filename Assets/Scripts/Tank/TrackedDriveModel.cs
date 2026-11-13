@@ -4,8 +4,8 @@ namespace PolishTanks.Tank
 {
     /// <summary>
     /// Speed and turn rate of a tracked hull. The tracks don't slip sideways,
-    /// so the hull only moves along its forward axis. A weak engine or field-patched track scales speed and turning;
-    /// with one track out only the other one pulls, so the hull pivots round the dead side; with no engine or
+    /// so the hull only moves along its forward axis. A weak engine or damaged track scales speed and turning,
+    /// and a track weaker than the other drags the hull toward its side while driving; with one track out only the other one pulls, so the hull pivots round the dead side; with no engine or
     /// no tracks it stops.
     /// </summary>
     public sealed class TrackedDriveModel
@@ -56,13 +56,22 @@ namespace PolishTanks.Tank
             var targetSpeed = mobility * (throttle >= 0f ? throttle * s.maxForwardSpeed : throttle * s.maxReverseSpeed);
             var speedFactor = s.maxForwardSpeed > 0f ? Mathf.Clamp01(Mathf.Abs(Speed) / s.maxForwardSpeed) : 0f;
             var maxTurn = mobility * Mathf.Lerp(s.turnRate, s.turnRateAtMaxSpeed, speedFactor);
-            Approach(targetSpeed, -steer * maxTurn, SpeedChangeRate(throttle), deltaTime);
+            Approach(targetSpeed, -steer * maxTurn + Pull(throttle, mobility), SpeedChangeRate(throttle), deltaTime);
         }
 
         public void Reset()
         {
             Speed = 0f;
             AngularSpeed = 0f;
+        }
+
+        private float Pull(float throttle, float mobility)
+        {
+            var c = Condition;
+            var imbalance = c.RightTrack - c.LeftTrack;
+            if (Mathf.Abs(imbalance) < 0.001f || c.TrackPull <= 0f)
+                return 0f;
+            return Mathf.Sign(imbalance) * throttle * c.TrackPull * mobility * Settings.turnRate;
         }
 
         private void StepCrippled(float throttle, float steer, float deltaTime)
