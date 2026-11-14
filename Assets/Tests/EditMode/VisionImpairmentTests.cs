@@ -46,7 +46,7 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
-        public void Aim_BlindedIntactBlock_LosesTheFlashStrength()
+        public void Aim_BlindedIntactBlock_FlashesWithoutLosingTheView()
         {
             var model = FourBlocks();
             var blinding = new VisionBlinding();
@@ -56,8 +56,9 @@ namespace PolishTanks.Tests.EditMode
             impairment.Aim(model, false, blinding);
             impairment.Step(10f, 1f, 1f);
 
-            Assert.That(impairment.Loss(2), Is.EqualTo(0.8f).Within(1e-5f));
-            Assert.That(impairment.Loss(1), Is.Zero);
+            Assert.That(impairment.Flash(2), Is.EqualTo(0.8f).Within(1e-5f));
+            Assert.That(impairment.Loss(2), Is.Zero);
+            Assert.That(impairment.Flash(1), Is.Zero);
         }
 
         [Test]
