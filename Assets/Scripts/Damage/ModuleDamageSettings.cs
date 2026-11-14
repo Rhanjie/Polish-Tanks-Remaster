@@ -33,7 +33,7 @@ namespace PolishTanks.Damage
         [SerializeField, Range(0f, 1f)] private float smallArmsBlockDamageChance = 0.03f;
 
         [Tooltip("Chance that a machine-gun bullet on the front or side blinds a vision block for a moment.")]
-        [SerializeField, Range(0f, 1f)] private float smallArmsBlindChance = 0.15f;
+        [SerializeField, Range(0f, 1f)] private float smallArmsBlindChance = 0.07f;
 
         [Tooltip("Seconds a blinded vision block stays blind before it starts to clear.")]
         [SerializeField, Min(0f)] private float blindSeconds = 1.2f;
