@@ -78,7 +78,7 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
-        public void Gun_SpreadFields_AreScaledByOpticsAccuracy()
+        public void Gun_SpreadFields_AreScaledByOpticsAndGunFactor_AndCappedAtCone()
         {
             var optics = factory.Create<OpticsModule>(("accuracyMultiplier", 2f));
             ModuleFactory.Set(loadout, ("optics", optics));
@@ -86,10 +86,11 @@ namespace PolishTanks.Tests.EditMode
 
             var gun = TankStatsCalculator.Calculate(loadout).Gun;
 
-            Assert.That(gun.maxDispersion, Is.EqualTo((0.5f + TankStatsCalculator.MaxDispersionBloom) * 2f).Within(1e-4f));
-            Assert.That(gun.movingDispersion, Is.EqualTo(TankStatsCalculator.MovingDispersion * 2f).Within(1e-5f));
-            Assert.That(gun.turningDispersion, Is.EqualTo(TankStatsCalculator.TurningDispersion * 2f).Within(1e-5f));
-            Assert.That(gun.shotDispersion, Is.EqualTo(3f).Within(1e-5f));
+            var scale = 2f * TankStatsCalculator.MainGunDispersionFactor;
+            Assert.That(gun.maxDispersion, Is.EqualTo(TankStatsCalculator.MaxDispersionCone * 0.5f).Within(1e-4f));
+            Assert.That(gun.movingDispersion, Is.EqualTo(TankStatsCalculator.MovingDispersion * scale).Within(1e-5f));
+            Assert.That(gun.turningDispersion, Is.EqualTo(TankStatsCalculator.TurningDispersion * scale).Within(1e-5f));
+            Assert.That(gun.shotDispersion, Is.EqualTo(1.5f * scale).Within(1e-5f));
             Assert.That(gun.aimTime, Is.EqualTo(3f));
         }
     }

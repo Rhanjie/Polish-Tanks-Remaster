@@ -28,9 +28,10 @@ namespace PolishTanks.Tank.Modules
 
         public const float ProjectileSpeedPerMuzzleVelocity = 0.06f;
 
-        public const float MovingDispersion = 0.7f;
+        public const float MovingDispersion = 1f;
         public const float TurningDispersion = 0.09f;
-        public const float MaxDispersionBloom = 12f;
+        public const float MaxDispersionCone = 60f;
+        public const float MainGunDispersionFactor = 1.2f;
 
         public static IReadOnlyList<string> Validate(TankLoadout loadout)
         {
@@ -170,7 +171,7 @@ namespace PolishTanks.Tank.Modules
                 barrelKick = gun.BarrelKick,
                 barrelReturnTime = gun.BarrelReturnTime,
             };
-            SetDispersion(ref stats.Gun, gun.Dispersion, gun.ShotDispersion, gun.AimTime, accuracy);
+            SetDispersion(ref stats.Gun, gun.Dispersion, gun.ShotDispersion, gun.AimTime, accuracy * MainGunDispersionFactor);
             stats.GunCaliber = gun.Caliber;
             stats.MuzzleVelocity = gun.MuzzleVelocity;
             stats.GunDamage = gun.Damage;
@@ -224,7 +225,7 @@ namespace PolishTanks.Tank.Modules
         private static void SetDispersion(ref GunSettings settings, float settled, float perShot, float aimTime, float accuracy)
         {
             settings.dispersion = settled * accuracy;
-            settings.maxDispersion = (settled + MaxDispersionBloom) * accuracy;
+            settings.maxDispersion = Mathf.Max(settings.dispersion, MaxDispersionCone * 0.5f);
             settings.movingDispersion = MovingDispersion * accuracy;
             settings.turningDispersion = TurningDispersion * accuracy;
             settings.shotDispersion = perShot * accuracy;
