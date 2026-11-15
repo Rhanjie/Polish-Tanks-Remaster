@@ -2345,6 +2345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
   mount: 0
+  coverClearance: 5
 --- !u!1 &1337713277372976376
 GameObject:
   m_ObjectHideFlags: 0
@@ -2846,6 +2847,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
   mount: 2
+  coverClearance: 0
 --- !u!1 &4587848391960648809
 GameObject:
   m_ObjectHideFlags: 0
@@ -7946,3 +7948,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
   mount: 1
+  coverClearance: 5

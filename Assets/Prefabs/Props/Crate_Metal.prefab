@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7425567102283966734}
   - component: {fileID: 8071527037367562480}
   - component: {fileID: 1051759750719922614}
+  - component: {fileID: 3283637134755960806}
   m_Layer: 0
   m_Name: Crate_Metal
   m_TagString: Untagged
@@ -214,6 +215,18 @@ MonoBehaviour:
   height: 0.5
   color: {r: 0, g: 0, b: 0, a: 0.45}
   sortingOrder: -50
+--- !u!114 &3283637134755960806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3286670493697861118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b58f2ee2f800fdc4e9d9ecfd2b3ab47f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Weapons.LowCover
 --- !u!1 &4832190368451815681
 GameObject:
   m_ObjectHideFlags: 0

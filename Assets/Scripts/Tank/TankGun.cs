@@ -16,6 +16,9 @@ namespace PolishTanks.Tank
     {
         [SerializeField] private GunMount mount = GunMount.Main;
 
+        [Tooltip("Low cover (crates, barrels) within this distance of the tank is fired over. 0 for guns mounted low on the hull.")]
+        [SerializeField, Min(0f)] private float coverClearance = 5f;
+
         private const int MaxShotsPerFrame = 8;
 
         [Inject] private IPoolService pools;
@@ -205,6 +208,8 @@ namespace PolishTanks.Tank
                 PenetrationMin = settings.penetrationMin,
                 PenetrationMax = settings.penetrationMax,
                 Caliber = settings.caliber,
+                FiredFrom = ownerBody != null ? ownerBody.position : (Vector2)origin,
+                CoverClearance = coverClearance,
                 ImpactPool = EffectPool(definition.ImpactEffect, definition),
                 BlockedPool = EffectPool(definition.BlockedEffect, definition),
                 RicochetPool = EffectPool(definition.RicochetEffect, definition),

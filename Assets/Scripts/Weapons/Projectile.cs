@@ -9,6 +9,7 @@ namespace PolishTanks.Weapons
     /// along its path, so fast shots can't tunnel through thin objects. It can glance off once, flying on
     /// with reduced power; after that any hit that fails to penetrate breaks it up. A target that lets it pass
     /// through is ignored from then on and the shot carries on with the penetration it has left.
+    /// Low cover close to where it was fired is flown over, as if the barrel cleared it.
     /// </summary>
     public class Projectile : PooledBehaviour
     {
@@ -145,6 +146,9 @@ namespace PolishTanks.Weapons
                     continue;
                 if (ignoredColliders.Contains(hit.collider)
                     || (hit.rigidbody != null && ignoredBodies.Contains(hit.rigidbody)))
+                    continue;
+                if (LowCover.ShootsOver(hit.point, shot.FiredFrom, shot.CoverClearance, shot.Ricocheted)
+                    && hit.collider.GetComponentInParent<LowCover>() != null)
                     continue;
                 if (!found || hit.distance < nearest.distance)
                 {
