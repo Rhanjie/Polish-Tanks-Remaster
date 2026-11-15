@@ -20,6 +20,7 @@ MonoBehaviour:
   turret: {fileID: 11400000, guid: 53b76ceae5ae79344a7254bceefc9274, type: 2}
   mainGun: {fileID: 11400000, guid: 4e0f315331ef7dc4aae2f3841c84a8ab, type: 2}
   coaxialMachineGun: {fileID: 11400000, guid: 3e85d7f65a76b4f4eb9f64e4288cc72b, type: 2}
+  hullMachineGun: {fileID: 11400000, guid: 62ac518d964fb7642b8f2cc53337f1e3, type: 2}
   optics: {fileID: 11400000, guid: 79995e17757101b4e800474f9d233ea2, type: 2}
   equipment:
   - {fileID: 11400000, guid: 370494248153bf7499255a5488aff256, type: 2}

@@ -20,7 +20,9 @@ MonoBehaviour:
   tier: 1
   caliber: 7.92
   roundsPerMinute: 900
-  dispersion: 2
+  dispersion: 3.5
+  aimTime: 0.8
+  shotDispersion: 0.2
   damage: 8
   penetrationMin: 6
   penetrationMax: 10

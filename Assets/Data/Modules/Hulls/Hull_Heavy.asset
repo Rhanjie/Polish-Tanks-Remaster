@@ -22,6 +22,8 @@ MonoBehaviour:
   visualScale: 1.1
   colliderSize: {x: 2.85, y: 4.5}
   turretMount: {x: 0, y: 0.17}
+  hasHullMachineGunMount: 1
+  hullMachineGunMount: {x: 0.66, y: 2.05}
   frontArmor: 100
   sideArmor: 80
   rearArmor: 60

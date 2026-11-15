@@ -25,6 +25,8 @@ MonoBehaviour:
   penetrationMin: 110
   penetrationMax: 140
   dispersion: 0.3
+  aimTime: 2.4
+  shotDispersion: 1.8
   ammoCapacity: 90
   muzzleFlashScale: 1.35
   muzzleSmoke: 14
