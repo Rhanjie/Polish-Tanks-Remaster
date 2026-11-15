@@ -124,5 +124,24 @@ namespace PolishTanks.Tests.EditMode
 
             Assert.That(ranks, Is.EqualTo(new[] { 0, 1, 1 }));
         }
+
+        [Test]
+        public void Ranks_LowerWingRunningIntoMainRoof_DrawsAfterMainRoof()
+        {
+            var blocks = new[] { Gable(-2.5f, 3f, 5f, 6f, 6f, 2.5f), Gable(-5f, -3f, 10f, 6f, 6f, 3f) };
+            var ranks = new int[2];
+
+            CompoundLayout.Ranks(blocks, ranks, 7);
+
+            Assert.That(ranks[0], Is.GreaterThan(ranks[1]));
+        }
+
+        [Test]
+        public void RidgeExtensions_WingAboveLowerHouseRoof_DoesNotExtend()
+        {
+            var blocks = new[] { Gable(-3f, 0f, 6f, 10f, 12f, 3f), Gable(-8f, -6f, 16f, 6f, 6f, 3f) };
+
+            Assert.That(CompoundLayout.RidgeExtensions(blocks, 0), Is.EqualTo(Vector2.zero));
+        }
     }
 }

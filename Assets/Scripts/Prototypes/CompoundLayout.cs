@@ -6,7 +6,8 @@ namespace PolishTanks.Prototypes
     /// <summary>
     /// Geometry of a building compound made of axis-aligned blocks: which parts of each block's walls stay
     /// visible next to its neighbours, roof surface heights (gable roofs slope from eaves to ridge) and the
-    /// drawing rank of each block (lower blocks first, so taller walls and roofs land on top).
+    /// drawing rank of each block (lower blocks first, so taller walls and roofs land on top; a wing whose ridge runs
+    /// into a neighbour's roof draws right after that neighbour, so the valley stays on top).
     /// All points are in compound space.
     /// </summary>
     public static class CompoundLayout
@@ -17,6 +18,8 @@ namespace PolishTanks.Prototypes
         private static readonly List<float> Breaks = new List<float>(16);
         private static readonly List<int> Supports = new List<int>(8);
         private static readonly List<int> Order = new List<int>(16);
+        private static readonly List<float> SortHeights = new List<float>(16);
+        private static readonly List<bool> Extends = new List<bool>(16);
 
         public static float SurfaceHeight(in BlockShape block, Vector2 point)
         {
@@ -98,42 +101,81 @@ namespace PolishTanks.Prototypes
             var along = block.RidgeAlongX ? Vector2.right : Vector2.up;
             var start = block.RidgeAlongX ? new Vector2(rect.xMin, rect.center.y) : new Vector2(rect.center.x, rect.yMin);
             var end = block.RidgeAlongX ? new Vector2(rect.xMax, rect.center.y) : new Vector2(rect.center.x, rect.yMax);
-            return new Vector2(RidgeExtension(blocks, index, start, -along), RidgeExtension(blocks, index, end, along));
+            return new Vector2(RidgeExtension(blocks, index, start, -along, out _), RidgeExtension(blocks, index, end, along, out _));
         }
 
-        private static float RidgeExtension(IReadOnlyList<BlockShape> blocks, int self, Vector2 ridgeEnd, Vector2 outward)
+        private static float RidgeExtension(IReadOnlyList<BlockShape> blocks, int self, Vector2 ridgeEnd, Vector2 outward, out int into)
         {
             var block = blocks[self];
             var probe = ridgeEnd + outward * ProbeDistance;
             var extension = float.PositiveInfinity;
+            into = -1;
             for (var i = 0; i < blocks.Count; i++)
             {
                 var neighbour = blocks[i];
                 if (i == self || !neighbour.HasGable || neighbour.RidgeAlongX == block.RidgeAlongX || !neighbour.Rect.Contains(probe))
                     continue;
                 var rise = SurfaceHeight(neighbour, probe);
+                if (rise < block.Height - Epsilon)
+                    continue;
                 if (rise >= block.TopHeight)
                 {
                     extension = 0f;
+                    into = -1;
                     continue;
                 }
                 var halfDepth = neighbour.RidgeAlongX ? neighbour.Rect.height * 0.5f : neighbour.Rect.width * 0.5f;
                 var toRidge = Mathf.Abs(Vector2.Dot(neighbour.Rect.center - ridgeEnd, outward));
                 var slope = neighbour.RidgeHeight / halfDepth;
-                extension = Mathf.Min(extension, Mathf.Min(toRidge, (block.TopHeight - rise) / slope));
+                var reach = Mathf.Min(toRidge, (block.TopHeight - rise) / slope);
+                if (reach < extension)
+                {
+                    extension = reach;
+                    into = i;
+                }
             }
-            return float.IsPositiveInfinity(extension) ? 0f : extension;
+            if (float.IsPositiveInfinity(extension) || extension <= 0f)
+            {
+                into = -1;
+                return 0f;
+            }
+            return extension;
         }
 
         public static void Ranks(IReadOnlyList<BlockShape> blocks, int[] ranks, int maxRank)
         {
             Order.Clear();
+            SortHeights.Clear();
+            Extends.Clear();
             for (var i = 0; i < blocks.Count; i++)
+            {
                 Order.Add(i);
+                var height = blocks[i].TopHeight;
+                var extends = false;
+                if (blocks[i].HasGable)
+                {
+                    var rect = blocks[i].Rect;
+                    var along = blocks[i].RidgeAlongX ? Vector2.right : Vector2.up;
+                    var start = blocks[i].RidgeAlongX ? new Vector2(rect.xMin, rect.center.y) : new Vector2(rect.center.x, rect.yMin);
+                    var end = blocks[i].RidgeAlongX ? new Vector2(rect.xMax, rect.center.y) : new Vector2(rect.center.x, rect.yMax);
+                    RidgeExtension(blocks, i, start, -along, out var intoStart);
+                    RidgeExtension(blocks, i, end, along, out var intoEnd);
+                    if (intoStart >= 0)
+                        height = Mathf.Max(height, blocks[intoStart].TopHeight);
+                    if (intoEnd >= 0)
+                        height = Mathf.Max(height, blocks[intoEnd].TopHeight);
+                    extends = intoStart >= 0 || intoEnd >= 0;
+                }
+                SortHeights.Add(height);
+                Extends.Add(extends);
+            }
             Order.Sort((x, y) =>
             {
-                var byHeight = blocks[x].TopHeight.CompareTo(blocks[y].TopHeight);
-                return byHeight != 0 ? byHeight : x.CompareTo(y);
+                var byHeight = SortHeights[x].CompareTo(SortHeights[y]);
+                if (byHeight != 0)
+                    return byHeight;
+                var byExtension = Extends[x].CompareTo(Extends[y]);
+                return byExtension != 0 ? byExtension : x.CompareTo(y);
             });
             for (var i = 0; i < Order.Count; i++)
                 ranks[Order[i]] = Mathf.Min(i, maxRank);
