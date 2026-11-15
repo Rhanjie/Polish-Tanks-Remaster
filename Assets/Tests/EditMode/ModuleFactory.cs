@@ -35,6 +35,7 @@ namespace PolishTanks.Tests.EditMode
                     case float f: prop.floatValue = f; break;
                     case int i when prop.propertyType == SerializedPropertyType.Float: prop.floatValue = i; break;
                     case int i: prop.intValue = i; break;
+                    case bool b: prop.boolValue = b; break;
                     case string s: prop.stringValue = s; break;
                     case Vector2 v: prop.vector2Value = v; break;
                     case Object o: prop.objectReferenceValue = o; break;

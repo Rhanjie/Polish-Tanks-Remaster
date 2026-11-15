@@ -211,6 +211,7 @@ GameObject:
   - component: {fileID: 7189182370424384847}
   - component: {fileID: 5853799384062393476}
   - component: {fileID: 2460168020394679257}
+  - component: {fileID: 7618458127642773154}
   m_Layer: 0
   m_Name: Wall_Concrete
   m_TagString: Untagged
@@ -319,6 +320,18 @@ MonoBehaviour:
   occlusionTarget: {fileID: 0}
   fadedAlpha: 0.35
   fadeSpeed: 6
+--- !u!114 &7618458127642773154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4522660047999250350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b58f2ee2f800fdc4e9d9ecfd2b3ab47f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Weapons.LowCover
 --- !u!1 &7886901573430187039
 GameObject:
   m_ObjectHideFlags: 0

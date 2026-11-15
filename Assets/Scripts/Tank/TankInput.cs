@@ -9,6 +9,7 @@ namespace PolishTanks.Tank
     /// Feeds the injected player input into the tank components.
     /// The repair key starts or stops a <see cref="FieldRepair"/>; while it runs the tank stays put and holds fire
     /// (the turret still aims), and only the repair key calls it off.
+    /// The machine gun button fires the coaxial gun and, while the cursor lies inside its arc, the hull machine gun too.
     /// Disable it to drive the tank from code (tests, AI).
     /// </summary>
     [RequireComponent(typeof(TankMovement))]
@@ -21,6 +22,8 @@ namespace PolishTanks.Tank
         private TurretAimer aimer;
         private TankGun gun;
         private TankGun coaxialGun;
+        private TankGun hullGun;
+        private BallMount ballMount;
         private FieldRepair repair;
 
         private void Awake()
@@ -29,6 +32,8 @@ namespace PolishTanks.Tank
             aimer = GetComponentInChildren<TurretAimer>(true);
             gun = TankGun.Find(gameObject, GunMount.Main);
             coaxialGun = TankGun.Find(gameObject, GunMount.Coaxial);
+            hullGun = TankGun.Find(gameObject, GunMount.Hull);
+            ballMount = GetComponentInChildren<BallMount>(true);
             repair = GetComponent<FieldRepair>();
         }
 
@@ -40,6 +45,8 @@ namespace PolishTanks.Tank
                 gun.SetTrigger(false);
             if (coaxialGun != null)
                 coaxialGun.SetTrigger(false);
+            if (hullGun != null)
+                hullGun.SetTrigger(false);
         }
 
         private void Update()
@@ -55,11 +62,23 @@ namespace PolishTanks.Tank
                 movement.SetInput(value.y, value.x);
             }
 
-            if (aimer != null && gameCamera != null)
-                aimer.SetAimPoint(gameCamera.ScreenToWorld(input.PointerScreenPosition));
+            var hullGunCovers = false;
+            if (gameCamera != null)
+            {
+                var aimPoint = gameCamera.ScreenToWorld(input.PointerScreenPosition);
+                if (aimer != null)
+                    aimer.SetAimPoint(aimPoint);
+                if (ballMount != null)
+                {
+                    ballMount.SetAimPoint(aimPoint);
+                    hullGunCovers = ballMount.IsOnTarget;
+                }
+            }
 
             UpdateTrigger(gun, !repairing && input.FireHeld, !repairing && input.FirePressedThisFrame);
             UpdateTrigger(coaxialGun, !repairing && input.SecondaryFireHeld, !repairing && input.SecondaryFirePressedThisFrame);
+            UpdateTrigger(hullGun, !repairing && hullGunCovers && input.SecondaryFireHeld,
+                !repairing && hullGunCovers && input.SecondaryFirePressedThisFrame);
         }
 
         private bool UpdateRepair()

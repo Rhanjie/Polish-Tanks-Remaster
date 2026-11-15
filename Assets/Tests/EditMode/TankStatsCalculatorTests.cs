@@ -116,7 +116,7 @@ namespace PolishTanks.Tests.EditMode
             var stats = TankStatsCalculator.Calculate(loadout);
 
             Assert.That(stats.ViewRange, Is.EqualTo(12f));
-            Assert.That(stats.GunDispersion, Is.EqualTo(0.25f).Within(1e-5f));
+            Assert.That(stats.GunDispersion, Is.EqualTo(0.25f * TankStatsCalculator.MainGunDispersionFactor).Within(1e-5f));
         }
 
         [Test]

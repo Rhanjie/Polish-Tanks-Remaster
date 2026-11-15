@@ -91,8 +91,8 @@ namespace PolishTanks.Tests.PlayMode
             rig.Gun.TryFire();
 
             var projectile = Object.FindAnyObjectByType<Projectile>();
-            Assert.That(projectile.Velocity.x, Is.EqualTo(0f).Within(1e-3f));
-            Assert.That(projectile.Velocity.y, Is.EqualTo(12f).Within(1e-3f));
+            Assert.That(projectile.Velocity.magnitude, Is.EqualTo(12f).Within(1e-3f));
+            Assert.That(Vector2.Angle(Vector2.up, projectile.Velocity), Is.LessThanOrEqualTo(GunDispersion.MinimumSettled + 1e-3f));
         }
 
         [Test]

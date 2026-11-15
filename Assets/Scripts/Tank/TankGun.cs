@@ -16,6 +16,9 @@ namespace PolishTanks.Tank
     {
         [SerializeField] private GunMount mount = GunMount.Main;
 
+        [Tooltip("Low cover (crates, barrels) within this distance of the tank is fired over. 0 for guns mounted low on the hull.")]
+        [SerializeField, Min(0f)] private float coverClearance = 5f;
+
         private const int MaxShotsPerFrame = 8;
 
         [Inject] private IPoolService pools;
@@ -32,6 +35,8 @@ namespace PolishTanks.Tank
         private Rigidbody2D ownerBody;
         private float flashTimeLeft;
         private bool triggerHeld;
+        private GunDispersion dispersion;
+        private float lastBarrelAngle;
 
         public event Action<TankGun> Fired;
 
@@ -46,6 +51,17 @@ namespace PolishTanks.Tank
 
         public Vector2 LastShotDirection { get; private set; }
 
+        public float Dispersion => Spread.Current;
+        public float SettledDispersion => Spread.Settled;
+
+        public float CrewFactor
+        {
+            get => Spread.CrewFactor;
+            set => Spread.CrewFactor = value;
+        }
+
+        private GunDispersion Spread => dispersion ??= new GunDispersion(settings);
+
         public GunSettings Settings
         {
             get => settings;
@@ -53,6 +69,7 @@ namespace PolishTanks.Tank
             {
                 var feedChanged = value.magazineSize != settings.magazineSize || !Mathf.Approximately(value.magazineReloadTime, settings.magazineReloadTime);
                 settings = value;
+                Spread.Settings = value;
                 if (reload != null)
                     reload.ReloadTime = value.reloadTime;
                 if (magazine != null && feedChanged)
@@ -79,8 +96,9 @@ namespace PolishTanks.Tank
             magazine.Consume();
 
             Vector2 axis = transform.up;
-            var direction = BallisticsMath.ApplySpread(axis, settings.dispersion, Random.value, Random.value);
+            var direction = BallisticsMath.ApplySpread(axis, Spread.Current, Random.value, Random.value);
             LastShotDirection = direction;
+            Spread.OnShot();
 
             SpawnProjectile(direction);
             ApplyRecoil(direction);
@@ -104,6 +122,13 @@ namespace PolishTanks.Tank
                 ownerBody = recoilTarget.GetComponent<Rigidbody2D>();
             if (muzzleFlash != null)
                 muzzleFlash.enabled = false;
+            lastBarrelAngle = BarrelAngle;
+        }
+
+        private void OnEnable()
+        {
+            lastBarrelAngle = BarrelAngle;
+            Spread.Settle();
         }
 
         private void OnDisable()
@@ -124,12 +149,24 @@ namespace PolishTanks.Tank
         {
             reload.Tick(Time.deltaTime);
             magazine.Tick(Time.deltaTime);
+            UpdateDispersion(Time.deltaTime);
 
             var shots = 0;
             while (triggerHeld && shots < MaxShotsPerFrame && TryFire())
                 shots++;
 
             UpdateMuzzleFlash(Time.deltaTime);
+        }
+
+        private float BarrelAngle => transform.eulerAngles.z;
+
+        private void UpdateDispersion(float deltaTime)
+        {
+            var angle = BarrelAngle;
+            var rotationSpeed = deltaTime > 0f ? Mathf.DeltaAngle(lastBarrelAngle, angle) / deltaTime : 0f;
+            lastBarrelAngle = angle;
+            var speed = ownerBody != null ? ownerBody.linearVelocity.magnitude : 0f;
+            Spread.Tick(deltaTime, speed, rotationSpeed);
         }
 
         private void PrewarmPools()
@@ -171,6 +208,8 @@ namespace PolishTanks.Tank
                 PenetrationMin = settings.penetrationMin,
                 PenetrationMax = settings.penetrationMax,
                 Caliber = settings.caliber,
+                FiredFrom = ownerBody != null ? ownerBody.position : (Vector2)origin,
+                CoverClearance = coverClearance,
                 ImpactPool = EffectPool(definition.ImpactEffect, definition),
                 BlockedPool = EffectPool(definition.BlockedEffect, definition),
                 RicochetPool = EffectPool(definition.RicochetEffect, definition),

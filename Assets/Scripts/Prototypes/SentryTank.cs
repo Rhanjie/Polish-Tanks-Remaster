@@ -34,6 +34,8 @@ namespace PolishTanks.Prototypes
         private TurretAimer aimer;
         private TankGun mainGun;
         private TankGun machineGun;
+        private TankGun hullGun;
+        private BallMount ballMount;
         private float jitter;
         private float burstClock;
         private float nextShot;
@@ -44,6 +46,8 @@ namespace PolishTanks.Prototypes
             aimer = GetComponentInChildren<TurretAimer>(true);
             mainGun = TankGun.Find(gameObject, GunMount.Main);
             machineGun = TankGun.Find(gameObject, GunMount.Coaxial);
+            hullGun = TankGun.Find(gameObject, GunMount.Hull);
+            ballMount = GetComponentInChildren<BallMount>(true);
             PickJitter();
             nextShot = Time.time + Random.Range(0f, shotInterval);
         }
@@ -61,6 +65,8 @@ namespace PolishTanks.Prototypes
             Vector2 origin = aimer.transform.position;
             aimer.SetAimPoint(origin + (Vector2)(Quaternion.Euler(0f, 0f, jitter) * (target - origin)));
             var onTarget = Mathf.Abs(aimer.RemainingAngle) <= aimTolerance;
+            if (ballMount != null)
+                ballMount.SetAimPoint(target);
 
             if (onTarget && Time.time >= nextShot && mainGun != null && mainGun.TryFire())
             {
@@ -94,6 +100,8 @@ namespace PolishTanks.Prototypes
         {
             if (machineGun != null)
                 machineGun.SetTrigger(held);
+            if (hullGun != null)
+                hullGun.SetTrigger(held && ballMount != null && ballMount.IsOnTarget);
         }
     }
 }

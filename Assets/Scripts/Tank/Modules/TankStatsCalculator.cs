@@ -28,6 +28,11 @@ namespace PolishTanks.Tank.Modules
 
         public const float ProjectileSpeedPerMuzzleVelocity = 0.06f;
 
+        public const float MovingDispersion = 1f;
+        public const float TurningDispersion = 0.09f;
+        public const float MaxDispersionCone = 60f;
+        public const float MainGunDispersionFactor = 1.2f;
+
         public static IReadOnlyList<string> Validate(TankLoadout loadout)
         {
             var errors = new List<string>();
@@ -43,6 +48,9 @@ namespace PolishTanks.Tank.Modules
             if (loadout.Tracks == null) errors.Add("Tracks slot is empty.");
             if (loadout.Turret == null) errors.Add("Turret slot is empty.");
             if (loadout.MainGun == null) errors.Add("Main gun slot is empty.");
+
+            if (loadout.HullMachineGun != null && loadout.Hull != null && !loadout.Hull.HasHullMachineGunMount)
+                errors.Add("Hull machine gun fitted, hull has no mount for it.");
 
             var equipmentCount = loadout.Equipment.Count(e => e != null);
             if (loadout.Hull != null && equipmentCount > loadout.Hull.EquipmentSlots)
@@ -64,6 +72,7 @@ namespace PolishTanks.Tank.Modules
             var turret = loadout.Turret;
             var gun = loadout.MainGun;
             var mg = loadout.CoaxialMachineGun;
+            var hullMg = loadout.HullMachineGun;
             var optics = loadout.Optics;
 
             var stats = new TankStats
@@ -74,7 +83,7 @@ namespace PolishTanks.Tank.Modules
             };
 
             CalculateMobility(stats, transmission, tracks);
-            CalculateFirepower(stats, engine, turret, gun, mg, optics);
+            CalculateFirepower(stats, engine, turret, gun, mg, hullMg, optics);
 
             stats.FrontArmor = hull.FrontArmor;
             stats.SideArmor = hull.SideArmor;
@@ -133,7 +142,7 @@ namespace PolishTanks.Tank.Modules
         }
 
         private static void CalculateFirepower(TankStats stats, EngineModule engine, TurretModule turret,
-            MainGunModule gun, CoaxialMachineGunModule mg, OpticsModule optics)
+            MainGunModule gun, CoaxialMachineGunModule mg, HullMachineGunModule hullMg, OpticsModule optics)
         {
             var gunLoadFactor = gun.Mass > turret.MaxGunMass ? turret.MaxGunMass / gun.Mass : 1f;
             var traverseFactor = engine.TraverseDriveMultiplier * gunLoadFactor;
@@ -152,7 +161,6 @@ namespace PolishTanks.Tank.Modules
                 smokeParticles = gun.MuzzleSmoke,
                 projectile = gun.Projectile,
                 projectileSpeed = gun.MuzzleVelocity * ProjectileSpeedPerMuzzleVelocity,
-                dispersion = gun.Dispersion * accuracy,
                 damage = gun.Damage,
                 caliber = gun.Caliber,
                 penetrationMin = gun.PenetrationMin,
@@ -163,29 +171,43 @@ namespace PolishTanks.Tank.Modules
                 barrelKick = gun.BarrelKick,
                 barrelReturnTime = gun.BarrelReturnTime,
             };
+            SetDispersion(ref stats.Gun, gun.Dispersion, gun.ShotDispersion, gun.AimTime, accuracy * MainGunDispersionFactor);
             stats.GunCaliber = gun.Caliber;
             stats.MuzzleVelocity = gun.MuzzleVelocity;
             stats.GunDamage = gun.Damage;
             stats.PenetrationMin = gun.PenetrationMin;
             stats.PenetrationMax = gun.PenetrationMax;
-            stats.GunDispersion = gun.Dispersion * accuracy;
+            stats.GunDispersion = stats.Gun.dispersion;
             stats.AmmoCapacity = gun.AmmoCapacity;
 
             stats.HasMachineGun = mg != null;
-            if (mg == null)
-                return;
-            stats.MachineGunFireInterval = mg.FireInterval;
-            stats.MachineGunDispersion = mg.Dispersion * accuracy;
-            stats.MachineGunDamage = mg.Damage;
-            stats.MachineGunBeltSize = mg.BeltSize;
-            stats.MachineGunBeltChangeTime = mg.BeltChangeTime;
-            stats.MachineGun = new GunSettings
+            if (mg != null)
+            {
+                stats.MachineGun = MachineGunSettings(mg, accuracy);
+                stats.MachineGunFireInterval = mg.FireInterval;
+                stats.MachineGunDispersion = stats.MachineGun.dispersion;
+                stats.MachineGunDamage = mg.Damage;
+                stats.MachineGunBeltSize = mg.BeltSize;
+                stats.MachineGunBeltChangeTime = mg.BeltChangeTime;
+            }
+
+            stats.HasHullMachineGun = hullMg != null;
+            if (hullMg != null)
+            {
+                stats.HullMachineGun = MachineGunSettings(hullMg, accuracy);
+                stats.HullMachineGunArc = hullMg.Arc;
+                stats.HullMachineGunTraverseSpeed = hullMg.TraverseSpeed;
+            }
+        }
+
+        private static GunSettings MachineGunSettings(MachineGunModule mg, float accuracy)
+        {
+            var settings = new GunSettings
             {
                 reloadTime = mg.FireInterval,
                 muzzleFlashDuration = MachineGunFlashDuration,
                 projectile = mg.Projectile,
                 projectileSpeed = mg.MuzzleVelocity * ProjectileSpeedPerMuzzleVelocity,
-                dispersion = stats.MachineGunDispersion,
                 damage = mg.Damage,
                 caliber = mg.Caliber,
                 penetrationMin = mg.PenetrationMin,
@@ -196,6 +218,18 @@ namespace PolishTanks.Tank.Modules
                 magazineSize = mg.BeltSize,
                 magazineReloadTime = mg.BeltChangeTime,
             };
+            SetDispersion(ref settings, mg.Dispersion, mg.ShotDispersion, mg.AimTime, accuracy);
+            return settings;
+        }
+
+        private static void SetDispersion(ref GunSettings settings, float settled, float perShot, float aimTime, float accuracy)
+        {
+            settings.dispersion = settled * accuracy;
+            settings.maxDispersion = Mathf.Max(settings.dispersion, MaxDispersionCone * 0.5f);
+            settings.movingDispersion = MovingDispersion * accuracy;
+            settings.turningDispersion = TurningDispersion * accuracy;
+            settings.shotDispersion = perShot * accuracy;
+            settings.aimTime = aimTime;
         }
     }
 }
