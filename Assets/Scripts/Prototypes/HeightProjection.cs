@@ -9,6 +9,9 @@ namespace PolishTanks.Prototypes
     /// building converts them into its own space before building walls or shadows. Building sorting orders go from
     /// <see cref="BuildingSortingBase"/> up, <see cref="BuildingSortingStride"/> per step, higher for buildings nearer the centre.
     /// Each step holds <see cref="BuildingLayers"/> layers of two orders (walls, then roof) for the blocks of one compound.
+    /// Building surfaces also write depth from <see cref="BuildingDepth"/>: in this oblique top-down view the higher surface
+    /// is always the visible one, so the depth test settles overlaps that no draw order can. The depth range sits behind
+    /// z = 0, where every other sprite lives, so buildings never hide sprites drawn after them.
     /// </summary>
     public static class HeightProjection
     {
@@ -20,6 +23,13 @@ namespace PolishTanks.Prototypes
         public const float BuildingSortingStepsPerUnit = 10f;
         public const int BuildingLayers = 8;
         public const int BuildingSortingStride = BuildingLayers * 2;
+
+        public const float BuildingDepthFar = 10f;
+        public const float BuildingDepthPerUnit = 0.2f;
+        public const float BuildingDepthMaxHeight = 45f;
+
+        public static float BuildingDepth(float height) =>
+            BuildingDepthFar - Mathf.Clamp(height, 0f, BuildingDepthMaxHeight) * BuildingDepthPerUnit;
 
         public static int BuildingSortingOrder(float distanceFromViewCenter)
         {

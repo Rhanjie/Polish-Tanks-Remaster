@@ -16,7 +16,9 @@ namespace PolishTanks.Prototypes
     /// Flat roofs use the roof sprite; gable roofs replace it with a sloped mesh whose ridge leans further than the eaves.
     /// Also runs in the editor so the scene shows real sizes; there the lean comes from the main camera.
     /// Buildings closer to the view centre lean over the ones further out, so walls and roof get a sorting order
-    /// from <see cref="HeightProjection.BuildingSortingOrder"/> every frame instead of a fixed one.
+    /// from <see cref="HeightProjection.BuildingSortingOrder"/> every frame instead of a fixed one. Every vertex and the roof
+    /// sprite also get a depth from <see cref="HeightProjection.BuildingDepth"/>, so where a wall and a roof overlap the
+    /// higher one wins even inside one compound.
     /// </summary>
     [ExecuteAlways]
     [DefaultExecutionOrder(200)]
@@ -143,7 +145,7 @@ namespace PolishTanks.Prototypes
             leanPerUnit = HeightProjection.RoofOffset(anchor, viewCenter, 1f, perspective);
             RoofOffset = leanPerUnit * building.Height;
 
-            var roofPosition = new Vector3(basePosition.x + RoofOffset.x, basePosition.y + RoofOffset.y, roof.transform.position.z);
+            var roofPosition = new Vector3(basePosition.x + RoofOffset.x, basePosition.y + RoofOffset.y, HeightProjection.BuildingDepth(building.Height));
             if ((roof.transform.position - roofPosition).sqrMagnitude > 1e-6f)
                 roof.transform.position = roofPosition;
             if (roof.size != building.Size)
@@ -442,9 +444,8 @@ namespace PolishTanks.Prototypes
 
         private Vector3 ToLocal(Transform target, Transform space, Vector2 point, float height)
         {
-            var world = (Vector2)space.TransformPoint(point) + leanPerUnit * height;
-            Vector2 local = target.InverseTransformPoint(world);
-            return local;
+            var flat = (Vector2)space.TransformPoint(point) + leanPerUnit * height;
+            return target.InverseTransformPoint(new Vector3(flat.x, flat.y, HeightProjection.BuildingDepth(height)));
         }
 
         private void AddQuad(int start)
