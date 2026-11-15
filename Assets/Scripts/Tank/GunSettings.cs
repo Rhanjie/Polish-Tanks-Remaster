@@ -20,8 +20,6 @@ namespace PolishTanks.Tank
         [Tooltip("What the gun fires. Without one the gun only flashes.")]
         public ProjectileDefinition projectile;
         [Min(0f)] public float projectileSpeed;
-        [Tooltip("Max deviation from the barrel axis, degrees.")]
-        [Min(0f)] public float dispersion;
         [Min(0f)] public float damage;
         [Tooltip("Shell diameter, mm. A shell three times thicker than a plate cannot glance off it.")]
         [Min(0f)] public float caliber;
@@ -30,6 +28,20 @@ namespace PolishTanks.Tank
         [Min(0f)] public float penetrationMax;
         [Tooltip("Impulse given to what the projectile hits.")]
         [Min(0f)] public float impactImpulse;
+
+        [Header("Dispersion")]
+        [Tooltip("Max deviation from the barrel axis once the gun has settled, degrees. Never drops below a small floor.")]
+        [Min(0f)] public float dispersion;
+        [Tooltip("Upper limit of the spread, degrees.")]
+        [Min(0f)] public float maxDispersion;
+        [Tooltip("Degrees added per world unit per second of tank speed.")]
+        [Min(0f)] public float movingDispersion;
+        [Tooltip("Degrees added per degree per second the barrel swings, from the hull turning or the turret traversing.")]
+        [Min(0f)] public float turningDispersion;
+        [Tooltip("Degrees added by each shot.")]
+        [Min(0f)] public float shotDispersion;
+        [Tooltip("Seconds for the spread to close most of the way back once the gun is held still.")]
+        [Min(0f)] public float aimTime;
 
         [Header("Kick")]
         [Tooltip("Impulse pushing the tank back on each shot.")]
