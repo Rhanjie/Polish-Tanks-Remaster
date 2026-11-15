@@ -6,10 +6,14 @@ using UnityEngine;
 namespace PolishTanks.Prototypes
 {
     /// <summary>
-    /// 2.5D top-down view of a building in the style of early GTA: the roof leans away from the
+    /// 2.5D top-down view of a building block in the style of early GTA: the roof leans away from the
     /// camera center in proportion to height, walls are rebuilt every frame between footprint and
     /// roof, and the whole building fades when it hides the tracked target. The building may be rotated: the lean is
-    /// worked out in world space and turned into the building's own space for the walls.
+    /// worked out in world space and turned into local space for the meshes.
+    /// Inside a <see cref="BuildingCompound"/> the lean comes from the compound's anchor, walls are the segments the
+    /// compound left visible, the sorting step is shared and the whole compound fades together. A standalone block
+    /// leans from its own centre and lays out its walls in the walls object's space.
+    /// Flat roofs use the roof sprite; gable roofs replace it with a sloped mesh whose ridge leans further than the eaves.
     /// Also runs in the editor so the scene shows real sizes; there the lean comes from the main camera.
     /// Buildings closer to the view centre lean over the ones further out, so walls and roof get a sorting order
     /// from <see cref="HeightProjection.BuildingSortingOrder"/> every frame instead of a fixed one.
@@ -18,21 +22,34 @@ namespace PolishTanks.Prototypes
     [DefaultExecutionOrder(200)]
     public class ExtrudedBuildingView : MonoBehaviour
     {
-        private static readonly Vector2[] EdgeNormals = { Vector2.down, Vector2.right, Vector2.up, Vector2.left };
-
         [SerializeField] private Building building;
         [SerializeField] private SpriteRenderer roof;
         [SerializeField] private MeshFilter walls;
 
+        [Tooltip("Mesh used instead of the roof sprite when the building has a gable roof.")]
+        [SerializeField] private MeshFilter gableRoof;
+
         [Tooltip("How strongly height turns into lean. Roughly 1 / camera distance.")]
         [SerializeField, Min(0f)] private float perspective = 0.035f;
 
-        [Tooltip("World units of wall per texture repeat, along the wall and up.")]
+        [Tooltip("World units of wall per texture repeat, along the wall and up. The height is one storey.")]
         [SerializeField] private Vector2 wallTextureSize = new Vector2(2f, 2f);
 
         [SerializeField] private Vector2 lightDirection = new Vector2(-0.6f, 0.8f);
         [SerializeField] private Color litWall = Color.white;
         [SerializeField] private Color shadedWall = new Color(0.55f, 0.55f, 0.6f);
+
+        [Tooltip("Wall brightness where it meets the ground, a cheap contact shadow.")]
+        [SerializeField, Range(0f, 1f)] private float groundShade = 0.72f;
+
+        [Header("Gable roof")]
+        [Tooltip("World units of roof per texture repeat, along the ridge and down the slope.")]
+        [SerializeField] private Vector2 roofTextureSize = new Vector2(2f, 2f);
+        [SerializeField, Min(0f)] private float eaveOverhang = 0.25f;
+        [SerializeField, Min(0f)] private float ridgeCapWidth = 0.2f;
+        [SerializeField] private Color litRoof = Color.white;
+        [SerializeField] private Color shadedRoof = new Color(0.68f, 0.66f, 0.66f);
+        [SerializeField] private Color ridgeCap = new Color(0.55f, 0.5f, 0.48f);
 
         [Header("Occlusion")]
         [Tooltip("Object that makes the building fade when hidden by it. Defaults to the main camera's follow target.")]
@@ -40,16 +57,21 @@ namespace PolishTanks.Prototypes
         [SerializeField, Range(0f, 1f)] private float fadedAlpha = 0.35f;
         [SerializeField, Min(0.01f)] private float fadeSpeed = 6f;
 
-        private readonly List<Vector3> vertices = new List<Vector3>(16);
-        private readonly List<Vector2> uvs = new List<Vector2>(16);
-        private readonly List<Color> colors = new List<Color>(16);
-        private readonly List<int> triangles = new List<int>(24);
+        private readonly List<Vector3> vertices = new List<Vector3>(32);
+        private readonly List<Vector2> uvs = new List<Vector2>(32);
+        private readonly List<Color> colors = new List<Color>(32);
+        private readonly List<int> triangles = new List<int>(48);
         private readonly List<Vector2> hull = new List<Vector2>(8);
-        private readonly Vector2[] corners = new Vector2[4];
+        private readonly List<BlockShape> soloShapes = new List<BlockShape>(1);
+        private readonly List<WallSegment> soloWalls = new List<WallSegment>(4);
+        private readonly List<GableEnd> soloGableEnds = new List<GableEnd>(2);
         private readonly Vector2[] worldCorners = new Vector2[4];
-        private Vector2 localRoofOffset;
+        private BuildingCompound compound;
         private MeshRenderer wallRenderer;
+        private MeshRenderer gableRenderer;
         private Mesh mesh;
+        private Mesh roofMesh;
+        private Vector2 leanPerUnit;
         [Inject] private IGameCamera gameCamera;
         private float alpha = 1f;
 
@@ -63,20 +85,46 @@ namespace PolishTanks.Prototypes
         {
             if (building == null)
                 building = GetComponentInParent<Building>();
-            mesh = new Mesh { name = "Building Walls", hideFlags = HideFlags.DontSave };
-            mesh.MarkDynamic();
+            compound = building != null ? building.GetComponentInParent<BuildingCompound>() : null;
+            mesh = CreateMesh("Building Walls");
             if (walls != null)
                 walls.sharedMesh = mesh;
+            if (gableRoof != null)
+            {
+                roofMesh = CreateMesh("Building Gable Roof");
+                gableRoof.sharedMesh = roofMesh;
+                gableRenderer = gableRoof.GetComponent<MeshRenderer>();
+            }
         }
 
         private void OnDisable()
         {
-            if (mesh == null)
+            DestroyMesh(mesh);
+            DestroyMesh(roofMesh);
+            mesh = null;
+            roofMesh = null;
+        }
+
+        private void OnTransformParentChanged()
+        {
+            compound = building != null ? building.GetComponentInParent<BuildingCompound>() : null;
+        }
+
+        private static Mesh CreateMesh(string meshName)
+        {
+            var created = new Mesh { name = meshName, hideFlags = HideFlags.DontSave };
+            created.MarkDynamic();
+            return created;
+        }
+
+        private static void DestroyMesh(Mesh target)
+        {
+            if (target == null)
                 return;
             if (Application.isPlaying)
-                Destroy(mesh);
+                Destroy(target);
             else
-                DestroyImmediate(mesh);
+                DestroyImmediate(target);
         }
 
         private void LateUpdate()
@@ -86,42 +134,77 @@ namespace PolishTanks.Prototypes
             if (!TryGetViewCenter(out var viewCenter))
                 return;
 
+            var index = compound != null ? compound.IndexOf(building) : -1;
+            var inCompound = index >= 0;
             Vector2 basePosition = building.transform.position;
-            RoofOffset = HeightProjection.RoofOffset(basePosition, viewCenter, building.Height, perspective);
+            var anchor = inCompound ? compound.Anchor : basePosition;
+            leanPerUnit = HeightProjection.RoofOffset(anchor, viewCenter, 1f, perspective);
+            RoofOffset = leanPerUnit * building.Height;
 
             var roofPosition = new Vector3(basePosition.x + RoofOffset.x, basePosition.y + RoofOffset.y, roof.transform.position.z);
             if ((roof.transform.position - roofPosition).sqrMagnitude > 1e-6f)
                 roof.transform.position = roofPosition;
             if (roof.size != building.Size)
                 roof.size = building.Size;
-            ApplySortingOrder(viewCenter);
-            localRoofOffset = walls.transform.InverseTransformVector(RoofOffset);
 
-            FillCorners();
-            UpdateFade();
-            BuildWalls();
-
-            var roofColor = roof.color;
-            if (!Mathf.Approximately(roofColor.a, alpha))
+            Transform space;
+            BlockShape shape;
+            IReadOnlyList<WallSegment> segments;
+            IReadOnlyList<GableEnd> gableEnds;
+            if (inCompound)
             {
-                roofColor.a = alpha;
-                roof.color = roofColor;
+                space = compound.transform;
+                shape = compound.ShapeOf(index);
+                segments = compound.WallsOf(index);
+                gableEnds = compound.GableEndsOf(index);
             }
+            else
+            {
+                space = walls.transform;
+                shape = UpdateSoloLayout();
+                segments = soloWalls;
+                gableEnds = soloGableEnds;
+            }
+
+            var order = ApplySortingOrder(viewCenter, inCompound, inCompound ? compound.LayerOf(index) : 0);
+            UpdateFade();
+            BuildWalls(space, shape, segments, gableEnds);
+            UpdateRoof(space, shape, order + 1);
         }
 
-        private void ApplySortingOrder(Vector2 viewCenter)
+        private BlockShape UpdateSoloLayout()
         {
-            Vector2 local = building.transform.InverseTransformPoint(viewCenter);
-            var half = building.Size * 0.5f;
-            var nearest = new Vector2(Mathf.Clamp(local.x, -half.x, half.x), Mathf.Clamp(local.y, -half.y, half.y));
-            var distance = Vector2.Distance(viewCenter, building.transform.TransformPoint(nearest));
-            var order = HeightProjection.BuildingSortingOrder(distance);
+            var shape = new BlockShape(new Rect(-building.Size * 0.5f, building.Size), building.Height, building.Roof, building.RidgeHeight);
+            soloShapes.Clear();
+            soloShapes.Add(shape);
+            CompoundLayout.WallSegments(soloShapes, 0, soloWalls);
+            CompoundLayout.GableEnds(soloShapes, 0, soloGableEnds);
+            return shape;
+        }
+
+        private int ApplySortingOrder(Vector2 viewCenter, bool inCompound, int layer)
+        {
+            var distance = DistanceToFootprint(building, viewCenter);
+            if (inCompound)
+                foreach (var block in compound.Blocks)
+                    distance = Mathf.Min(distance, DistanceToFootprint(block, viewCenter));
+
+            var order = HeightProjection.BuildingSortingOrder(distance) + layer * 2;
             if (wallRenderer == null)
                 wallRenderer = walls.GetComponent<MeshRenderer>();
             if (wallRenderer != null && wallRenderer.sortingOrder != order)
                 wallRenderer.sortingOrder = order;
             if (roof.sortingOrder != order + 1)
                 roof.sortingOrder = order + 1;
+            return order;
+        }
+
+        private static float DistanceToFootprint(Building block, Vector2 point)
+        {
+            Vector2 local = block.transform.InverseTransformPoint(point);
+            var half = block.Size * 0.5f;
+            var nearest = new Vector2(Mathf.Clamp(local.x, -half.x, half.x), Mathf.Clamp(local.y, -half.y, half.y));
+            return Vector2.Distance(point, block.transform.TransformPoint(nearest));
         }
 
         private bool TryGetViewCenter(out Vector2 center)
@@ -144,14 +227,30 @@ namespace PolishTanks.Prototypes
                 alpha = 1f;
                 return;
             }
-            IsOccluding = occlusionTarget != null && Covers(occlusionTarget.position);
+            IsOccluding = occlusionTarget != null && CoversTarget(occlusionTarget.position);
             var target = IsOccluding ? fadedAlpha : 1f;
             alpha = Mathf.MoveTowards(alpha, target, fadeSpeed * Time.deltaTime);
         }
 
-        private bool Covers(Vector2 point)
+        private bool CoversTarget(Vector2 point)
         {
-            HeightProjection.ExtrudedQuadHull(worldCorners[0], worldCorners[1], worldCorners[2], worldCorners[3], RoofOffset, hull);
+            if (compound == null || compound.IndexOf(building) < 0)
+                return Covers(building, point);
+            foreach (var block in compound.Blocks)
+                if (Covers(block, point))
+                    return true;
+            return false;
+        }
+
+        private bool Covers(Building block, Vector2 point)
+        {
+            var half = block.Size * 0.5f;
+            var t = block.transform;
+            worldCorners[0] = t.TransformPoint(new Vector3(-half.x, -half.y));
+            worldCorners[1] = t.TransformPoint(new Vector3(half.x, -half.y));
+            worldCorners[2] = t.TransformPoint(new Vector3(half.x, half.y));
+            worldCorners[3] = t.TransformPoint(new Vector3(-half.x, half.y));
+            HeightProjection.ExtrudedQuadHull(worldCorners[0], worldCorners[1], worldCorners[2], worldCorners[3], leanPerUnit * block.TopHeight, hull);
             for (var i = 0; i < hull.Count; i++)
             {
                 var a = hull[i];
@@ -162,63 +261,211 @@ namespace PolishTanks.Prototypes
             return hull.Count >= 3;
         }
 
-        private void FillCorners()
+        private void BuildWalls(Transform space, BlockShape shape, IReadOnlyList<WallSegment> segments, IReadOnlyList<GableEnd> gableEnds)
         {
-            var half = building.Size * 0.5f;
-            corners[0] = new Vector2(-half.x, -half.y);
-            corners[1] = new Vector2(half.x, -half.y);
-            corners[2] = new Vector2(half.x, half.y);
-            corners[3] = new Vector2(-half.x, half.y);
-            for (var i = 0; i < 4; i++)
-                worldCorners[i] = building.transform.TransformPoint(corners[i]);
+            ClearBuffers();
+            var target = walls.transform;
+            var light = lightDirection.normalized;
+
+            foreach (var segment in segments)
+            {
+                Vector2 normal = space.TransformDirection(segment.Normal);
+                if (!HeightProjection.IsVisibleWall(normal, leanPerUnit))
+                    continue;
+
+                var shade = WallShade(normal, light);
+                var groundA = segment.BottomA <= 0.001f ? groundShade : 1f;
+                var groundB = segment.BottomB <= 0.001f ? groundShade : 1f;
+                var u0 = WallU(shape, segment.Normal, segment.A);
+                var u1 = WallU(shape, segment.Normal, segment.B);
+
+                var start = vertices.Count;
+                vertices.Add(ToLocal(target, space, segment.A, segment.BottomA));
+                vertices.Add(ToLocal(target, space, segment.B, segment.BottomB));
+                vertices.Add(ToLocal(target, space, segment.B, segment.Top));
+                vertices.Add(ToLocal(target, space, segment.A, segment.Top));
+                uvs.Add(new Vector2(u0, segment.BottomA / wallTextureSize.y));
+                uvs.Add(new Vector2(u1, segment.BottomB / wallTextureSize.y));
+                uvs.Add(new Vector2(u1, segment.Top / wallTextureSize.y));
+                uvs.Add(new Vector2(u0, segment.Top / wallTextureSize.y));
+                colors.Add(Darken(shade, groundA));
+                colors.Add(Darken(shade, groundB));
+                colors.Add(shade);
+                colors.Add(shade);
+                AddQuad(start);
+            }
+
+            foreach (var end in gableEnds)
+            {
+                Vector2 normal = space.TransformDirection(end.Normal);
+                if (!HeightProjection.IsVisibleWall(normal, leanPerUnit))
+                    continue;
+
+                var shade = WallShade(normal, light);
+                var middle = (end.A + end.B) * 0.5f;
+                var start = vertices.Count;
+                vertices.Add(ToLocal(target, space, end.A, end.Base));
+                vertices.Add(ToLocal(target, space, end.B, end.Base));
+                vertices.Add(ToLocal(target, space, middle, end.Apex));
+                uvs.Add(new Vector2(WallU(shape, end.Normal, end.A), end.Base / wallTextureSize.y));
+                uvs.Add(new Vector2(WallU(shape, end.Normal, end.B), end.Base / wallTextureSize.y));
+                uvs.Add(new Vector2(WallU(shape, end.Normal, middle), end.Apex / wallTextureSize.y));
+                colors.Add(shade);
+                colors.Add(shade);
+                colors.Add(shade);
+                triangles.Add(start);
+                triangles.Add(start + 2);
+                triangles.Add(start + 1);
+            }
+
+            ApplyBuffers(mesh);
         }
 
-        private void BuildWalls()
+        private void UpdateRoof(Transform space, BlockShape shape, int roofOrder)
+        {
+            var useGable = shape.HasGable && gableRoof != null && roofMesh != null;
+            if (roof.enabled == useGable)
+                roof.enabled = !useGable;
+            if (gableRenderer != null && gableRenderer.enabled != useGable)
+                gableRenderer.enabled = useGable;
+
+            if (useGable)
+            {
+                if (gableRenderer != null && gableRenderer.sortingOrder != roofOrder)
+                    gableRenderer.sortingOrder = roofOrder;
+                BuildGableRoof(space, shape);
+                return;
+            }
+
+            var roofColor = roof.color;
+            if (!Mathf.Approximately(roofColor.a, alpha))
+            {
+                roofColor.a = alpha;
+                roof.color = roofColor;
+            }
+        }
+
+        private void BuildGableRoof(Transform space, BlockShape shape)
+        {
+            ClearBuffers();
+            var target = gableRoof.transform;
+            var light = lightDirection.normalized;
+            var rect = shape.Rect;
+            var along = shape.RidgeAlongX ? Vector2.right : Vector2.up;
+            var across = shape.RidgeAlongX ? Vector2.up : Vector2.right;
+            var halfLength = (shape.RidgeAlongX ? rect.width : rect.height) * 0.5f + eaveOverhang;
+            var halfDepth = (shape.RidgeAlongX ? rect.height : rect.width) * 0.5f + eaveOverhang;
+            var center = rect.center;
+            var eave = shape.Height;
+            var ridge = shape.TopHeight;
+            var alongStart = Vector2.Dot(center, along) - halfLength;
+
+            for (var side = -1; side <= 1; side += 2)
+            {
+                Vector2 normal = space.TransformDirection(across * side);
+                var shade = Color.Lerp(shadedRoof, litRoof, Mathf.Clamp01(Vector2.Dot(normal, light) * 0.5f + 0.5f));
+                shade.a = alpha;
+
+                var eaveA = center - along * halfLength + across * (halfDepth * side);
+                var eaveB = center + along * halfLength + across * (halfDepth * side);
+                var ridgeA = center - along * halfLength;
+                var ridgeB = center + along * halfLength;
+                var length = halfLength * 2f / roofTextureSize.x;
+                var depth = halfDepth / roofTextureSize.y;
+
+                var start = vertices.Count;
+                vertices.Add(ToLocal(target, space, eaveA, eave));
+                vertices.Add(ToLocal(target, space, eaveB, eave));
+                vertices.Add(ToLocal(target, space, ridgeB, ridge));
+                vertices.Add(ToLocal(target, space, ridgeA, ridge));
+                var u0 = (Vector2.Dot(eaveA, along) - alongStart) / roofTextureSize.x;
+                uvs.Add(new Vector2(u0, 0f));
+                uvs.Add(new Vector2(u0 + length, 0f));
+                uvs.Add(new Vector2(u0 + length, depth));
+                uvs.Add(new Vector2(u0, depth));
+                for (var i = 0; i < 4; i++)
+                    colors.Add(shade);
+                AddQuad(start);
+            }
+
+            if (ridgeCapWidth > 0f)
+            {
+                var cap = ridgeCap;
+                cap.a = alpha;
+                var half = across * (ridgeCapWidth * 0.5f);
+                var a = center - along * halfLength;
+                var b = center + along * halfLength;
+                var start = vertices.Count;
+                vertices.Add(ToLocal(target, space, a - half, ridge));
+                vertices.Add(ToLocal(target, space, b - half, ridge));
+                vertices.Add(ToLocal(target, space, b + half, ridge));
+                vertices.Add(ToLocal(target, space, a + half, ridge));
+                var length = halfLength * 2f / roofTextureSize.x;
+                uvs.Add(new Vector2(0f, 0f));
+                uvs.Add(new Vector2(length, 0f));
+                uvs.Add(new Vector2(length, 0.1f));
+                uvs.Add(new Vector2(0f, 0.1f));
+                for (var i = 0; i < 4; i++)
+                    colors.Add(cap);
+                AddQuad(start);
+            }
+
+            ApplyBuffers(roofMesh);
+        }
+
+        private Color WallShade(Vector2 worldNormal, Vector2 light)
+        {
+            var shade = Color.Lerp(shadedWall, litWall, Mathf.Clamp01(Vector2.Dot(worldNormal, light) * 0.5f + 0.5f));
+            shade.a = alpha;
+            return shade;
+        }
+
+        private static Color Darken(Color color, float factor) =>
+            new Color(color.r * factor, color.g * factor, color.b * factor, color.a);
+
+        private float WallU(BlockShape shape, Vector2 normal, Vector2 point)
+        {
+            var edge = normal.y < -0.5f ? 0 : normal.x > 0.5f ? 1 : normal.y > 0.5f ? 2 : 3;
+            CompoundLayout.GetEdge(shape.Rect, edge, out var a, out var b, out _);
+            var length = Vector2.Distance(a, b);
+            var direction = length > 0f ? (b - a) / length : Vector2.zero;
+            var margin = (length % wallTextureSize.x) * 0.5f;
+            return (Vector2.Dot(point - a, direction) - margin) / wallTextureSize.x;
+        }
+
+        private Vector3 ToLocal(Transform target, Transform space, Vector2 point, float height)
+        {
+            var world = (Vector2)space.TransformPoint(point) + leanPerUnit * height;
+            Vector2 local = target.InverseTransformPoint(world);
+            return local;
+        }
+
+        private void AddQuad(int start)
+        {
+            triangles.Add(start);
+            triangles.Add(start + 2);
+            triangles.Add(start + 1);
+            triangles.Add(start);
+            triangles.Add(start + 3);
+            triangles.Add(start + 2);
+        }
+
+        private void ClearBuffers()
         {
             vertices.Clear();
             uvs.Clear();
             colors.Clear();
             triangles.Clear();
+        }
 
-            var light = lightDirection.normalized;
-            for (var edge = 0; edge < 4; edge++)
-            {
-                var normal = EdgeNormals[edge];
-                if (!HeightProjection.IsVisibleWall(normal, localRoofOffset))
-                    continue;
-
-                var a = corners[edge];
-                var b = corners[(edge + 1) % 4];
-                var length = Vector2.Distance(a, b) / wallTextureSize.x;
-                var up = building.Height / wallTextureSize.y;
-                var shade = Color.Lerp(shadedWall, litWall, Mathf.Clamp01(Vector2.Dot((Vector2)walls.transform.TransformDirection(normal), light) * 0.5f + 0.5f));
-                shade.a = alpha;
-
-                var start = vertices.Count;
-                vertices.Add(a);
-                vertices.Add(b);
-                vertices.Add(b + localRoofOffset);
-                vertices.Add(a + localRoofOffset);
-                uvs.Add(new Vector2(0f, 0f));
-                uvs.Add(new Vector2(length, 0f));
-                uvs.Add(new Vector2(length, up));
-                uvs.Add(new Vector2(0f, up));
-                for (var i = 0; i < 4; i++)
-                    colors.Add(shade);
-                triangles.Add(start);
-                triangles.Add(start + 2);
-                triangles.Add(start + 1);
-                triangles.Add(start);
-                triangles.Add(start + 3);
-                triangles.Add(start + 2);
-            }
-
-            mesh.Clear();
-            mesh.SetVertices(vertices);
-            mesh.SetUVs(0, uvs);
-            mesh.SetColors(colors);
-            mesh.SetTriangles(triangles, 0);
-            mesh.RecalculateBounds();
+        private void ApplyBuffers(Mesh target)
+        {
+            target.Clear();
+            target.SetVertices(vertices);
+            target.SetUVs(0, uvs);
+            target.SetColors(colors);
+            target.SetTriangles(triangles, 0);
+            target.RecalculateBounds();
         }
     }
 }
