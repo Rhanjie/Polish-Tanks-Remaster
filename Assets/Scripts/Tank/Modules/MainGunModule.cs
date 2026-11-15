@@ -20,8 +20,14 @@ namespace PolishTanks.Tank.Modules
         [FormerlySerializedAs("penetration")]
         [SerializeField, Min(0f)] private float penetrationMax = 90f;
 
-        [Tooltip("Random spread of a shot, degrees.")]
+        [Tooltip("Spread of a shot once the tank stands still and the gun has settled, degrees.")]
         [SerializeField, Min(0f)] private float dispersion = 0.4f;
+
+        [Tooltip("Seconds for the spread to close most of the way back after moving or firing.")]
+        [SerializeField, Min(0f)] private float aimTime = 2f;
+
+        [Tooltip("Degrees each shot adds to the spread.")]
+        [SerializeField, Min(0f)] private float shotDispersion = 2f;
 
         [Tooltip("Shells carried before resupply.")]
         [SerializeField, Min(1)] private int ammoCapacity = 60;
@@ -55,6 +61,8 @@ namespace PolishTanks.Tank.Modules
         public float PenetrationMin => penetrationMin;
         public float PenetrationMax => penetrationMax;
         public float Dispersion => dispersion;
+        public float AimTime => aimTime;
+        public float ShotDispersion => shotDispersion;
         public int AmmoCapacity => ammoCapacity;
         public float MuzzleFlashScale => muzzleFlashScale;
         public int MuzzleSmoke => muzzleSmoke;

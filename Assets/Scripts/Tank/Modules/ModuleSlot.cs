@@ -10,6 +10,7 @@ namespace PolishTanks.Tank.Modules
         Turret,
         MainGun,
         CoaxialMachineGun,
+        HullMachineGun,
         Optics,
         Equipment,
     }

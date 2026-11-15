@@ -5,5 +5,6 @@ namespace PolishTanks.Tank
     {
         Main,
         Coaxial,
+        Hull,
     }
 }

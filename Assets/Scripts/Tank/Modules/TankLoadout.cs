@@ -19,6 +19,7 @@ namespace PolishTanks.Tank.Modules
 
         [Header("Optional")]
         [SerializeField] private CoaxialMachineGunModule coaxialMachineGun;
+        [SerializeField] private HullMachineGunModule hullMachineGun;
         [SerializeField] private OpticsModule optics;
         [SerializeField] private List<EquipmentModule> equipment = new List<EquipmentModule>();
 
@@ -30,12 +31,13 @@ namespace PolishTanks.Tank.Modules
         public TurretModule Turret => turret;
         public MainGunModule MainGun => mainGun;
         public CoaxialMachineGunModule CoaxialMachineGun => coaxialMachineGun;
+        public HullMachineGunModule HullMachineGun => hullMachineGun;
         public OpticsModule Optics => optics;
         public IReadOnlyList<EquipmentModule> Equipment => equipment;
 
         public IEnumerable<TankModule> AllModules()
         {
-            TankModule[] fixedSlots = { hull, engine, transmission, tracks, turret, mainGun, coaxialMachineGun, optics };
+            TankModule[] fixedSlots = { hull, engine, transmission, tracks, turret, mainGun, coaxialMachineGun, hullMachineGun, optics };
             foreach (var module in fixedSlots)
                 if (module != null)
                     yield return module;

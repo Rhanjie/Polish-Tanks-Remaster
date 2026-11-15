@@ -10,12 +10,12 @@ namespace PolishTanks.Tests.EditMode
         [Test]
         public void MachineGunAssets_ImpactImpulse_IsZero()
         {
-            var guids = AssetDatabase.FindAssets("t:CoaxialMachineGunModule", new[] { "Assets/Data/Modules/MachineGuns" });
+            var guids = AssetDatabase.FindAssets("t:MachineGunModule", new[] { "Assets/Data/Modules/MachineGuns" });
             Assert.That(guids, Is.Not.Empty);
 
             foreach (var guid in guids)
             {
-                var module = AssetDatabase.LoadAssetAtPath<CoaxialMachineGunModule>(AssetDatabase.GUIDToAssetPath(guid));
+                var module = AssetDatabase.LoadAssetAtPath<MachineGunModule>(AssetDatabase.GUIDToAssetPath(guid));
                 Assert.That(module.ImpactImpulse, Is.EqualTo(0f), AssetDatabase.GUIDToAssetPath(guid));
             }
         }

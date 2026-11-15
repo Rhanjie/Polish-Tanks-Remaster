@@ -12,6 +12,10 @@ namespace PolishTanks.Tank.Modules
         [SerializeField] private Vector2 colliderSize = new Vector2(2.6f, 4.1f);
         [Tooltip("Turret ring position in hull space.")]
         [SerializeField] private Vector2 turretMount = new Vector2(0f, 0.15f);
+        [Tooltip("Whether the front plate has a ball mount for a hull machine gun.")]
+        [SerializeField] private bool hasHullMachineGunMount;
+        [Tooltip("Hull machine gun muzzle position in hull space, on the front plate by the driver.")]
+        [SerializeField] private Vector2 hullMachineGunMount = new Vector2(0.55f, 1.95f);
 
         [Header("Protection")]
         [SerializeField, Min(0f)] private float frontArmor = 50f;
@@ -29,6 +33,8 @@ namespace PolishTanks.Tank.Modules
         public float VisualScale => visualScale;
         public Vector2 ColliderSize => colliderSize;
         public Vector2 TurretMount => turretMount;
+        public bool HasHullMachineGunMount => hasHullMachineGunMount;
+        public Vector2 HullMachineGunMount => hullMachineGunMount;
         public float FrontArmor => frontArmor;
         public float SideArmor => sideArmor;
         public float RearArmor => rearArmor;

@@ -7,6 +7,7 @@ namespace PolishTanks.Tank.Modules
     /// and pushed into the tank components by <see cref="TankController"/>.
     /// Units: mass in kg, power-to-weight in hp per tonne, dispersion in degrees.
     /// Machine gun fields stay zero when no machine gun is fitted.
+    /// <see cref="CrewDispersionFactor"/> scales every gun's spread; it stays 1 until crews gain experience.
     /// </summary>
     public sealed class TankStats
     {
@@ -33,6 +34,13 @@ namespace PolishTanks.Tank.Modules
         public float MachineGunDamage;
         public int MachineGunBeltSize;
         public float MachineGunBeltChangeTime;
+
+        public bool HasHullMachineGun;
+        public GunSettings HullMachineGun;
+        public float HullMachineGunArc;
+        public float HullMachineGunTraverseSpeed;
+
+        public float CrewDispersionFactor = 1f;
 
         public float FrontArmor;
         public float SideArmor;

@@ -25,6 +25,8 @@ namespace PolishTanks.Tank
         private TurretAimer aimer;
         private TankGun gun;
         private TankGun coaxialGun;
+        private TankGun hullGun;
+        private BallMount ballMount;
         private HullView hullView;
         private TurretView turretView;
         private Damageable damageable;
@@ -72,6 +74,8 @@ namespace PolishTanks.Tank
             aimer = GetComponentInChildren<TurretAimer>(true);
             gun = TankGun.Find(gameObject, GunMount.Main);
             coaxialGun = TankGun.Find(gameObject, GunMount.Coaxial);
+            hullGun = TankGun.Find(gameObject, GunMount.Hull);
+            ballMount = GetComponentInChildren<BallMount>(true);
             hullView = GetComponentInChildren<HullView>(true);
             damageable = GetComponent<Damageable>();
             if (damageable != null)
@@ -108,17 +112,33 @@ namespace PolishTanks.Tank
             if (aimer != null)
                 aimer.Settings = stats.Turret;
             if (gun != null)
-                gun.Settings = stats.Gun;
-            if (coaxialGun != null)
             {
-                coaxialGun.enabled = stats.HasMachineGun;
-                if (stats.HasMachineGun)
-                    coaxialGun.Settings = stats.MachineGun;
+                gun.Settings = stats.Gun;
+                gun.CrewFactor = stats.CrewDispersionFactor;
+            }
+            ApplyMachineGun(coaxialGun, stats.HasMachineGun, stats.MachineGun, stats.CrewDispersionFactor);
+            ApplyMachineGun(hullGun, stats.HasHullMachineGun, stats.HullMachineGun, stats.CrewDispersionFactor);
+            if (ballMount != null)
+            {
+                ballMount.gameObject.SetActive(stats.HasHullMachineGun);
+                ballMount.Arc = stats.HullMachineGunArc;
+                ballMount.TraverseSpeed = stats.HullMachineGunTraverseSpeed;
             }
             if (body != null)
                 body.mass = stats.TotalMass / 1000f;
             if (damageable != null)
                 damageable.Configure(stats.HitPoints, new ArmorProfile(stats.FrontArmor, stats.SideArmor, stats.RearArmor));
+        }
+
+        private static void ApplyMachineGun(TankGun machineGun, bool fitted, GunSettings settings, float crewFactor)
+        {
+            if (machineGun == null)
+                return;
+            machineGun.enabled = fitted;
+            if (!fitted)
+                return;
+            machineGun.Settings = settings;
+            machineGun.CrewFactor = crewFactor;
         }
 
         private void OnDied(Damageable _)
@@ -131,7 +151,7 @@ namespace PolishTanks.Tank
             var spin = body != null ? body.angularVelocity : 0f;
 
             foreach (var behaviour in GetComponentsInChildren<MonoBehaviour>())
-                if (behaviour is TankInput || behaviour is TankGun || behaviour is TurretAimer || behaviour is TankMovement)
+                if (behaviour is TankInput || behaviour is TankGun || behaviour is TurretAimer || behaviour is BallMount || behaviour is TankMovement)
                     behaviour.enabled = false;
 
             if (body != null)
@@ -161,6 +181,8 @@ namespace PolishTanks.Tank
                 hullCollider.size = hull.ColliderSize;
             if (aimer != null)
                 aimer.transform.localPosition = hull.TurretMount;
+            if (ballMount != null)
+                ballMount.transform.localPosition = hull.HullMachineGunMount;
             if (gun == null)
                 return;
 
