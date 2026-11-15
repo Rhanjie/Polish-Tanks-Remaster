@@ -134,6 +134,8 @@ namespace PolishTanks.Prototypes
             if (!TryGetViewCenter(out var viewCenter))
                 return;
 
+            if (!Application.isPlaying)
+                compound = building.GetComponentInParent<BuildingCompound>();
             var index = compound != null ? compound.IndexOf(building) : -1;
             var inCompound = index >= 0;
             Vector2 basePosition = building.transform.position;
