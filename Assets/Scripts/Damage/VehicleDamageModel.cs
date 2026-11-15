@@ -25,15 +25,19 @@ namespace PolishTanks.Damage
         public VehicleDamageModel(in PartDamageChances layout)
         {
             Add(new PartId(VehiclePart.Engine));
+            
             if (layout.HasTracks)
             {
                 Add(new PartId(VehiclePart.LeftTrack));
                 Add(new PartId(VehiclePart.RightTrack));
             }
+            
             if (layout.HasTurretRing)
                 Add(new PartId(VehiclePart.TurretRing));
+            
             for (var i = 0; i < layout.VisionBlocks; i++)
                 Add(new PartId(VehiclePart.VisionBlock, i));
+            
             VisionBlocks = Mathf.Max(0, layout.VisionBlocks);
         }
 
