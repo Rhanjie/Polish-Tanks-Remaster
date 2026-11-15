@@ -71,7 +71,7 @@ namespace PolishTanks.Tank
                 if (ballMount != null)
                 {
                     ballMount.SetAimPoint(aimPoint);
-                    hullGunCovers = ballMount.CanReach;
+                    hullGunCovers = ballMount.IsOnTarget;
                 }
             }
 

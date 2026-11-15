@@ -7,10 +7,11 @@ using UnityEngine;
 namespace PolishTanks.UI
 {
     /// <summary>
-    /// The player's aiming cursor, drawn in the world in place of the system cursor. A ring around the pointer shows
+    /// The player's aiming cursor, drawn in the world in place of the system cursor, which comes back whenever the reticle has nothing to show. A ring around the pointer shows
     /// how far the main gun's shots can stray at that distance right now: it widens when the tank drives, turns or
     /// fires and closes back as the gun settles. A fainter ring does the same for the coaxial machine gun.
     /// </summary>
+    [DefaultExecutionOrder(1000)]
     public class AimReticle : MonoBehaviour
     {
         [SerializeField] private Material lineMaterial;
@@ -48,14 +49,18 @@ namespace PolishTanks.UI
             centreDot = CreateRing("Centre Dot", gunColor, 8);
         }
 
-        private void OnEnable() => Cursor.visible = false;
+        private bool shown;
 
-        private void OnDisable() => Cursor.visible = true;
+        private void OnDisable()
+        {
+            shown = false;
+            Cursor.visible = true;
+        }
 
         private void OnApplicationFocus(bool focused)
         {
             if (focused && isActiveAndEnabled)
-                Cursor.visible = false;
+                Cursor.visible = !shown;
         }
 
         private void LateUpdate()
@@ -103,6 +108,8 @@ namespace PolishTanks.UI
 
         private void Show(bool visible)
         {
+            shown = visible;
+            Cursor.visible = !visible;
             gunOutline.enabled = visible;
             gunRing.enabled = visible;
             centreDot.enabled = visible;

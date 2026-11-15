@@ -101,7 +101,7 @@ namespace PolishTanks.Prototypes
             if (machineGun != null)
                 machineGun.SetTrigger(held);
             if (hullGun != null)
-                hullGun.SetTrigger(held && ballMount != null && ballMount.CanReach);
+                hullGun.SetTrigger(held && ballMount != null && ballMount.IsOnTarget);
         }
     }
 }
