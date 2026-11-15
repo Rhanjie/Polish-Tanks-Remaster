@@ -34,6 +34,28 @@ namespace PolishTanks.Tests.PlayMode
             return building;
         }
 
+        public BuildingCompound CreateCompound(Vector2 position)
+        {
+            var go = Track(new GameObject("Compound"));
+            go.transform.position = position;
+            return go.AddComponent<BuildingCompound>();
+        }
+
+        public Building CreateBlock(BuildingCompound compound, Vector2 localPosition, Vector2 size, float height)
+        {
+            var building = CreateBuilding(Vector2.zero, size, height);
+            building.transform.SetParent(compound.transform, false);
+            building.transform.localPosition = localPosition;
+            return building;
+        }
+
+        public MeshFilter CreateGableRoof()
+        {
+            var filter = Track(new GameObject("GableRoof")).AddComponent<MeshFilter>();
+            filter.gameObject.AddComponent<MeshRenderer>();
+            return filter;
+        }
+
         public Camera CreateMainCamera(Vector2 position)
         {
             var go = Track(new GameObject("TestMainCamera"));
@@ -60,7 +82,7 @@ namespace PolishTanks.Tests.PlayMode
 
         public MeshFilter CreateWalls() => Track(new GameObject("Walls")).AddComponent<MeshFilter>();
 
-        public ExtrudedBuildingView CreateExtrudedView(Building building, SpriteRenderer roof, MeshFilter walls, Transform target = null)
+        public ExtrudedBuildingView CreateExtrudedView(Building building, SpriteRenderer roof, MeshFilter walls, Transform target = null, MeshFilter gableRoof = null)
         {
             var go = Track(new GameObject("ExtrudedView"));
             go.SetActive(false);
@@ -68,6 +90,8 @@ namespace PolishTanks.Tests.PlayMode
             TankRig.SetField(view, "building", building);
             TankRig.SetField(view, "roof", roof);
             TankRig.SetField(view, "walls", walls);
+            if (gableRoof != null)
+                TankRig.SetField(view, "gableRoof", gableRoof);
             if (target != null)
                 view.SetOcclusionTarget(target);
             if (container != null)

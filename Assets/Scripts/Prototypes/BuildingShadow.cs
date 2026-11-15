@@ -6,7 +6,8 @@ namespace PolishTanks.Prototypes
     /// <summary>
     /// Ground shadow of a building: the footprint swept along the sun direction by its height.
     /// Rebuilt only when the building, its rotation or the sun settings change. The sun direction is in world space.
-    /// Runs in the editor too, so the scene view shows it while laying out a map.
+    /// Runs in the editor too, so the scene view shows it while laying out a map. The building shadow material
+    /// marks a stencil bit, so overlapping shadows of joined blocks darken the ground only once.
     /// </summary>
     [ExecuteAlways]
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -58,7 +59,7 @@ namespace PolishTanks.Prototypes
         private bool IsOutdated()
         {
             return building.Size != builtSize
-                || !Mathf.Approximately(building.Height, builtHeight)
+                || !Mathf.Approximately(building.ShadowHeight, builtHeight)
                 || sunDirection != builtSun
                 || !Mathf.Approximately(shadowLength, builtLength)
                 || color != builtColor
@@ -71,7 +72,7 @@ namespace PolishTanks.Prototypes
                 return;
 
             var local = new Rect(-building.Size * 0.5f, building.Size);
-            Vector2 offset = transform.InverseTransformVector(HeightProjection.ShadowOffset(sunDirection, building.Height, shadowLength));
+            Vector2 offset = transform.InverseTransformVector(HeightProjection.ShadowOffset(sunDirection, building.ShadowHeight, shadowLength));
             HeightProjection.ExtrudedRectHull(local, offset, hull);
 
             vertices.Clear();
@@ -96,7 +97,7 @@ namespace PolishTanks.Prototypes
             mesh.RecalculateBounds();
 
             builtSize = building.Size;
-            builtHeight = building.Height;
+            builtHeight = building.ShadowHeight;
             builtSun = sunDirection;
             builtLength = shadowLength;
             builtColor = color;
