@@ -12,11 +12,11 @@ namespace PolishTanks.Tank.Modules
         [SerializeField, Min(1f)] private float caliber = 7.92f;
         [SerializeField, Min(1f)] private float roundsPerMinute = 900f;
         [Tooltip("Spread once the tank stands still and the gun has settled, degrees.")]
-        [SerializeField, Min(0f)] private float dispersion = 3f;
+        [SerializeField, Min(0f)] private float dispersion = 4.5f;
         [Tooltip("Seconds for the spread to close most of the way back after moving or firing.")]
-        [SerializeField, Min(0f)] private float aimTime = 0.8f;
+        [SerializeField, Min(0f)] private float aimTime = 1f;
         [Tooltip("Degrees each round adds to the spread, so long bursts walk wide.")]
-        [SerializeField, Min(0f)] private float shotDispersion = 0.25f;
+        [SerializeField, Min(0f)] private float shotDispersion = 0.6f;
         [SerializeField, Min(0f)] private float damage = 8f;
         [Tooltip("Armor penetration in mm, rolled between min and max on every hit.")]
         [SerializeField, Min(0f)] private float penetrationMin = 6f;

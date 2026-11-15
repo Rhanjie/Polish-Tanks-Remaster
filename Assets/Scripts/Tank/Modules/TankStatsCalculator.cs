@@ -28,9 +28,9 @@ namespace PolishTanks.Tank.Modules
 
         public const float ProjectileSpeedPerMuzzleVelocity = 0.06f;
 
-        public const float MovingDispersion = 0.35f;
-        public const float TurningDispersion = 0.04f;
-        public const float MaxDispersionBloom = 8f;
+        public const float MovingDispersion = 0.7f;
+        public const float TurningDispersion = 0.09f;
+        public const float MaxDispersionBloom = 12f;
 
         public static IReadOnlyList<string> Validate(TankLoadout loadout)
         {
