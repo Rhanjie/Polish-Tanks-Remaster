@@ -7,7 +7,8 @@ namespace PolishTanks.Prototypes
     /// Math for faking object height in a top-down view: roofs pushed away from the view center
     /// (perspective parallax) and shadows cast along the sun direction. Offsets are in world space; a rotated
     /// building converts them into its own space before building walls or shadows. Building sorting orders go from
-    /// <see cref="BuildingSortingBase"/> up, two per step (walls, then roof), higher for buildings nearer the centre.
+    /// <see cref="BuildingSortingBase"/> up, <see cref="BuildingSortingStride"/> per step, higher for buildings nearer the centre.
+    /// Each step holds <see cref="BuildingLayers"/> layers of two orders (walls, then roof) for the blocks of one compound.
     /// </summary>
     public static class HeightProjection
     {
@@ -17,11 +18,13 @@ namespace PolishTanks.Prototypes
         public const int BuildingSortingBase = 100;
         public const int BuildingSortingSteps = 2000;
         public const float BuildingSortingStepsPerUnit = 10f;
+        public const int BuildingLayers = 8;
+        public const int BuildingSortingStride = BuildingLayers * 2;
 
         public static int BuildingSortingOrder(float distanceFromViewCenter)
         {
             var steps = Mathf.Clamp(Mathf.RoundToInt(distanceFromViewCenter * BuildingSortingStepsPerUnit), 0, BuildingSortingSteps);
-            return BuildingSortingBase + (BuildingSortingSteps - steps) * 2;
+            return BuildingSortingBase + (BuildingSortingSteps - steps) * BuildingSortingStride;
         }
 
         public static Vector2 ShadowOffset(Vector2 sunDirection, float height, float shadowLength) =>
