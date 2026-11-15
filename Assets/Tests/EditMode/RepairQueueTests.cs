@@ -8,13 +8,12 @@ namespace PolishTanks.Tests.EditMode
     {
         private static PartDamageChances Full => new PartDamageChances { HasTracks = true, HasTurretRing = true, VisionBlocks = 4 };
 
-        private static float First() => 0f;
-
         private static VehicleDamageModel ModelWith(params VehiclePart[] destroyed)
         {
             var model = new VehicleDamageModel(Full);
+            var blocks = 0;
             foreach (var part in destroyed)
-                model.Break(part, First);
+                TestDamage.Destroy(model, part, part == VehiclePart.VisionBlock ? blocks++ : 0);
             return model;
         }
 
@@ -60,7 +59,7 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
-        public void Next_DestroyedEngineAlreadyFieldRepaired_SkipsIt()
+        public void Next_DestroyedEnginePatchedToDamaged_SkipsIt()
         {
             var model = ModelWith(VehiclePart.Engine, VehiclePart.LeftTrack);
             model.FieldRepair(new PartId(VehiclePart.Engine));
@@ -75,7 +74,7 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
-        public void Next_OnlyFieldRepairedParts_ReturnsNull()
+        public void Next_OnlyDamagedParts_ReturnsNull()
         {
             var model = ModelWith(VehiclePart.Engine);
             model.FieldRepair(new PartId(VehiclePart.Engine));

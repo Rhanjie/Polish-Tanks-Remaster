@@ -4,17 +4,22 @@ namespace PolishTanks.Damage
 {
     /// <summary>
     /// How badly the crew's view is spoiled, block by block, eased over time for the screen effect. A block's loss
-    /// is 1 when destroyed, 0.5 when field-repaired and 0 when intact. Losses rise fast (glass shatters at once) and fall slower (the crew clears the view piece by piece).
-    /// The fire alarm eases the same way while the engine burns.
+    /// is 1 when destroyed, half when damaged and 0 when intact. Losses rise fast (glass shatters at once) and fall
+    /// slower (the crew clears the view piece by piece). Blinding flashes are kept apart from the loss, because the
+    /// screen draws them as glare rather than broken glass: they flare up at once and fade by
+    /// <see cref="FlashFadeRate"/>. The fire alarm eases like the losses while the engine burns.
     /// </summary>
     public sealed class VisionImpairment
     {
         public const int MaxBlocks = 6;
+        public const float FlashFadeRate = 2.5f;
 
         private const float Epsilon = 0.001f;
 
         private readonly float[] loss = new float[MaxBlocks];
         private readonly float[] target = new float[MaxBlocks];
+        private readonly float[] flash = new float[MaxBlocks];
+        private readonly float[] flashTarget = new float[MaxBlocks];
         private float fireTarget;
 
         public int Blocks { get; private set; }
@@ -27,7 +32,7 @@ namespace PolishTanks.Damage
                 if (FireAlarm > Epsilon)
                     return true;
                 for (var i = 0; i < Blocks; i++)
-                    if (loss[i] > Epsilon)
+                    if (loss[i] > Epsilon || flash[i] > Epsilon)
                         return true;
                 return false;
             }
@@ -35,27 +40,38 @@ namespace PolishTanks.Damage
 
         public float Loss(int block) => block >= 0 && block < MaxBlocks ? loss[block] : 0f;
 
-        public void Aim(VehicleDamageModel model, bool burning)
+        public float Flash(int block) => block >= 0 && block < MaxBlocks ? flash[block] : 0f;
+
+        public void Aim(VehicleDamageModel model, bool burning, VisionBlinding blinding = null)
         {
             Blocks = model == null ? 0 : Mathf.Min(model.VisionBlocks, MaxBlocks);
             for (var i = 0; i < MaxBlocks; i++)
-                target[i] = i < Blocks
-                    ? 1f - model.Effectiveness(new PartId(VehiclePart.VisionBlock, i))
-                    : 0f;
+            {
+                target[i] = i < Blocks ? 1f - model.Effectiveness(new PartId(VehiclePart.VisionBlock, i)) : 0f;
+                flashTarget[i] = i < Blocks && blinding != null ? blinding.Amount(i) : 0f;
+            }
             fireTarget = burning ? 1f : 0f;
         }
 
         public void Clear()
         {
             for (var i = 0; i < MaxBlocks; i++)
+            {
                 target[i] = 0f;
+                flashTarget[i] = 0f;
+            }
             fireTarget = 0f;
         }
 
         public void Step(float deltaTime, float worsenRate, float recoverRate)
         {
             for (var i = 0; i < MaxBlocks; i++)
+            {
                 loss[i] = Approach(loss[i], target[i], deltaTime, worsenRate, recoverRate);
+                flash[i] = flashTarget[i] > flash[i]
+                    ? flashTarget[i]
+                    : Mathf.MoveTowards(flash[i], flashTarget[i], FlashFadeRate * deltaTime);
+            }
             FireAlarm = Approach(FireAlarm, fireTarget, deltaTime, worsenRate, recoverRate);
         }
 

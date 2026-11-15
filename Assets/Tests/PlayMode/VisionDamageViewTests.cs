@@ -69,10 +69,10 @@ namespace PolishTanks.Tests.PlayMode
             Assume.That(broken.HasValue, Is.True);
 
             var deadline = Time.time + Timeout;
-            while (LossOf(broken.Value.Index) < 1f && Time.time < deadline)
+            while (LossOf(broken.Value.Index) < 0.5f && Time.time < deadline)
                 yield return null;
 
-            Assert.That(LossOf(broken.Value.Index), Is.EqualTo(1f).Within(1e-3f));
+            Assert.That(LossOf(broken.Value.Index), Is.EqualTo(0.5f).Within(1e-3f));
         }
 
         [UnityTest]

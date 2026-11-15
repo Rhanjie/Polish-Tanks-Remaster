@@ -60,6 +60,12 @@ namespace PolishTanks.Tests.PlayMode
                 yield return new WaitForFixedUpdate();
         }
 
+        private void Destroy(VehiclePart part)
+        {
+            damage.Break(part);
+            damage.Break(part);
+        }
+
         private void ShootLeftSide(float caliber = 75f)
         {
             Physics2D.SyncTransforms();
@@ -77,8 +83,9 @@ namespace PolishTanks.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator OnHit_PenetratingLeftSideHitWithCertainTrackBreak_TankNoLongerDrivesNormally()
+        public IEnumerator OnHit_TwoPenetratingLeftSideHitsWithCertainTrackBreak_TankNoLongerDrivesNormally()
         {
+            ShootLeftSide();
             ShootLeftSide();
             tank.Movement.SetInput(1f, 0f);
 
@@ -88,10 +95,13 @@ namespace PolishTanks.Tests.PlayMode
         }
 
         [Test]
-        public void OnHit_PenetratingLeftSideHitWithCertainTrackBreak_ThrowsLeftTrack()
+        public void OnHit_TwoPenetratingLeftSideHitsWithCertainTrackBreak_ThrowsLeftTrack()
         {
             ShootLeftSide();
+            var afterFirst = damage.Model.ConditionOf(new PartId(VehiclePart.LeftTrack));
+            ShootLeftSide();
 
+            Assert.That(afterFirst, Is.EqualTo(PartCondition.Damaged));
             Assert.That(damage.Model.ConditionOf(new PartId(VehiclePart.LeftTrack)), Is.EqualTo(PartCondition.Destroyed));
         }
 
@@ -103,12 +113,25 @@ namespace PolishTanks.Tests.PlayMode
             Assert.That(damage.Model.ConditionOf(new PartId(VehiclePart.LeftTrack)), Is.EqualTo(PartCondition.Intact));
         }
 
+        [Test]
+        public void OnHit_MachineGunBulletWithCertainBlindChance_BlindsViewWithoutDamagingParts()
+        {
+            TankRig.SetField(damage, "settings", rig.Create<ModuleDamageSettings>(
+                ("smallArmsBlockDamageChance", 0f), ("smallArmsBlindChance", 1f)));
+
+            ShootLeftSide(7.92f);
+
+            Assert.That(damage.Visibility, Is.LessThan(1f));
+            Assert.That(damage.Model.ConditionOf(new PartId(VehiclePart.LeftTrack)), Is.EqualTo(PartCondition.Intact));
+            Assert.That(damage.Model.ConditionOf(new PartId(VehiclePart.VisionBlock, 0)), Is.EqualTo(PartCondition.Intact));
+        }
+
         [UnityTest]
         public IEnumerator Break_Engine_StartsFireThatCostsHitPoints()
         {
             var start = tank.Root.GetComponent<Damageable>().HitPoints;
 
-            damage.Break(VehiclePart.Engine);
+            Destroy(VehiclePart.Engine);
             var deadline = Time.time + 2f;
             while (tank.Root.GetComponent<Damageable>().HitPoints >= start && Time.time < deadline)
                 yield return null;
@@ -117,9 +140,17 @@ namespace PolishTanks.Tests.PlayMode
         }
 
         [Test]
-        public void Break_Engine_SetsTankOnFire()
+        public void Break_EngineOnce_DoesNotSetTankOnFire()
         {
             damage.Break(VehiclePart.Engine);
+
+            Assert.That(damage.IsBurning, Is.False);
+        }
+
+        [Test]
+        public void Break_Engine_SetsTankOnFire()
+        {
+            Destroy(VehiclePart.Engine);
 
             Assert.That(damage.IsBurning, Is.True);
         }
@@ -127,7 +158,7 @@ namespace PolishTanks.Tests.PlayMode
         [UnityTest]
         public IEnumerator Break_Engine_TankWillNotDrive()
         {
-            damage.Break(VehiclePart.Engine);
+            Destroy(VehiclePart.Engine);
             tank.Movement.SetInput(1f, 0f);
 
             yield return WaitFixedUpdates(50);
@@ -138,7 +169,7 @@ namespace PolishTanks.Tests.PlayMode
         [UnityTest]
         public IEnumerator Break_TurretRing_TurretDoesNotRotateTowardAimPoint()
         {
-            damage.Break(VehiclePart.TurretRing);
+            Destroy(VehiclePart.TurretRing);
             tank.Aimer.SetAimPoint(new Vector2(-10f, 0f));
 
             for (var i = 0; i < 30; i++)
@@ -150,7 +181,7 @@ namespace PolishTanks.Tests.PlayMode
         [Test]
         public void FieldRepair_BrokenEngine_ExtinguishesFire()
         {
-            damage.Break(VehiclePart.Engine);
+            Destroy(VehiclePart.Engine);
 
             damage.FieldRepair(new PartId(VehiclePart.Engine));
 

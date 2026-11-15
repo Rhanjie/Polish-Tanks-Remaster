@@ -103,5 +103,23 @@ namespace PolishTanks.Tests.EditMode
 
             Assert.That(result, Does.Contain(VehiclePart.TurretRing));
         }
+
+        [TestCase(0.01f, SmallArmsEffect.DamageBlock)]
+        [TestCase(0.1f, SmallArmsEffect.Blind)]
+        [TestCase(0.5f, SmallArmsEffect.None)]
+        public void RollSmallArms_FrontHit_DamagesRarelyAndBlindsMoreOften(float roll, SmallArmsEffect expected)
+        {
+            var effect = PartHitRules.RollSmallArms(HitSide.Front, Certain, 0.03f, 0.15f, () => roll);
+
+            Assert.That(effect, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void RollSmallArms_RearHit_DoesNothing()
+        {
+            var effect = PartHitRules.RollSmallArms(HitSide.Rear, Certain, 1f, 1f, () => 0f);
+
+            Assert.That(effect, Is.EqualTo(SmallArmsEffect.None));
+        }
     }
 }

@@ -2,7 +2,9 @@
 // vision block, so together the blocks cover the whole view and neighbouring cells belong to different blocks.
 // A destroyed block turns its cells into opaque grey static; a field-repaired one leaves them clear but
 // shattered: radial cracks, broken polygonal rings and shards that shift the image, with a slight blur. Cell
-// layout comes from a per-tank seed. While the engine burns the screen edges pulse red.
+// layout comes from a per-tank seed. A blinding hit floods its block's cells with flickering white glare that
+// is brightest at the splash point and fades out, leaving the glass intact. While the engine burns the screen
+// edges pulse red.
 Shader "Hidden/Polish Tanks/Vision Damage"
 {
     SubShader
@@ -28,6 +30,8 @@ Shader "Hidden/Polish Tanks/Vision Damage"
             float4 _VisionParams;
             float4 _VisionLossA;
             float4 _VisionLossB;
+            float4 _VisionFlashA;
+            float4 _VisionFlashB;
 
             static const int MaxBlocks = 6;
             static const float CellsPerHeight = 3.0;
@@ -38,6 +42,7 @@ Shader "Hidden/Polish Tanks/Vision Damage"
             static const float3 StaticGrey = float3(0.3, 0.3, 0.29);
             static const float3 GlassLight = float3(0.86, 0.88, 0.9);
             static const float3 AlarmColor = float3(0.9, 0.08, 0.03);
+            static const float3 FlashColor = float3(1.0, 0.97, 0.88);
 
             float Hash(float2 p)
             {
@@ -67,6 +72,12 @@ Shader "Hidden/Polish Tanks/Vision Damage"
             {
                 float losses[6] = { _VisionLossA.x, _VisionLossA.y, _VisionLossA.z, _VisionLossA.w, _VisionLossB.x, _VisionLossB.y };
                 return losses[index];
+            }
+
+            float BlockFlash(int index)
+            {
+                float flashes[6] = { _VisionFlashA.x, _VisionFlashA.y, _VisionFlashA.z, _VisionFlashA.w, _VisionFlashB.x, _VisionFlashB.y };
+                return flashes[index];
             }
 
             float Line(float gap, float width)
@@ -160,6 +171,7 @@ Shader "Hidden/Polish Tanks/Vision Damage"
                 float2 shift = 0.0;
                 float loss = 0.0;
                 float glass = 0.0;
+                float flash = 0.0;
 
                 if (blocks > 0)
                 {
@@ -208,6 +220,16 @@ Shader "Hidden/Polish Tanks/Vision Damage"
                     loss = lerp((own + other) * 0.5, own, smoothstep(0.0, 0.025, border));
                     glass = saturate(own * 2.0);
 
+                    float ownFlash = BlockFlash((int)BlockOf(owner, blocks));
+                    float otherFlash = BlockFlash((int)BlockOf(runnerUp, blocks));
+                    float cellFlash = lerp((ownFlash + otherFlash) * 0.5, ownFlash, smoothstep(0.0, 0.06, border));
+                    if (cellFlash > 0.001)
+                    {
+                        float spread = length((local - impact) / CellsPerHeight);
+                        float core = 1.0 - smoothstep(0.0, 0.55 / CellsPerHeight, spread);
+                        flash = cellFlash * lerp(0.7, 1.0, core);
+                    }
+
                     if (own > 0.001)
                     {
                         float2 shard;
@@ -235,6 +257,14 @@ Shader "Hidden/Polish Tanks/Vision Damage"
 
                 float glint = 0.6 + 0.4 * Grain(floor(pixel / 2.0), 0.0);
                 color = lerp(color, GlassLight, crack * 0.42 * glint);
+
+                if (flash > 0.001)
+                {
+                    float flicker = 0.85 + 0.15 * Grain(float2(floor(_Time.y * 30.0), seed), 3.0);
+                    float glare = saturate(flash * flicker);
+                    color *= 1.0 + glare * 1.5;
+                    color = lerp(color, FlashColor, glare * 0.85);
+                }
 
                 if (alarm > 0.001)
                 {

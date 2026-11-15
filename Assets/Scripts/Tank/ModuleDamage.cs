@@ -9,10 +9,12 @@ using Random = UnityEngine.Random;
 namespace PolishTanks.Tank
 {
     /// <summary>
-    /// Knocks out tank parts when hits land, using the break chances from the fitted modules, and pushes the result
-    /// into the drive and turret. A track snapping at speed drags the hull round toward the dead side; a destroyed
-    /// engine stops the tank and starts a fire that eats hit points until it burns out. Rounds below the settings'
-    /// minimum calibre never damage parts. A loadout with a different part layout keeps the damage of shared parts.
+    /// Wears tank parts down when hits land, using the break chances from the fitted modules, and pushes the result
+    /// into the drive and turret. Each hit moves a part one step, from intact to damaged to destroyed. A track snapping
+    /// at speed drags the hull round toward the dead side; a destroyed engine stops the tank and starts a fire that
+    /// eats hit points until it burns out. Rounds below the settings' minimum calibre only threaten the vision blocks:
+    /// now and then one gets damaged, more often it is blinded for a moment. A loadout with a different part layout
+    /// keeps the damage of shared parts.
     /// </summary>
     [RequireComponent(typeof(TankController), typeof(Damageable), typeof(TankMovement))]
     public class ModuleDamage : MonoBehaviour
@@ -26,6 +28,7 @@ namespace PolishTanks.Tank
 
         private readonly List<VehiclePart> rolled = new List<VehiclePart>();
         private readonly FireState fire = new FireState();
+        private readonly VisionBlinding blinding = new VisionBlinding();
         private TankController controller;
         private Damageable damageable;
         private TankMovement movement;
@@ -41,6 +44,8 @@ namespace PolishTanks.Tank
 
         public VehicleDamageModel Model { get; private set; }
         public bool IsBurning => fire.IsBurning;
+        public VisionBlinding Blinding => blinding;
+        public float Visibility => blinding.Visibility(Model);
         public float FireRemaining => fire.Remaining;
         public ModuleDamageSettings Settings => settings;
 
@@ -53,6 +58,8 @@ namespace PolishTanks.Tank
             if (broken == null)
                 return null;
 
+            if (Model.ConditionOf(broken.Value) != PartCondition.Destroyed)
+                return broken;
             if (part == VehiclePart.LeftTrack || part == VehiclePart.RightTrack)
                 Yank(part == VehiclePart.LeftTrack, speed);
             if (part == VehiclePart.Engine)
@@ -67,6 +74,13 @@ namespace PolishTanks.Tank
             if (id.Part == VehiclePart.Engine)
                 Extinguish();
             return true;
+        }
+
+        public void Blind(int block)
+        {
+            if (Model == null || controller.IsDestroyed)
+                return;
+            blinding.Flash(block, settings.BlindSeconds, settings.BlindStrength);
         }
 
         public void Extinguish()
@@ -114,6 +128,7 @@ namespace PolishTanks.Tank
 
         private void Update()
         {
+            blinding.Tick(Time.deltaTime);
             if (!fire.IsBurning)
                 return;
             var ticks = fire.Tick(Time.deltaTime, settings.FireTickInterval);
@@ -143,9 +158,14 @@ namespace PolishTanks.Tank
 
         private void OnHit(PenetrationResult result, HitOutcome outcome, float dealt)
         {
-            if (Model == null || damageable.IsDead || (outcome != HitOutcome.Penetrated && outcome != HitOutcome.Blocked))
+            if (Model == null || damageable.IsDead || outcome == HitOutcome.Ignored)
                 return;
             if (damageable.LastCaliber < settings.MinCaliber)
+            {
+                OnSmallArmsHit(result.Side);
+                return;
+            }
+            if (outcome != HitOutcome.Penetrated && outcome != HitOutcome.Blocked)
                 return;
 
             var leftSide = Vector2.Dot(damageable.LastFace, transform.right) < 0f;
@@ -153,6 +173,16 @@ namespace PolishTanks.Tank
                 settings.NonPenetratingTrackFactor, Dice, rolled);
             foreach (var part in rolled)
                 Break(part);
+        }
+
+        private void OnSmallArmsHit(HitSide side)
+        {
+            var effect = PartHitRules.RollSmallArms(side, chances, settings.SmallArmsBlockDamageChance,
+                settings.SmallArmsBlindChance, Dice);
+            if (effect == SmallArmsEffect.DamageBlock)
+                Break(VehiclePart.VisionBlock);
+            else if (effect == SmallArmsEffect.Blind)
+                Blind(Mathf.Min(Model.VisionBlocks - 1, (int)(Dice() * Model.VisionBlocks)));
         }
 
         private void OnPartChanged(PartId id, PartCondition condition)
@@ -163,6 +193,7 @@ namespace PolishTanks.Tank
 
         private void OnTankDestroyed(TankController _)
         {
+            blinding.Clear();
             if (!fire.IsBurning)
                 return;
             fire.Extinguish();
@@ -171,7 +202,8 @@ namespace PolishTanks.Tank
 
         private void PushEffects()
         {
-            movement.Condition = new DriveCondition(Model.EnginePower, Model.LeftTrack, Model.RightTrack, settings.CrippledCrawl);
+            movement.Condition = new DriveCondition(Model.EnginePower, Model.LeftTrack, Model.RightTrack,
+                settings.CrippledCrawl, settings.DamagedTrackPull);
             if (aimer != null)
                 aimer.TraverseFactor = Model.TurretTraverse;
         }

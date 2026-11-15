@@ -47,18 +47,22 @@ namespace PolishTanks.Tests.PlayMode
 
             Assert.That(marks.Left.emitting && marks.Right.emitting, Is.True);
 
-            Physics2D.SyncTransforms();
-            var projectile = fixture.Pools.For(fixture.CreateProjectilePrefab()).Get(new Vector2(-3f, 0f), Quaternion.identity);
-            projectile.Launch(new ProjectileShot
+            var prefab = fixture.CreateProjectilePrefab();
+            for (var shot = 0; shot < 2; shot++)
             {
-                Velocity = new Vector2(10f, 0f),
-                Lifetime = 5f,
-                Damage = 1f,
-                PenetrationMin = 1000f,
-                PenetrationMax = 1000f,
-                Caliber = 75f,
-            });
-            projectile.Step(0.5f);
+                Physics2D.SyncTransforms();
+                var projectile = fixture.Pools.For(prefab).Get(new Vector2(-3f, 0f), Quaternion.identity);
+                projectile.Launch(new ProjectileShot
+                {
+                    Velocity = new Vector2(10f, 0f),
+                    Lifetime = 5f,
+                    Damage = 1f,
+                    PenetrationMin = 1000f,
+                    PenetrationMax = 1000f,
+                    Caliber = 75f,
+                });
+                projectile.Step(0.5f);
+            }
             yield return null;
 
             Assert.That(damage.Model.ConditionOf(new PartId(VehiclePart.LeftTrack)), Is.EqualTo(PartCondition.Destroyed));

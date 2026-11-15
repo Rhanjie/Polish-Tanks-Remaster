@@ -51,6 +51,8 @@ namespace PolishTanks.Rendering
             private static readonly int ParamsId = Shader.PropertyToID("_VisionParams");
             private static readonly int LossAId = Shader.PropertyToID("_VisionLossA");
             private static readonly int LossBId = Shader.PropertyToID("_VisionLossB");
+            private static readonly int FlashAId = Shader.PropertyToID("_VisionFlashA");
+            private static readonly int FlashBId = Shader.PropertyToID("_VisionFlashB");
 
             private readonly Material material;
 
@@ -86,6 +88,8 @@ namespace PolishTanks.Rendering
                 material.SetVector(ParamsId, new Vector4(VisionDamageState.Seed, VisionDamageState.Blocks, VisionDamageState.FireAlarm, 0f));
                 material.SetVector(LossAId, VisionDamageState.LossA);
                 material.SetVector(LossBId, VisionDamageState.LossB);
+                material.SetVector(FlashAId, VisionDamageState.FlashA);
+                material.SetVector(FlashBId, VisionDamageState.FlashB);
             }
         }
     }

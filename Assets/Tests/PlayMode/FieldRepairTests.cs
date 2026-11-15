@@ -72,20 +72,22 @@ namespace PolishTanks.Tests.PlayMode
         public IEnumerator Update_RepairPressedWithDestroyedEngine_PatchesEngineAndPutsOutFire()
         {
             damage.Break(VehiclePart.Engine);
+            damage.Break(VehiclePart.Engine);
             var engine = new PartId(VehiclePart.Engine);
 
             yield return PressRepairUntil(true);
             var deadline = Time.time + 3f;
-            while (damage.Model.ConditionOf(engine) != PartCondition.FieldRepaired && Time.time < deadline)
+            while (damage.Model.ConditionOf(engine) != PartCondition.Damaged && Time.time < deadline)
                 yield return null;
 
-            Assert.That(damage.Model.ConditionOf(engine), Is.EqualTo(PartCondition.FieldRepaired));
+            Assert.That(damage.Model.ConditionOf(engine), Is.EqualTo(PartCondition.Damaged));
             Assert.That(damage.IsBurning, Is.False);
         }
 
         [UnityTest]
         public IEnumerator Update_DriveAndFireWhileRepairing_KeepRepairingAndTankStill()
         {
+            damage.Break(VehiclePart.LeftTrack);
             damage.Break(VehiclePart.LeftTrack);
             yield return PressRepairUntil(true);
             var start = tank.Root.transform.position;
@@ -103,6 +105,7 @@ namespace PolishTanks.Tests.PlayMode
         [UnityTest]
         public IEnumerator Update_RepairPressedWhileRepairing_StopsRepair()
         {
+            damage.Break(VehiclePart.LeftTrack);
             damage.Break(VehiclePart.LeftTrack);
             yield return PressRepairUntil(true);
 
