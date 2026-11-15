@@ -89,6 +89,42 @@ namespace PolishTanks.Prototypes
             }
         }
 
+        public static Vector2 RidgeExtensions(IReadOnlyList<BlockShape> blocks, int index)
+        {
+            var block = blocks[index];
+            if (!block.HasGable)
+                return Vector2.zero;
+            var rect = block.Rect;
+            var along = block.RidgeAlongX ? Vector2.right : Vector2.up;
+            var start = block.RidgeAlongX ? new Vector2(rect.xMin, rect.center.y) : new Vector2(rect.center.x, rect.yMin);
+            var end = block.RidgeAlongX ? new Vector2(rect.xMax, rect.center.y) : new Vector2(rect.center.x, rect.yMax);
+            return new Vector2(RidgeExtension(blocks, index, start, -along), RidgeExtension(blocks, index, end, along));
+        }
+
+        private static float RidgeExtension(IReadOnlyList<BlockShape> blocks, int self, Vector2 ridgeEnd, Vector2 outward)
+        {
+            var block = blocks[self];
+            var probe = ridgeEnd + outward * ProbeDistance;
+            var extension = float.PositiveInfinity;
+            for (var i = 0; i < blocks.Count; i++)
+            {
+                var neighbour = blocks[i];
+                if (i == self || !neighbour.HasGable || neighbour.RidgeAlongX == block.RidgeAlongX || !neighbour.Rect.Contains(probe))
+                    continue;
+                var rise = SurfaceHeight(neighbour, probe);
+                if (rise >= block.TopHeight)
+                {
+                    extension = 0f;
+                    continue;
+                }
+                var halfDepth = neighbour.RidgeAlongX ? neighbour.Rect.height * 0.5f : neighbour.Rect.width * 0.5f;
+                var toRidge = Mathf.Abs(Vector2.Dot(neighbour.Rect.center - ridgeEnd, outward));
+                var slope = neighbour.RidgeHeight / halfDepth;
+                extension = Mathf.Min(extension, Mathf.Min(toRidge, (block.TopHeight - rise) / slope));
+            }
+            return float.IsPositiveInfinity(extension) ? 0f : extension;
+        }
+
         public static void Ranks(IReadOnlyList<BlockShape> blocks, int[] ranks, int maxRank)
         {
             Order.Clear();

@@ -18,6 +18,7 @@ namespace PolishTanks.Prototypes
         private readonly List<BlockShape> shapes = new List<BlockShape>(8);
         private readonly List<List<WallSegment>> walls = new List<List<WallSegment>>(8);
         private readonly List<List<GableEnd>> gableEnds = new List<List<GableEnd>>(8);
+        private readonly List<Vector2> ridgeExtensions = new List<Vector2>(8);
         private readonly List<Building> scratchBlocks = new List<Building>(8);
         private int[] ranks = new int[8];
         private bool dirty = true;
@@ -61,6 +62,12 @@ namespace PolishTanks.Prototypes
         {
             Refresh();
             return gableEnds[index];
+        }
+
+        public Vector2 RidgeExtensionsOf(int index)
+        {
+            Refresh();
+            return ridgeExtensions[index];
         }
 
         public void MarkDirty() => dirty = true;
@@ -108,10 +115,12 @@ namespace PolishTanks.Prototypes
                 walls.Add(new List<WallSegment>(8));
                 gableEnds.Add(new List<GableEnd>(2));
             }
+            ridgeExtensions.Clear();
             for (var i = 0; i < blocks.Count; i++)
             {
                 CompoundLayout.WallSegments(shapes, i, walls[i]);
                 CompoundLayout.GableEnds(shapes, i, gableEnds[i]);
+                ridgeExtensions.Add(CompoundLayout.RidgeExtensions(shapes, i));
             }
         }
 

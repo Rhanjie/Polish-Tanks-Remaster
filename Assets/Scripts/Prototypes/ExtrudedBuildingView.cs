@@ -151,8 +151,10 @@ namespace PolishTanks.Prototypes
             BlockShape shape;
             IReadOnlyList<WallSegment> segments;
             IReadOnlyList<GableEnd> gableEnds;
+            var ridgeExtensions = Vector2.zero;
             if (inCompound)
             {
+                ridgeExtensions = compound.RidgeExtensionsOf(index);
                 space = compound.transform;
                 shape = compound.ShapeOf(index);
                 segments = compound.WallsOf(index);
@@ -169,7 +171,7 @@ namespace PolishTanks.Prototypes
             var order = ApplySortingOrder(viewCenter, inCompound, inCompound ? compound.LayerOf(index) : 0);
             UpdateFade();
             BuildWalls(space, shape, segments, gableEnds);
-            UpdateRoof(space, shape, order + 1);
+            UpdateRoof(space, shape, ridgeExtensions, order + 1);
         }
 
         private BlockShape UpdateSoloLayout()
@@ -321,7 +323,7 @@ namespace PolishTanks.Prototypes
             ApplyBuffers(mesh);
         }
 
-        private void UpdateRoof(Transform space, BlockShape shape, int roofOrder)
+        private void UpdateRoof(Transform space, BlockShape shape, Vector2 ridgeExtensions, int roofOrder)
         {
             var useGable = shape.HasGable && gableRoof != null && roofMesh != null;
             if (roof.enabled == useGable)
@@ -333,7 +335,7 @@ namespace PolishTanks.Prototypes
             {
                 if (gableRenderer != null && gableRenderer.sortingOrder != roofOrder)
                     gableRenderer.sortingOrder = roofOrder;
-                BuildGableRoof(space, shape);
+                BuildGableRoof(space, shape, ridgeExtensions);
                 return;
             }
 
@@ -345,7 +347,7 @@ namespace PolishTanks.Prototypes
             }
         }
 
-        private void BuildGableRoof(Transform space, BlockShape shape)
+        private void BuildGableRoof(Transform space, BlockShape shape, Vector2 ridgeExtensions)
         {
             ClearBuffers();
             var target = gableRoof.transform;
@@ -353,12 +355,18 @@ namespace PolishTanks.Prototypes
             var rect = shape.Rect;
             var along = shape.RidgeAlongX ? Vector2.right : Vector2.up;
             var across = shape.RidgeAlongX ? Vector2.up : Vector2.right;
-            var halfLength = (shape.RidgeAlongX ? rect.width : rect.height) * 0.5f + eaveOverhang;
+            var halfLength = (shape.RidgeAlongX ? rect.width : rect.height) * 0.5f;
             var halfDepth = (shape.RidgeAlongX ? rect.height : rect.width) * 0.5f + eaveOverhang;
             var center = rect.center;
             var eave = shape.Height;
             var ridge = shape.TopHeight;
-            var alongStart = Vector2.Dot(center, along) - halfLength;
+            var eaveStart = halfLength + (ridgeExtensions.x > 0f ? 0f : eaveOverhang);
+            var eaveEnd = halfLength + (ridgeExtensions.y > 0f ? 0f : eaveOverhang);
+            var ridgeStart = halfLength + (ridgeExtensions.x > 0f ? ridgeExtensions.x : eaveOverhang);
+            var ridgeEnd = halfLength + (ridgeExtensions.y > 0f ? ridgeExtensions.y : eaveOverhang);
+            var origin = Vector2.Dot(center, along) - Mathf.Max(eaveStart, ridgeStart);
+            var ridgeA = center - along * ridgeStart;
+            var ridgeB = center + along * ridgeEnd;
 
             for (var side = -1; side <= 1; side += 2)
             {
@@ -366,11 +374,8 @@ namespace PolishTanks.Prototypes
                 var shade = Color.Lerp(shadedRoof, litRoof, Mathf.Clamp01(Vector2.Dot(normal, light) * 0.5f + 0.5f));
                 shade.a = alpha;
 
-                var eaveA = center - along * halfLength + across * (halfDepth * side);
-                var eaveB = center + along * halfLength + across * (halfDepth * side);
-                var ridgeA = center - along * halfLength;
-                var ridgeB = center + along * halfLength;
-                var length = halfLength * 2f / roofTextureSize.x;
+                var eaveA = center - along * eaveStart + across * (halfDepth * side);
+                var eaveB = center + along * eaveEnd + across * (halfDepth * side);
                 var depth = halfDepth / roofTextureSize.y;
 
                 var start = vertices.Count;
@@ -378,11 +383,10 @@ namespace PolishTanks.Prototypes
                 vertices.Add(ToLocal(target, space, eaveB, eave));
                 vertices.Add(ToLocal(target, space, ridgeB, ridge));
                 vertices.Add(ToLocal(target, space, ridgeA, ridge));
-                var u0 = (Vector2.Dot(eaveA, along) - alongStart) / roofTextureSize.x;
-                uvs.Add(new Vector2(u0, 0f));
-                uvs.Add(new Vector2(u0 + length, 0f));
-                uvs.Add(new Vector2(u0 + length, depth));
-                uvs.Add(new Vector2(u0, depth));
+                uvs.Add(new Vector2(RoofU(eaveA, along, origin), 0f));
+                uvs.Add(new Vector2(RoofU(eaveB, along, origin), 0f));
+                uvs.Add(new Vector2(RoofU(ridgeB, along, origin), depth));
+                uvs.Add(new Vector2(RoofU(ridgeA, along, origin), depth));
                 for (var i = 0; i < 4; i++)
                     colors.Add(shade);
                 AddQuad(start);
@@ -393,18 +397,17 @@ namespace PolishTanks.Prototypes
                 var cap = ridgeCap;
                 cap.a = alpha;
                 var half = across * (ridgeCapWidth * 0.5f);
-                var a = center - along * halfLength;
-                var b = center + along * halfLength;
                 var start = vertices.Count;
-                vertices.Add(ToLocal(target, space, a - half, ridge));
-                vertices.Add(ToLocal(target, space, b - half, ridge));
-                vertices.Add(ToLocal(target, space, b + half, ridge));
-                vertices.Add(ToLocal(target, space, a + half, ridge));
-                var length = halfLength * 2f / roofTextureSize.x;
-                uvs.Add(new Vector2(0f, 0f));
-                uvs.Add(new Vector2(length, 0f));
-                uvs.Add(new Vector2(length, 0.1f));
-                uvs.Add(new Vector2(0f, 0.1f));
+                vertices.Add(ToLocal(target, space, ridgeA - half, ridge));
+                vertices.Add(ToLocal(target, space, ridgeB - half, ridge));
+                vertices.Add(ToLocal(target, space, ridgeB + half, ridge));
+                vertices.Add(ToLocal(target, space, ridgeA + half, ridge));
+                var u0 = RoofU(ridgeA, along, origin);
+                var u1 = RoofU(ridgeB, along, origin);
+                uvs.Add(new Vector2(u0, 0f));
+                uvs.Add(new Vector2(u1, 0f));
+                uvs.Add(new Vector2(u1, 0.1f));
+                uvs.Add(new Vector2(u0, 0.1f));
                 for (var i = 0; i < 4; i++)
                     colors.Add(cap);
                 AddQuad(start);
@@ -412,6 +415,8 @@ namespace PolishTanks.Prototypes
 
             ApplyBuffers(roofMesh);
         }
+
+        private float RoofU(Vector2 point, Vector2 along, float origin) => (Vector2.Dot(point, along) - origin) / roofTextureSize.x;
 
         private Color WallShade(Vector2 worldNormal, Vector2 light)
         {
