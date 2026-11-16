@@ -15,8 +15,10 @@ namespace PolishTanks.Prototypes
     /// </summary>
     public static class HeightProjection
     {
+        public const float MaxLeanDistance = 32f;
+
         public static Vector2 RoofOffset(Vector2 basePosition, Vector2 viewCenter, float height, float perspective) =>
-            (basePosition - viewCenter) * (height * perspective);
+            Vector2.ClampMagnitude(basePosition - viewCenter, MaxLeanDistance) * (height * perspective);
 
         public const int BuildingSortingBase = 100;
         public const int BuildingSortingSteps = 2000;
