@@ -18,9 +18,9 @@ MonoBehaviour:
   mass: 11000
   cost: 1500
   tier: 3
-  sprite: {fileID: 21300000, guid: 761a7bc4b559b474ca139ccb76efce20, type: 3}
-  visualScale: 1.1
-  muzzleDistance: 4.4
+  sprite: {fileID: 21300000, guid: 43a8bf5f3f0ae9d4f98798e4c18e4f36, type: 3}
+  visualScale: 1
+  muzzleDistance: 4.9
   maxTraverseSpeed: 55
   traverseAcceleration: 120
   responseTime: 0.35

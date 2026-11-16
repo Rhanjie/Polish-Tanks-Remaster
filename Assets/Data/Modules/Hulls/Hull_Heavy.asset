@@ -18,12 +18,12 @@ MonoBehaviour:
   mass: 28000
   cost: 1800
   tier: 3
-  sprite: {fileID: 21300000, guid: e2d016f3afb05ef4384cc3a23545cd8f, type: 3}
-  visualScale: 1.1
-  colliderSize: {x: 2.85, y: 4.5}
-  turretMount: {x: 0, y: 0.17}
+  sprite: {fileID: 21300000, guid: 78b27b2136a4ac84e87df9ea4ebb8401, type: 3}
+  visualScale: 1
+  colliderSize: {x: 3.2, y: 4.8}
+  turretMount: {x: 0, y: 0.3}
   hasHullMachineGunMount: 1
-  hullMachineGunMount: {x: 0.66, y: 2.05}
+  hullMachineGunMount: {x: 0.7, y: 1.75}
   frontArmor: 100
   sideArmor: 80
   rearArmor: 60
