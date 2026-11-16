@@ -42,6 +42,7 @@ namespace PolishTanks.Weapons
         public Rigidbody2D Shooter => shot.Shooter;
         public bool HasRicocheted => shot.Ricocheted;
         public float Radius => radius;
+        public LayerMask HitMask => hitMask;
 
         public void Launch(in ProjectileShot projectileShot)
         {
