@@ -15,10 +15,10 @@ MonoBehaviour:
   textures: {fileID: 18700000, guid: 9a736fa8990412a4f97152ff40a800a9, type: 3}
   layers:
   - name: Grass
-    textureSize: 4
+    textureSize: 5.12
     blocksVehicles: 0
   - name: Dry Grass
-    textureSize: 4
+    textureSize: 5.12
     blocksVehicles: 0
   - name: Dirt
     textureSize: 4
@@ -30,7 +30,7 @@ MonoBehaviour:
     textureSize: 3
     blocksVehicles: 0
   - name: Sand
-    textureSize: 5
+    textureSize: 4
     blocksVehicles: 0
   - name: Cobblestone
     textureSize: 3
