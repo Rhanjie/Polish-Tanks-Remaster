@@ -49,8 +49,8 @@ namespace PolishTanks.Tests.PlayMode
         {
             gun.TryFire();
 
-            var frames = 0;
-            while (gun.Dispersion > gun.SettledDispersion + 0.1f && frames++ < 600)
+            var deadline = Time.time + 5f;
+            while (gun.Dispersion > gun.SettledDispersion + 0.1f && Time.time < deadline)
                 yield return null;
 
             Assert.That(gun.Dispersion, Is.EqualTo(gun.SettledDispersion).Within(0.1f));
