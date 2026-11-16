@@ -11,6 +11,8 @@ namespace PolishTanks.Tank
     /// A tank weapon (main gun or coaxial MG): reload and belt feed, pooled projectiles,
     /// recoil on the hull, barrel kick, camera shake, muzzle flash and smoke. Sits on the muzzle object:
     /// its up axis is the barrel, the flash and smoke are children, and the hull and barrel recoil are found in its parents.
+    /// When something solid other than low cover lies between the barrel's base (the parent) and the muzzle, as when the
+    /// barrel is pushed into a building, the shot starts at the base and hits that obstacle instead of appearing beyond it.
     /// </summary>
     public class TankGun : MonoBehaviour
     {
@@ -20,6 +22,7 @@ namespace PolishTanks.Tank
         [SerializeField, Min(0f)] private float coverClearance = 5f;
 
         private const int MaxShotsPerFrame = 8;
+        private static readonly RaycastHit2D[] BarrelHits = new RaycastHit2D[8];
 
         [Inject] private IPoolService pools;
         [Inject] private ICameraShake cameraShake;
@@ -192,7 +195,7 @@ namespace PolishTanks.Tank
                 return;
             }
 
-            var origin = transform.position;
+            var origin = ShotOrigin(definition.Prefab.HitMask);
             var shooterVelocity = ownerBody != null ? ownerBody.linearVelocity : Vector2.zero;
             var velocity = BallisticsMath.LaunchVelocity(direction, settings.projectileSpeed, shooterVelocity);
 
@@ -215,6 +218,28 @@ namespace PolishTanks.Tank
                 RicochetPool = EffectPool(definition.RicochetEffect, definition),
                 OtherRicochetPool = EffectPool(definition.OtherRicochetEffect, definition),
             });
+        }
+
+        private Vector3 ShotOrigin(LayerMask hitMask)
+        {
+            var muzzle = transform.position;
+            if (transform.parent == null)
+                return muzzle;
+
+            var breech = transform.parent.position;
+            var filter = new ContactFilter2D { useTriggers = false };
+            filter.SetLayerMask(hitMask);
+            var count = Physics2D.Linecast(breech, muzzle, filter, BarrelHits);
+            for (var i = 0; i < count; i++)
+            {
+                var hit = BarrelHits[i];
+                if (ownerBody != null && hit.rigidbody == ownerBody)
+                    continue;
+                if (hit.collider.GetComponentInParent<LowCover>() != null)
+                    continue;
+                return breech;
+            }
+            return muzzle;
         }
 
         private PrefabPool<PooledEffect> EffectPool(PooledEffect effect, ProjectileDefinition definition) =>

@@ -32,6 +32,26 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
+        public void RoofOffset_FarFromViewCenter_StopsGrowingAtMaxLeanDistance()
+        {
+            var edge = HeightProjection.RoofOffset(new Vector2(HeightProjection.MaxLeanDistance, 0f), Vector2.zero, 10f, 0.04f);
+            var far = HeightProjection.RoofOffset(new Vector2(HeightProjection.MaxLeanDistance * 5f, 0f), Vector2.zero, 10f, 0.04f);
+
+            Assert.That(far.x, Is.EqualTo(edge.x).Within(1e-4f));
+        }
+
+        [Test]
+        public void BuildingSortingOrder_LowBlockDrawsUnderTanksAndTallAboveThem()
+        {
+            const int turretOrder = 12;
+            var low = HeightProjection.BuildingSortingOrder(5f, HeightProjection.LowBuildingHeight - 0.1f, 3);
+            var tall = HeightProjection.BuildingSortingOrder(5f, HeightProjection.LowBuildingHeight, 3);
+
+            Assert.That(low, Is.LessThan(turretOrder));
+            Assert.That(tall, Is.EqualTo(HeightProjection.BuildingSortingOrder(5f) + 6));
+        }
+
+        [Test]
         public void ShadowOffset_FollowsSunAndHeight()
         {
             var offset = HeightProjection.ShadowOffset(new Vector2(0f, -2f), 4f, 0.5f);
