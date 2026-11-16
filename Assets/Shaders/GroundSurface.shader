@@ -104,9 +104,11 @@ Shader "PolishTanks/Ground Surface"
                 return (int)round(LOAD_TEXTURE2D(_IndexTex, cell).r * 255.0);
             }
 
-            half4 SampleLayer(int layer, float2 positionWS)
+            half4 SampleLayer(int layer, float2 positionWS, float2 dx, float2 dy)
             {
-                return SAMPLE_TEXTURE2D_ARRAY(_Layers, sampler_Layers, positionWS * _LayerScale[layer], layer);
+                layer = clamp(layer, 0, 15);
+                float scale = _LayerScale[layer];
+                return SAMPLE_TEXTURE2D_ARRAY_GRAD(_Layers, sampler_Layers, positionWS * scale, layer, dx * scale, dy * scale);
             }
 
             Varyings Vert(Attributes input)
@@ -150,12 +152,14 @@ Shader "PolishTanks/Ground Surface"
                     }
                 }
 
+                float2 dx = ddx(input.positionWS);
+                float2 dy = ddy(input.positionWS);
                 half4 samples[4];
                 float scores[4];
                 float best = 0;
                 [unroll] for (int s = 0; s < 4; s++)
                 {
-                    samples[s] = weights[s] > 0 ? SampleLayer(max(layers[s], 0), input.positionWS) : half4(0, 0, 0, 0);
+                    samples[s] = SampleLayer(layers[s], input.positionWS, dx, dy);
                     scores[s] = weights[s] * lerp(1.0, 0.25 + samples[s].a * 1.5, _HeightBlend);
                     best = max(best, scores[s]);
                 }
@@ -165,7 +169,7 @@ Shader "PolishTanks/Ground Surface"
                 float total = 0;
                 [unroll] for (int t = 0; t < 4; t++)
                 {
-                    float b = max(scores[t] - threshold, 0);
+                    float b = weights[t] > 0 ? max(scores[t] - threshold, 0) : 0;
                     color += samples[t].rgb * b;
                     total += b;
                 }

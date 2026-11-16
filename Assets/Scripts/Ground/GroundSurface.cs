@@ -94,6 +94,11 @@ namespace PolishTanks.Ground
 
         private void Update()
         {
+            if (transform.hasChanged)
+            {
+                transform.hasChanged = false;
+                rebuildRequested = true;
+            }
             if (rebuildRequested)
                 Rebuild();
         }
@@ -105,7 +110,9 @@ namespace PolishTanks.Ground
         }
 
         private int LayerOfCell(Vector2Int cell) =>
-            tilemap.GetTile(new Vector3Int(cell.x, cell.y, 0)) is GroundTile tile ? tile.Layer : -1;
+            tilemap.GetTile(new Vector3Int(cell.x, cell.y, 0)) is GroundTile tile && tile.Layer < UsableLayers ? tile.Layer : -1;
+
+        private int UsableLayers => Mathf.Min(layers.Count, GroundLayerSet.MaxLayers);
 
         private void UploadIndexTexture()
         {
@@ -186,11 +193,11 @@ namespace PolishTanks.Ground
             composite.geometryType = CompositeCollider2D.GeometryType.Polygons;
             foreach (var rect in rects)
             {
-                var min = tilemap.CellToWorld(new Vector3Int(rect.xMin, rect.yMin, 0));
-                var max = tilemap.CellToWorld(new Vector3Int(rect.xMax, rect.yMax, 0));
+                var min = blocking.transform.InverseTransformPoint(tilemap.CellToWorld(new Vector3Int(rect.xMin, rect.yMin, 0)));
+                var max = blocking.transform.InverseTransformPoint(tilemap.CellToWorld(new Vector3Int(rect.xMax, rect.yMax, 0)));
                 var box = blocking.AddComponent<BoxCollider2D>();
                 box.offset = (min + max) * 0.5f;
-                box.size = max - min;
+                box.size = new Vector2(Mathf.Abs(max.x - min.x), Mathf.Abs(max.y - min.y));
                 box.compositeOperation = Collider2D.CompositeOperation.Merge;
             }
             composite.GenerateGeometry();
