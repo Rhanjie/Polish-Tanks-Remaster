@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/TankSandbox.unity
     guid: 9454b4af86b68b94f8479871b74e3a97
   - enabled: 1
+    path: Assets/Scenes/Missions/Mission_00_Tutorial.unity
+    guid: a8303a98cc6062446aff9b86fb49be87
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
