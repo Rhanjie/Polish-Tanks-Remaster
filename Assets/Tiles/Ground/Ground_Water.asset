@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a95e2bcca669c145a460d9a19ee8091, type: 3}
+  m_Name: Ground_Water
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Ground.GroundTile
+  layer: 8
+  preview: {fileID: 5452702156922783119, guid: 714cd233a1c1f444cb0a6ca626405ace, type: 3}
+  previewColor: {r: 0.15003797, g: 0.25629562, b: 0.27129617, a: 1}
