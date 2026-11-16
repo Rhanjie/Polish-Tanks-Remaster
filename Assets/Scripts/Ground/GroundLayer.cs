@@ -4,8 +4,10 @@ using UnityEngine;
 namespace PolishTanks.Ground
 {
     /// <summary>
-    /// One kind of ground in a <see cref="GroundLayerSet"/>: its slice in the texture array, how many world units one
-    /// texture repeat covers, and whether vehicles may drive over it (water does not).
+    /// One kind of ground in a <see cref="GroundLayerSet"/>: how many world units one texture repeat covers, whether
+    /// vehicles may drive over it (water does not), and which slices of the baked texture array hold its variants
+    /// (<see cref="VariantCount"/> slices from <see cref="FirstSlice"/>). The ground shader picks one variant at random
+    /// for every texture repeat. The source textures live in an editor-only asset, so builds carry only the baked array.
     /// </summary>
     [Serializable]
     public class GroundLayer
@@ -17,6 +19,9 @@ namespace PolishTanks.Ground
 
         [Tooltip("Cells of this layer get a collider that stops vehicles, e.g. water.")]
         [SerializeField] private bool blocksVehicles;
+
+        [SerializeField, HideInInspector] private int firstSlice;
+        [SerializeField, HideInInspector] private int variantCount;
 
         public GroundLayer() { }
 
@@ -30,5 +35,13 @@ namespace PolishTanks.Ground
         public string Name => name;
         public float TextureSize => textureSize;
         public bool BlocksVehicles => blocksVehicles;
+        public int FirstSlice => firstSlice;
+        public int VariantCount => variantCount;
+
+        public void AssignSlices(int first, int count)
+        {
+            firstSlice = first;
+            variantCount = count;
+        }
     }
 }

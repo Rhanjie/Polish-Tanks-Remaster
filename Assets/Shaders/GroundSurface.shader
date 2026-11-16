@@ -55,6 +55,8 @@ Shader "PolishTanks/Ground Surface"
             float4 _IndexTex_TexelSize;
             float4 _Grid;
             float _LayerScale[16];
+            float _LayerFirstSlice[16];
+            float _LayerVariants[16];
 
             CBUFFER_START(UnityPerMaterial)
                 float _EdgeWobble;
@@ -108,7 +110,11 @@ Shader "PolishTanks/Ground Surface"
             {
                 layer = clamp(layer, 0, 15);
                 float scale = _LayerScale[layer];
-                return SAMPLE_TEXTURE2D_ARRAY_GRAD(_Layers, sampler_Layers, positionWS * scale, layer, dx * scale, dy * scale);
+                float2 uv = positionWS * scale;
+                float variants = max(_LayerVariants[layer], 1.0);
+                float variant = min(floor(Hash(floor(uv) + layer * 31.7) * variants), variants - 1.0);
+                float slice = _LayerFirstSlice[layer] + variant;
+                return SAMPLE_TEXTURE2D_ARRAY_GRAD(_Layers, sampler_Layers, uv, slice, dx * scale, dy * scale);
             }
 
             Varyings Vert(Attributes input)

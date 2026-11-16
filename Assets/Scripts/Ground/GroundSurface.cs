@@ -7,7 +7,8 @@ namespace PolishTanks.Ground
     /// Draws a painted ground tilemap as one quad instead of square tiles. The tilemap is turned into a
     /// <see cref="GroundIndexMap"/> uploaded as a point-sampled index texture; the <c>PolishTanks/Ground Surface</c>
     /// shader blends the four nearest cells with a wobbly edge and lets the higher texture (alpha) win, so grass gives way
-    /// to dirt in clumps instead of along cell edges. Cells of layers that block vehicles get merged box colliders on
+    /// to dirt in clumps instead of along cell edges. Every texture repeat shows one of its layer's variants, picked at
+    /// random from its position, so a large patch of one layer does not look tiled. Cells of layers that block vehicles get merged box colliders on
     /// <see cref="blockingLayer"/> under a hidden child.
     /// Runs in the editor and rebuilds whenever the tilemap changes, so painting with the tile palette shows the final
     /// ground at once. The tilemap's own renderer should stay disabled. Nothing it builds is saved with the scene.
@@ -20,6 +21,8 @@ namespace PolishTanks.Ground
         private static readonly int GridId = Shader.PropertyToID("_Grid");
         private static readonly int LayersId = Shader.PropertyToID("_Layers");
         private static readonly int LayerScaleId = Shader.PropertyToID("_LayerScale");
+        private static readonly int LayerFirstSliceId = Shader.PropertyToID("_LayerFirstSlice");
+        private static readonly int LayerVariantsId = Shader.PropertyToID("_LayerVariants");
 
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private GroundLayerSet layers;
@@ -36,6 +39,8 @@ namespace PolishTanks.Ground
         [SerializeField] private int blockingLayer = 4;
 
         private readonly float[] layerScales = new float[GroundLayerSet.MaxLayers];
+        private readonly float[] layerFirstSlices = new float[GroundLayerSet.MaxLayers];
+        private readonly float[] layerVariants = new float[GroundLayerSet.MaxLayers];
         private MeshRenderer meshRenderer;
         private Mesh mesh;
         private Texture2D indexTexture;
@@ -164,7 +169,11 @@ namespace PolishTanks.Ground
             var origin = tilemap.CellToWorld(new Vector3Int(cells.xMin, cells.yMin, 0));
             var cellSize = tilemap.layoutGrid != null ? tilemap.layoutGrid.cellSize.x : 1f;
             for (var i = 0; i < layerScales.Length; i++)
+            {
                 layerScales[i] = 1f / layers.TextureSize(i);
+                layerFirstSlices[i] = layers.FirstSlice(i);
+                layerVariants[i] = layers.VariantCount(i);
+            }
 
             meshRenderer.sortingOrder = sortingOrder;
             meshRenderer.GetPropertyBlock(properties);
@@ -173,6 +182,8 @@ namespace PolishTanks.Ground
                 properties.SetTexture(LayersId, layers.Textures);
             properties.SetVector(GridId, new Vector4(origin.x, origin.y, cellSize, 0f));
             properties.SetFloatArray(LayerScaleId, layerScales);
+            properties.SetFloatArray(LayerFirstSliceId, layerFirstSlices);
+            properties.SetFloatArray(LayerVariantsId, layerVariants);
             meshRenderer.SetPropertyBlock(properties);
         }
 
