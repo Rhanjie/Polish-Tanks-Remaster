@@ -9,6 +9,8 @@ namespace PolishTanks.Prototypes
     /// building converts them into its own space before building walls or shadows. Building sorting orders go from
     /// <see cref="BuildingSortingBase"/> up, <see cref="BuildingSortingStride"/> per step, higher for buildings nearer the centre.
     /// Each step holds <see cref="BuildingLayers"/> layers of two orders (walls, then roof) for the blocks of one compound.
+    /// Blocks lower than <see cref="LowBuildingHeight"/> (low walls, rubble) skip that and draw at
+    /// <see cref="LowBuildingSortingOrder"/>, under tanks, so a gun barrel reaching over them stays visible.
     /// Building surfaces also write depth from <see cref="BuildingDepth"/>: in this oblique top-down view the higher surface
     /// is always the visible one, so the depth test settles overlaps that no draw order can. The depth range sits behind
     /// z = 0, where every other sprite lives, so buildings never hide sprites drawn after them.
@@ -32,6 +34,14 @@ namespace PolishTanks.Prototypes
 
         public static float BuildingDepth(float height) =>
             BuildingDepthFar - Mathf.Clamp(height, 0f, BuildingDepthMaxHeight) * BuildingDepthPerUnit;
+
+        public const float LowBuildingHeight = 1.5f;
+        public const int LowBuildingSortingOrder = 2;
+
+        public static bool IsLowBuilding(float height) => height < LowBuildingHeight;
+
+        public static int BuildingSortingOrder(float distanceFromViewCenter, float height, int layer) =>
+            IsLowBuilding(height) ? LowBuildingSortingOrder : BuildingSortingOrder(distanceFromViewCenter) + layer * 2;
 
         public static int BuildingSortingOrder(float distanceFromViewCenter)
         {
