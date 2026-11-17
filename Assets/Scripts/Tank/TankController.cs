@@ -8,6 +8,7 @@ namespace PolishTanks.Tank
     /// <summary>
     /// Builds the tank from a <see cref="TankLoadout"/>: computes its stats and pushes them
     /// into movement, turret, guns and armor, and swaps sprites, collider and mass to match the modules.
+    /// <see cref="Fit"/>, <see cref="Remove(ModuleSlot)"/> and <see cref="Modify"/> swap single modules while the game runs.
     /// When its <see cref="Damageable"/> dies the tank becomes a wreck: controls and guns stop and the sprites darken.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(TankMovement))]
@@ -54,13 +55,33 @@ namespace PolishTanks.Tank
             }
 
             FindParts();
+            var previous = Loadout;
             Loadout = newLoadout;
             loadout = newLoadout;
             Stats = TankStatsCalculator.Calculate(newLoadout);
             ApplyStats(Stats);
             ApplyVisuals(newLoadout);
             StatsApplied?.Invoke(Stats);
+            if (previous != newLoadout)
+                LoadoutBuilder.Release(previous);
             return true;
+        }
+
+        public bool Fit(TankModule module) => Modify(builder => builder.Fit(module));
+
+        public bool Remove(ModuleSlot slot) => Modify(builder => builder.Remove(slot));
+
+        public bool Remove(TankModule module) => Modify(builder => builder.Remove(module));
+
+        public bool Modify(Action<LoadoutBuilder> change)
+        {
+            var builder = new LoadoutBuilder(Loadout);
+            change(builder);
+            var next = builder.Build();
+            if (Apply(next))
+                return true;
+            LoadoutBuilder.Release(next);
+            return false;
         }
 
         private void FindParts()
@@ -89,6 +110,11 @@ namespace PolishTanks.Tank
             initialized = true;
             if (loadout != null)
                 Apply(loadout);
+        }
+
+        private void OnDestroy()
+        {
+            LoadoutBuilder.Release(Loadout);
         }
 
         private void OnValidate()
