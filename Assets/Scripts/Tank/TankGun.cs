@@ -11,13 +11,14 @@ namespace PolishTanks.Tank
     /// A tank weapon (main gun or coaxial MG): reload and belt feed, pooled projectiles,
     /// recoil on the hull, barrel kick, camera shake, muzzle flash and smoke. Sits on the muzzle object:
     /// its up axis is the barrel, the flash and smoke are children, and the hull and barrel recoil are found in its parents.
+    /// Low cover within the cover clearance past the muzzle is fired over, so a long barrel clears cover as far out as a short one.
     /// </summary>
     public class TankGun : MonoBehaviour
     {
         [SerializeField] private GunMount mount = GunMount.Main;
 
-        [Tooltip("Low cover (crates, barrels) within this distance of the tank is fired over. 0 for guns mounted low on the hull.")]
-        [SerializeField, Min(0f)] private float coverClearance = 5f;
+        [Tooltip("Low cover (crates, barrels) within this distance of the muzzle is fired over. 0 for guns mounted low on the hull.")]
+        [SerializeField, Min(0f)] private float coverClearance = 2.5f;
 
         private const int MaxShotsPerFrame = 8;
 
@@ -208,7 +209,7 @@ namespace PolishTanks.Tank
                 PenetrationMin = settings.penetrationMin,
                 PenetrationMax = settings.penetrationMax,
                 Caliber = settings.caliber,
-                FiredFrom = ownerBody != null ? ownerBody.position : (Vector2)origin,
+                FiredFrom = origin,
                 CoverClearance = coverClearance,
                 ImpactPool = EffectPool(definition.ImpactEffect, definition),
                 BlockedPool = EffectPool(definition.BlockedEffect, definition),
