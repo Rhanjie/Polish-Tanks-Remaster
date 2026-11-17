@@ -33,6 +33,8 @@ namespace PolishTanks.Tank
         }
 
         public float CurrentSpeed => model?.Speed ?? 0f;
+        public float Throttle => throttle;
+        public float Steer => steer;
 
         public DriveCondition Condition
         {

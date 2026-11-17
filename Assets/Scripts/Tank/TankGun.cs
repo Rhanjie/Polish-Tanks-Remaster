@@ -189,6 +189,7 @@ namespace PolishTanks.Tank
             pools.For(definition.Prefab, definition.PrewarmCount);
             
             EffectPool(definition.ImpactEffect, definition);
+            EffectPool(definition.PenetratedEffect, definition);
             EffectPool(definition.BlockedEffect, definition);
             EffectPool(definition.RicochetEffect, definition);
             EffectPool(definition.OtherRicochetEffect, definition);
@@ -226,6 +227,7 @@ namespace PolishTanks.Tank
                 FiredFrom = origin,
                 CoverClearance = coverClearance,
                 ImpactPool = EffectPool(definition.ImpactEffect, definition),
+                PenetratedPool = EffectPool(definition.PenetratedEffect, definition),
                 BlockedPool = EffectPool(definition.BlockedEffect, definition),
                 RicochetPool = EffectPool(definition.RicochetEffect, definition),
                 OtherRicochetPool = EffectPool(definition.OtherRicochetEffect, definition),

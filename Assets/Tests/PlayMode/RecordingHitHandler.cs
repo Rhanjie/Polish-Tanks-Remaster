@@ -10,12 +10,13 @@ namespace PolishTanks.Tests.PlayMode
         public ProjectileHit LastHit { get; private set; }
 
         public HitOutcome Outcome { get; set; } = HitOutcome.Ignored;
+        public SurfaceMaterial Material { get; set; } = SurfaceMaterial.Other;
 
         public HitResponse OnProjectileHit(in ProjectileHit hit)
         {
             HitCount++;
             LastHit = hit;
-            return new HitResponse(Outcome, hit.Normal);
+            return new HitResponse(Outcome, hit.Normal, Material);
         }
     }
 }

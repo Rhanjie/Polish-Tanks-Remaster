@@ -17,6 +17,7 @@ namespace PolishTanks.Weapons
         public Vector2 FiredFrom;
         public float CoverClearance;
         public PrefabPool<PooledEffect> ImpactPool;
+        public PrefabPool<PooledEffect> PenetratedPool;
         public PrefabPool<PooledEffect> BlockedPool;
         public PrefabPool<PooledEffect> RicochetPool;
         public PrefabPool<PooledEffect> OtherRicochetPool;
