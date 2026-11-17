@@ -168,7 +168,7 @@ MonoBehaviour:
   radius: 0.08
   hitMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967279
   trail: {fileID: 4758823567744572260}
 --- !u!1 &9179715995582018748
 GameObject:

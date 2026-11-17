@@ -11,7 +11,6 @@ namespace PolishTanks.Tank
     /// A tank weapon (main gun or coaxial MG): reload and belt feed, pooled projectiles,
     /// recoil on the hull, barrel kick, camera shake, muzzle flash and smoke. Sits on the muzzle object:
     /// its up axis is the barrel, the flash and smoke are children, and the hull and barrel recoil are found in its parents.
-    /// Low cover within the cover clearance past the muzzle is fired over, so a long barrel clears cover as far out as a short one.
     /// </summary>
     public class TankGun : MonoBehaviour
     {
@@ -21,6 +20,7 @@ namespace PolishTanks.Tank
         [SerializeField, Min(0f)] private float coverClearance = 2.5f;
 
         private const int MaxShotsPerFrame = 8;
+        private static readonly RaycastHit2D[] BarrelHits = new RaycastHit2D[8];
 
         [Inject] private IPoolService pools;
         [Inject] private ICameraShake cameraShake;
@@ -71,10 +71,13 @@ namespace PolishTanks.Tank
                 var feedChanged = value.magazineSize != settings.magazineSize || !Mathf.Approximately(value.magazineReloadTime, settings.magazineReloadTime);
                 settings = value;
                 Spread.Settings = value;
+                
                 if (reload != null)
                     reload.ReloadTime = value.reloadTime;
+                    
                 if (magazine != null && feedChanged)
                     magazine.Configure(value.magazineSize, value.magazineReloadTime);
+                    
                 if (started)
                     PrewarmPools();
             }
@@ -85,6 +88,7 @@ namespace PolishTanks.Tank
             foreach (var gun in tank.GetComponentsInChildren<TankGun>(true))
                 if (gun.mount == mount)
                     return gun;
+                    
             return null;
         }
 
@@ -104,6 +108,7 @@ namespace PolishTanks.Tank
             SpawnProjectile(direction);
             ApplyRecoil(direction);
             ShowMuzzleFlash();
+            
             if (muzzleSmoke != null && settings.smokeParticles > 0)
                 muzzleSmoke.Emit(settings.smokeParticles);
 
@@ -115,14 +120,18 @@ namespace PolishTanks.Tank
         {
             reload = new ReloadTimer(settings.reloadTime);
             magazine = new Magazine(settings.magazineSize, settings.magazineReloadTime);
+            
             muzzleFlash = GetComponentInChildren<SpriteRenderer>(true);
             muzzleSmoke = GetComponentInChildren<ParticleSystem>(true);
             recoilTarget = GetComponentInParent<TankMovement>();
             barrelRecoil = GetComponentInParent<BarrelRecoil>();
+            
             if (recoilTarget != null)
                 ownerBody = recoilTarget.GetComponent<Rigidbody2D>();
+                
             if (muzzleFlash != null)
                 muzzleFlash.enabled = false;
+                
             lastBarrelAngle = BarrelAngle;
         }
 
@@ -136,6 +145,7 @@ namespace PolishTanks.Tank
         {
             triggerHeld = false;
             flashTimeLeft = 0f;
+            
             if (muzzleFlash != null)
                 muzzleFlash.enabled = false;
         }
@@ -175,7 +185,9 @@ namespace PolishTanks.Tank
             var definition = settings.projectile;
             if (pools == null || definition == null || definition.Prefab == null)
                 return;
+                
             pools.For(definition.Prefab, definition.PrewarmCount);
+            
             EffectPool(definition.ImpactEffect, definition);
             EffectPool(definition.BlockedEffect, definition);
             EffectPool(definition.RicochetEffect, definition);
@@ -187,18 +199,20 @@ namespace PolishTanks.Tank
             var definition = settings.projectile;
             if (definition == null || definition.Prefab == null)
                 return;
+                
             if (pools == null)
             {
                 Debug.LogWarning($"{name}: no {nameof(IPoolService)} injected, the shot has no projectile.", this);
                 return;
             }
 
-            var origin = transform.position;
+            var origin = ShotOrigin(definition.Prefab.HitMask);
             var shooterVelocity = ownerBody != null ? ownerBody.linearVelocity : Vector2.zero;
             var velocity = BallisticsMath.LaunchVelocity(direction, settings.projectileSpeed, shooterVelocity);
 
             var projectile = pools.For(definition.Prefab, definition.PrewarmCount)
                 .Get(origin, Quaternion.LookRotation(Vector3.forward, direction));
+                
             projectile.Launch(new ProjectileShot
             {
                 Velocity = velocity,
@@ -216,6 +230,31 @@ namespace PolishTanks.Tank
                 RicochetPool = EffectPool(definition.RicochetEffect, definition),
                 OtherRicochetPool = EffectPool(definition.OtherRicochetEffect, definition),
             });
+        }
+
+        private Vector3 ShotOrigin(LayerMask hitMask)
+        {
+            var muzzle = transform.position;
+            if (transform.parent == null)
+                return muzzle;
+
+            var breech = transform.parent.position;
+            var filter = new ContactFilter2D { useTriggers = false };
+            filter.SetLayerMask(hitMask);
+            
+            var count = Physics2D.Linecast(breech, muzzle, filter, BarrelHits);
+            for (var i = 0; i < count; i++)
+            {
+                var hit = BarrelHits[i];
+                if (ownerBody != null && hit.rigidbody == ownerBody)
+                    continue;
+                    
+                if (hit.collider.GetComponentInParent<LowCover>() != null)
+                    continue;
+                    
+                return breech;
+            }
+            return muzzle;
         }
 
         private PrefabPool<PooledEffect> EffectPool(PooledEffect effect, ProjectileDefinition definition) =>
@@ -240,6 +279,7 @@ namespace PolishTanks.Tank
         {
             if (muzzleFlash == null || settings.muzzleFlashDuration <= 0f)
                 return;
+                
             flashTimeLeft = settings.muzzleFlashDuration;
             muzzleFlash.enabled = true;
         }
@@ -248,7 +288,9 @@ namespace PolishTanks.Tank
         {
             if (flashTimeLeft <= 0f)
                 return;
+                
             flashTimeLeft -= deltaTime;
+            
             if (flashTimeLeft <= 0f && muzzleFlash != null)
                 muzzleFlash.enabled = false;
         }

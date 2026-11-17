@@ -195,7 +195,7 @@ namespace PolishTanks.Prototypes
                 foreach (var block in compound.Blocks)
                     distance = Mathf.Min(distance, DistanceToFootprint(block, viewCenter));
 
-            var order = HeightProjection.BuildingSortingOrder(distance) + layer * 2;
+            var order = HeightProjection.BuildingSortingOrder(distance, building.Height, layer);
             if (wallRenderer == null)
                 wallRenderer = walls.GetComponent<MeshRenderer>();
             if (wallRenderer != null && wallRenderer.sortingOrder != order)

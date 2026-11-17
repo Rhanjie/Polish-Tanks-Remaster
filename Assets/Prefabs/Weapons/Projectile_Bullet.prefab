@@ -260,5 +260,5 @@ MonoBehaviour:
   radius: 0.04
   hitMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967279
   trail: {fileID: 2078773306599533888}
