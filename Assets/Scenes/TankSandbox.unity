@@ -17950,6 +17950,59 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8791731851694367053, guid: f489ba0b66045974f890828080260c99, type: 3}
   m_PrefabInstance: {fileID: 292713577}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &294676459
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 294676461}
+  - component: {fileID: 294676460}
+  m_Layer: 0
+  m_Name: Navigation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &294676460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294676459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7572171abb554882a1257b1a74f8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Navigation.NavigationGridSource
+  area:
+    serializedVersion: 2
+    x: -146
+    y: -146
+    width: 292
+    height: 292
+  cellSize: 1
+  softObstacleCost: 4
+  drawCells: 0
+--- !u!4 &294676461
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294676459}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &295613628
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -402458,6 +402511,7 @@ MonoBehaviour:
   gameCamera: {fileID: 80974715}
   cameraShakeSource: {fileID: 690981732}
   playerTank: {fileID: 1035006131232419062}
+  navigation: {fileID: 294676460}
 --- !u!1001 &2131379092
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -403279,3 +403333,4 @@ SceneRoots:
   - {fileID: 1651525157}
   - {fileID: 874132546}
   - {fileID: 1114606350}
+  - {fileID: 294676461}
