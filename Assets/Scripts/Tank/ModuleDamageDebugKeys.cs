@@ -8,7 +8,7 @@ namespace PolishTanks.Tank
     /// Temporary playtest helper: number keys hit the player's own parts so every damage effect can be tried
     /// without an enemy. Each press moves a part one step toward destroyed. 1 engine, 2 left track, 3 right track,
     /// 4 turret ring, 5 a random vision block, 6 field-repairs everything destroyed at once, 7 blinds a random block. Until the HUD exists it also logs what the field repair crew
-    /// is doing. Only the tank driven by <see cref="TankInput"/> listens.
+    /// is doing. Only the tank driven by <see cref="TankInput"/> listens, and only while that input is on (not while a debug panel holds the tank).
     /// </summary>
     [RequireComponent(typeof(ModuleDamage))]
     public class ModuleDamageDebugKeys : MonoBehaviour
@@ -41,7 +41,7 @@ namespace PolishTanks.Tank
         private void Update()
         {
             var keyboard = Keyboard.current;
-            if (keyboard == null || tankInput == null || damage.Model == null)
+            if (keyboard == null || tankInput == null || !tankInput.isActiveAndEnabled || damage.Model == null)
                 return;
 
             if (keyboard.digit1Key.wasPressedThisFrame) Break(VehiclePart.Engine);

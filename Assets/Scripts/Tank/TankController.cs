@@ -8,6 +8,9 @@ namespace PolishTanks.Tank
     /// <summary>
     /// Builds the tank from a <see cref="TankLoadout"/>: computes its stats and pushes them
     /// into movement, turret, guns and armor, and swaps sprites, collider and mass to match the modules.
+    /// <see cref="Fit"/>, <see cref="Remove(ModuleSlot)"/> and <see cref="Modify"/> swap single modules while the game runs.
+    /// The tank owns the runtime loadouts it builds and destroys them once replaced; a runtime loadout handed to
+    /// <see cref="Apply(TankLoadout)"/> from elsewhere is copied first, so two tanks never share one.
     /// When its <see cref="Damageable"/> dies the tank becomes a wreck: controls and guns stop and the sprites darken.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(TankMovement))]
@@ -33,6 +36,7 @@ namespace PolishTanks.Tank
         private bool partsFound;
         private bool initialized;
         private bool reapplyPending;
+        private bool ownsLoadout;
         private Vector3? baseMuzzleFlashScale;
 
         public event Action<TankStats> StatsApplied;
@@ -46,6 +50,35 @@ namespace PolishTanks.Tank
 
         public bool Apply(TankLoadout newLoadout)
         {
+            if (newLoadout != null && newLoadout.IsRuntime && newLoadout != Loadout)
+                return Rebuild(new LoadoutBuilder(newLoadout));
+            return Apply(newLoadout, ownsLoadout && newLoadout == Loadout);
+        }
+
+        public bool Rebuild(LoadoutBuilder builder)
+        {
+            var built = builder.Build();
+            if (Apply(built, true))
+                return true;
+            LoadoutBuilder.Release(built);
+            return false;
+        }
+
+        public bool Fit(TankModule module) => Modify(builder => builder.Fit(module));
+
+        public bool Remove(ModuleSlot slot) => Modify(builder => builder.Remove(slot));
+
+        public bool Remove(TankModule module) => Modify(builder => builder.Remove(module));
+
+        public bool Modify(Action<LoadoutBuilder> change)
+        {
+            var builder = new LoadoutBuilder(Loadout);
+            change(builder);
+            return Rebuild(builder);
+        }
+
+        private bool Apply(TankLoadout newLoadout, bool owned)
+        {
             var errors = TankStatsCalculator.Validate(newLoadout);
             if (errors.Count > 0)
             {
@@ -54,12 +87,17 @@ namespace PolishTanks.Tank
             }
 
             FindParts();
+            var previous = Loadout;
+            var ownedPrevious = ownsLoadout;
             Loadout = newLoadout;
             loadout = newLoadout;
+            ownsLoadout = owned;
             Stats = TankStatsCalculator.Calculate(newLoadout);
             ApplyStats(Stats);
             ApplyVisuals(newLoadout);
             StatsApplied?.Invoke(Stats);
+            if (ownedPrevious && previous != newLoadout)
+                LoadoutBuilder.Release(previous);
             return true;
         }
 
@@ -91,6 +129,12 @@ namespace PolishTanks.Tank
                 Apply(loadout);
         }
 
+        private void OnDestroy()
+        {
+            if (ownsLoadout)
+                LoadoutBuilder.Release(Loadout);
+        }
+
         private void OnValidate()
         {
             if (Application.isPlaying && initialized && loadout != null)
@@ -116,8 +160,8 @@ namespace PolishTanks.Tank
                 gun.Settings = stats.Gun;
                 gun.CrewFactor = stats.CrewDispersionFactor;
             }
-            ApplyMachineGun(coaxialGun, stats.HasMachineGun, stats.MachineGun, stats.CrewDispersionFactor);
-            ApplyMachineGun(hullGun, stats.HasHullMachineGun, stats.HullMachineGun, stats.CrewDispersionFactor);
+            ApplyMachineGun(coaxialGun, stats.HasMachineGun && !IsDestroyed, stats.MachineGun, stats.CrewDispersionFactor);
+            ApplyMachineGun(hullGun, stats.HasHullMachineGun && !IsDestroyed, stats.HullMachineGun, stats.CrewDispersionFactor);
             if (ballMount != null)
             {
                 ballMount.gameObject.SetActive(stats.HasHullMachineGun);

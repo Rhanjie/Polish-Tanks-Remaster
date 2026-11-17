@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3596a35cd776cb944a5b3555a974b03d, type: 3}
+  m_Name: ModuleCatalog
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.ModuleCatalog
+  modules:
+  - {fileID: 11400000, guid: 62d61b84acc4540459dd6fe83247bb3d, type: 2}
+  - {fileID: 11400000, guid: 7447722b7931a714b9df7af4404f16da, type: 2}
+  - {fileID: 11400000, guid: 3f5c9fd7ab9a9dd498a97a8d858bd694, type: 2}
+  - {fileID: 11400000, guid: 2b31b12dd4462464f82f2858aceb7c89, type: 2}
+  - {fileID: 11400000, guid: 998d25ee884407c4e9fb6852805b6e4e, type: 2}
+  - {fileID: 11400000, guid: 6fd78d4cab306594ea92851f8eac3e73, type: 2}
+  - {fileID: 11400000, guid: 6503492e5716c644db59fc7bb6582791, type: 2}
+  - {fileID: 11400000, guid: 5d0889c77bc08a2458ea34c8f0909aa6, type: 2}
+  - {fileID: 11400000, guid: b5b839f9705a3f34fb9bb1d7a8508e53, type: 2}
+  - {fileID: 11400000, guid: 4a96a7e83969e9241a6b54fa1e8d5b89, type: 2}
+  - {fileID: 11400000, guid: 559bbdd45917dd6419b5c47e9fbc9bb6, type: 2}
+  - {fileID: 11400000, guid: 4abee0aebd0fcc448bf4923f17ee5c9a, type: 2}
+  - {fileID: 11400000, guid: 923c10aa4e6f402459034be0e9052162, type: 2}
+  - {fileID: 11400000, guid: 286bee7c4d2e3a04b997eb5d5a2fbdb9, type: 2}
+  - {fileID: 11400000, guid: 35ec0ad5a4aba004d84f501225f86fcc, type: 2}
+  - {fileID: 11400000, guid: 53b76ceae5ae79344a7254bceefc9274, type: 2}
+  - {fileID: 11400000, guid: 00d45a33112a44b4fb682e0571ca6b7b, type: 2}
+  - {fileID: 11400000, guid: 4ddfca5e919822d469815a8daf2dd304, type: 2}
+  - {fileID: 11400000, guid: 4e0f315331ef7dc4aae2f3841c84a8ab, type: 2}
+  - {fileID: 11400000, guid: 4fb5973447b35ea499b2c08086d6ec7b, type: 2}
+  - {fileID: 11400000, guid: 3e85d7f65a76b4f4eb9f64e4288cc72b, type: 2}
+  - {fileID: 11400000, guid: 62ac518d964fb7642b8f2cc53337f1e3, type: 2}
+  - {fileID: 11400000, guid: 1a9f082e0ddef8d4e87e1b877e8929a7, type: 2}
+  - {fileID: 11400000, guid: 20daa4d7d80e6504188196be32e26165, type: 2}
+  - {fileID: 11400000, guid: 79995e17757101b4e800474f9d233ea2, type: 2}
+  - {fileID: 11400000, guid: bcc6fcc6d452478438e7be725c5c853e, type: 2}
+  - {fileID: 11400000, guid: 2cbdc953cb70f3b4f9b23b5897dad194, type: 2}
+  - {fileID: 11400000, guid: 38f0e1b54a3b16b429c11f241a2d110e, type: 2}
+  - {fileID: 11400000, guid: 370494248153bf7499255a5488aff256, type: 2}
+  loadouts:
+  - {fileID: 11400000, guid: ff950fd6ec8421049bf6487b673041bf, type: 2}
+  - {fileID: 11400000, guid: 1bc7fb3bd5ecbf3459aa02b65353eb65, type: 2}
+  - {fileID: 11400000, guid: ca0ee4a91f2d7ba42b8464a5dd3e5802, type: 2}
