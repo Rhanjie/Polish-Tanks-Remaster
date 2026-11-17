@@ -5,8 +5,9 @@ using Debug = UnityEngine.Debug;
 namespace PolishTanks.Navigation
 {
     /// <summary>
-    /// The scene's navigation grid: covers <see cref="Area"/> and is built from the scene colliders the first time
-    /// anything asks for a path (or on Start), so nothing needs baking. <see cref="Rebuild"/> refreshes it after the
+    /// The scene's navigation grid: covers <see cref="Area"/> and is built from the scene colliders on Start, once
+    /// every object has enabled and made its colliders (the ground makes water and cliffs in OnEnable), or earlier if
+    /// something asks for a path first. Nothing needs baking. <see cref="Rebuild"/> refreshes it after the
     /// map changes. Selected in the editor it draws the area, and with Draw Cells on also the blocked (red) and soft
     /// (yellow) cells; "Preview Grid" in the component menu builds the grid outside Play Mode.
     /// </summary>
@@ -22,30 +23,27 @@ namespace PolishTanks.Navigation
 
         public Rect Area => area;
 
-        public INavigation Navigation
-        {
-            get
-            {
-                if (navigation == null)
-                    Rebuild();
-                return navigation;
-            }
-        }
+        public INavigation Navigation => navigation ??= new GridNavigation(BuildGrid);
 
         public void Rebuild()
         {
+            if (navigation == null)
+                navigation = new GridNavigation(BuildGrid());
+            else
+                navigation.Use(BuildGrid());
+        }
+
+        private NavGrid BuildGrid()
+        {
             var timer = Stopwatch.StartNew();
             var grid = NavGridBuilder.Build(area, cellSize, new Physics2DObstacleSource(softObstacleCost));
-            if (navigation == null)
-                navigation = new GridNavigation(grid);
-            else
-                navigation.Use(grid);
             Debug.Log($"[Navigation] {name}: {grid.Width}x{grid.Height} grid built in {timer.ElapsedMilliseconds} ms.", this);
+            return grid;
         }
 
         private void Start()
         {
-            if (navigation == null)
+            if (!((GridNavigation)Navigation).IsBuilt)
                 Rebuild();
         }
 
@@ -60,7 +58,7 @@ namespace PolishTanks.Navigation
         {
             Gizmos.color = new Color(0.3f, 0.8f, 1f, 0.8f);
             Gizmos.DrawWireCube(area.center, area.size);
-            if (!drawCells || navigation == null)
+            if (!drawCells || navigation == null || !navigation.IsBuilt)
                 return;
 
             var grid = navigation.Grid;
