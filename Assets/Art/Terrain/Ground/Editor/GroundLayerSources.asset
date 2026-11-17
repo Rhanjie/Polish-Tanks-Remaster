@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b747adb196bd5b42be1c5399737a06d, type: 3}
+  m_Name: GroundLayerSources
+  m_EditorClassIdentifier: PolishTanks.Editor::PolishTanks.Editor.Ground.GroundLayerSources
+  target: {fileID: 11400000, guid: d90b48fb5aa78384eb426d4e216abd8c, type: 2}
+  layers:
+  - name: Grass
+    textures:
+    - {fileID: 2800000, guid: a9db10cdc8e67644190ce60d6e1968b9, type: 3}
+    - {fileID: 2800000, guid: 7053d8927a95b66438957f01f055bad1, type: 3}
+    - {fileID: 2800000, guid: c77d4aa1e134403418901d58f5c7d93e, type: 3}
+    - {fileID: 2800000, guid: b16edc6df5d624b49966120c276108cb, type: 3}
+  - name: Dry Grass
+    textures:
+    - {fileID: 2800000, guid: 63e588dc231fefa4791ffa44ae34e371, type: 3}
+    - {fileID: 2800000, guid: b1747297ca9d70e4a874dfb44bc132c3, type: 3}
+    - {fileID: 2800000, guid: 2cb279cee9c1ebc41977b17025f1388a, type: 3}
+    - {fileID: 2800000, guid: 4dd504795883bdd4d8a4ebaa0cba9648, type: 3}
+  - name: Dirt
+    textures:
+    - {fileID: 2800000, guid: c5786ed479efde344ae4e4d8f9bf6c5e, type: 3}
+    - {fileID: 2800000, guid: 0f85684fbea2d724c80311f8a52c28e8, type: 3}
+    - {fileID: 2800000, guid: 63c0845d3c789a245b4a604063a25bbb, type: 3}
+  - name: Mud
+    textures:
+    - {fileID: 2800000, guid: b98d5e6594824f0408c59567ac816dc3, type: 3}
+    - {fileID: 2800000, guid: 653cfa2d2a9026440867d09a9ee849cd, type: 3}
+    - {fileID: 2800000, guid: 74c9a2424cbdaa940baa0b03c2818c48, type: 3}
+  - name: Gravel
+    textures:
+    - {fileID: 2800000, guid: 525cdbf3e9fcf2742afce560e47eab67, type: 3}
+    - {fileID: 2800000, guid: 91e70a763decb29418b78b282802b6f5, type: 3}
+    - {fileID: 2800000, guid: 265108932dfb0c144a9973c6e9b2d8f1, type: 3}
+  - name: Sand
+    textures:
+    - {fileID: 2800000, guid: 132f3ef4d61d50448a2ad0d21464d6ed, type: 3}
+    - {fileID: 2800000, guid: d7ee513bfdc53ee409c761c603ebcd9a, type: 3}
+    - {fileID: 2800000, guid: 4a2aefe52a303ce439458ddea7b44ebc, type: 3}
+  - name: Cobblestone
+    textures:
+    - {fileID: 2800000, guid: e9e82ac1f3dbe3b469c6123f3ce2c048, type: 3}
+    - {fileID: 2800000, guid: a90388b8025d72741bfe7fc02512d717, type: 3}
+    - {fileID: 2800000, guid: 239da74741f9c4f4085c5c4951c2fab1, type: 3}
+  - name: Ploughed Field
+    textures:
+    - {fileID: 2800000, guid: b9c46187a3c64b6449d58cbe979b68bb, type: 3}
+    - {fileID: 2800000, guid: e10ae83a2a364f24093feedc94e898ac, type: 3}
+    - {fileID: 2800000, guid: f0d63a47e430d4b48be4bbfb7d7a0002, type: 3}
+  - name: Water
+    textures:
+    - {fileID: 2800000, guid: 9f13fbba543d4d348a6eea49ddd816eb, type: 3}
+    - {fileID: 2800000, guid: 2b36aa0b31583bf498a7a3b009e03b8f, type: 3}
+    - {fileID: 2800000, guid: a52996ef83d13e946b623d27b973059d, type: 3}
+  - name: Pavement
+    textures:
+    - {fileID: 2800000, guid: 3dc5555a009f7ad49af41fe69f55c6b7, type: 3}
+    - {fileID: 2800000, guid: f4d3d135c1ba2154ca7ccec6ce3f1313, type: 3}
+    - {fileID: 2800000, guid: 66bf7c1d090bab84f9be8467fff40308, type: 3}
+  - name: Forest Floor
+    textures:
+    - {fileID: 2800000, guid: b9d2ec1519dc5c24293eb8bcb781e094, type: 3}
+    - {fileID: 2800000, guid: cb4d197494025f045b8f1372c7c7b5aa, type: 3}
+    - {fileID: 2800000, guid: 589ab48938f3c8941927906dcec89308, type: 3}
+  - name: Asphalt
+    textures:
+    - {fileID: 2800000, guid: 4fe0d90c7fedd694e9625081fd8d4464, type: 3}
+    - {fileID: 2800000, guid: 2c6a06d3e97d69644a3ef63cd99dd8a6, type: 3}
+    - {fileID: 2800000, guid: f2576ed49d1fab34b9f48140f2631b56, type: 3}
