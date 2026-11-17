@@ -12,38 +12,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1def8202f6038a4a97a6f7ed4c6e2e2, type: 3}
   m_Name: GroundLayers
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Ground.GroundLayerSet
-  textures: {fileID: 18700000, guid: 9a736fa8990412a4f97152ff40a800a9, type: 3}
+  textures: {fileID: 18700000, guid: 1a1443329aa54ec478fc10c6f4cf71c1, type: 2}
+  sliceSize: 256
   layers:
   - name: Grass
-    textureSize: 5.12
+    textureSize: 1.28
     blocksVehicles: 0
+    firstSlice: 0
+    variantCount: 4
   - name: Dry Grass
-    textureSize: 5.12
+    textureSize: 1.28
     blocksVehicles: 0
+    firstSlice: 4
+    variantCount: 4
   - name: Dirt
     textureSize: 4
     blocksVehicles: 0
+    firstSlice: 8
+    variantCount: 3
   - name: Mud
     textureSize: 4
     blocksVehicles: 0
+    firstSlice: 11
+    variantCount: 3
   - name: Gravel
     textureSize: 3
     blocksVehicles: 0
+    firstSlice: 14
+    variantCount: 3
   - name: Sand
     textureSize: 4
     blocksVehicles: 0
+    firstSlice: 17
+    variantCount: 3
   - name: Cobblestone
     textureSize: 3
     blocksVehicles: 0
+    firstSlice: 20
+    variantCount: 3
   - name: Ploughed Field
     textureSize: 6
     blocksVehicles: 0
+    firstSlice: 23
+    variantCount: 3
   - name: Water
     textureSize: 8
     blocksVehicles: 1
+    firstSlice: 26
+    variantCount: 3
   - name: Pavement
     textureSize: 4
     blocksVehicles: 0
+    firstSlice: 29
+    variantCount: 3
   - name: Forest Floor
     textureSize: 4
     blocksVehicles: 0
+    firstSlice: 32
+    variantCount: 3
+  - name: Asphalt
+    textureSize: 4
+    blocksVehicles: 0
+    firstSlice: 35
+    variantCount: 3
