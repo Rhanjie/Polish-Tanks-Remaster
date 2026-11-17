@@ -35,7 +35,9 @@ namespace PolishTanks.Tank.Modules
         public OpticsModule Optics => optics;
         public IReadOnlyList<EquipmentModule> Equipment => equipment;
 
-        public bool IsRuntime { get; private set; }
+        [SerializeField, HideInInspector] private bool isRuntime;
+
+        public bool IsRuntime => isRuntime;
 
         public TankModule Get(ModuleSlot slot)
         {
@@ -60,8 +62,8 @@ namespace PolishTanks.Tank.Modules
             var loadout = CreateInstance<TankLoadout>();
             loadout.name = displayName;
             loadout.displayName = displayName;
-            loadout.hideFlags = HideFlags.DontSave;
-            loadout.IsRuntime = true;
+            loadout.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
+            loadout.isRuntime = true;
             loadout.hull = Slot<HullModule>(slots, ModuleSlot.Hull);
             loadout.engine = Slot<EngineModule>(slots, ModuleSlot.Engine);
             loadout.transmission = Slot<TransmissionModule>(slots, ModuleSlot.Transmission);
