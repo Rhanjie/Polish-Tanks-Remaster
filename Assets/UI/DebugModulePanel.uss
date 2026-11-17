@@ -2,10 +2,10 @@
     position: absolute;
     top: 16px;
     right: 16px;
-    width: 460px;
+    width: 540px;
     max-height: 92%;
     padding: 10px 12px;
-    background-color: rgba(12, 14, 10, 0.92);
+    background-color: rgba(12, 14, 10, 0.96);
     border-width: 1px;
     border-color: rgba(200, 200, 180, 0.35);
     border-radius: 6px;

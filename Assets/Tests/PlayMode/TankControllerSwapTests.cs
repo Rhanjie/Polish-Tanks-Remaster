@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using PolishTanks.Tank;
 using PolishTanks.Tank.Modules;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace PolishTanks.Tests.PlayMode
 {
@@ -44,6 +46,8 @@ namespace PolishTanks.Tests.PlayMode
         {
             var tank = rig.BuildTank("Tank", rig.CreateLoadout(), Vector2.zero);
 
+            LogAssert.Expect(LogType.Error, new Regex("Engine slot is empty"));
+
             Assert.That(tank.Controller.Remove(ModuleSlot.Engine), Is.False);
         }
 
@@ -52,6 +56,7 @@ namespace PolishTanks.Tests.PlayMode
         {
             var original = rig.CreateLoadout();
             var tank = rig.BuildTank("Tank", original, Vector2.zero);
+            LogAssert.Expect(LogType.Error, new Regex("Engine slot is empty"));
 
             tank.Controller.Remove(ModuleSlot.Engine);
 
