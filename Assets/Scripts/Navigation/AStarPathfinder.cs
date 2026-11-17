@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace PolishTanks.Navigation
@@ -10,6 +11,7 @@ namespace PolishTanks.Navigation
     /// crates a detour worth taking unless going round is much longer. A start or goal inside an obstacle (a tank
     /// parked against a wall, a goal set on a building) moves to the nearest open cell first. When the goal can't be
     /// reached the result is <see cref="PathStatus.Partial"/>, ending at the reachable cell closest to it.
+    /// With <see cref="RecordSearches"/> on, each search also leaves a <see cref="SearchTrace"/> for debug views.
     /// One instance is not thread-safe; it reuses its buffers between searches.
     /// </summary>
     public sealed class AStarPathfinder
@@ -32,6 +34,7 @@ namespace PolishTanks.Navigation
         private readonly int[] seen;
         private readonly int[] closed;
         private int stamp;
+        private List<int> recording;
 
         public AStarPathfinder(NavGrid grid, int maxExpandedCells = 0)
         {
@@ -47,7 +50,24 @@ namespace PolishTanks.Navigation
 
         public int MaxExpandedCells { get; set; }
 
+        public bool RecordSearches { get; set; }
+
+        public SearchTrace LastSearch { get; private set; }
+
         public PathResult FindPath(PathRequest request)
+        {
+            if (!RecordSearches)
+                return Find(request);
+
+            recording = new List<int>();
+            var timer = Stopwatch.StartNew();
+            var result = Find(request);
+            LastSearch = new SearchTrace(request, result, recording, timer.Elapsed.TotalMilliseconds);
+            recording = null;
+            return result;
+        }
+
+        private PathResult Find(PathRequest request)
         {
             var radius = request.AgentRadius;
             if (!TryFindNearestWalkable(grid.WorldToCell(request.From), radius, out var start))
@@ -117,6 +137,7 @@ namespace PolishTanks.Navigation
                     continue;
                 closed[current] = stamp;
                 expanded++;
+                recording?.Add(current);
 
                 if (current == goalIndex)
                 {

@@ -104,5 +104,19 @@ namespace PolishTanks.Tests.EditMode
 
             Assert.That(CrossesDeepInside(grid, Start, result, cell => grid.SoftCost(cell) > 0f), Is.True);
         }
+
+        [Test]
+        public void FindPath_WhileRecording_TracesExpandedCellsFromStart()
+        {
+            var grid = new BoxObstacleSource().Solid(new Rect(14.9f, 0f, 0.2f, 14f)).BuildGrid(Area);
+            var navigation = new GridNavigation(grid) { RecordSearches = true };
+
+            var result = navigation.FindPath(new PathRequest(Start, Goal, 0.4f));
+
+            var trace = navigation.LastSearch;
+            Assert.That(trace.Result, Is.SameAs(result));
+            Assert.That(trace.ExpandedCells[0], Is.EqualTo(grid.Index(grid.WorldToCell(Start))));
+            Assert.That(trace.ExpandedCells, Has.Member(grid.Index(grid.WorldToCell(Goal))));
+        }
     }
 }

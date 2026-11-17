@@ -14,6 +14,7 @@ namespace PolishTanks.Navigation
         private Func<NavGrid> pendingBuild;
         private NavGrid grid;
         private AStarPathfinder pathfinder;
+        private bool recordSearches;
 
         public GridNavigation(NavGrid grid)
         {
@@ -26,6 +27,19 @@ namespace PolishTanks.Navigation
         }
 
         public bool IsBuilt => grid != null;
+
+        public bool RecordSearches
+        {
+            get => recordSearches;
+            set
+            {
+                recordSearches = value;
+                if (pathfinder != null)
+                    pathfinder.RecordSearches = value;
+            }
+        }
+
+        public SearchTrace LastSearch => pathfinder?.LastSearch;
 
         public NavGrid Grid
         {
@@ -41,7 +55,7 @@ namespace PolishTanks.Navigation
         {
             pendingBuild = null;
             grid = newGrid;
-            pathfinder = new AStarPathfinder(newGrid);
+            pathfinder = new AStarPathfinder(newGrid) { RecordSearches = recordSearches };
         }
 
         public PathResult FindPath(PathRequest request) => Grid != null ? pathfinder.FindPath(request) : PathResult.None;
