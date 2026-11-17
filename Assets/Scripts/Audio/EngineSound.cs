@@ -14,7 +14,7 @@ namespace PolishTanks.Audio
         [SerializeField] private AudioClip engineLoop;
 
         [SerializeField] private Vector2 pitch = new Vector2(0.7f, 1.45f);
-        [SerializeField] private Vector2 volume = new Vector2(0.2f, 0.5f);
+        [SerializeField] private Vector2 volume = new Vector2(0.12f, 0.3f);
 
         [Tooltip("Revs gained and lost per second.")]
         [SerializeField, Min(0.01f)] private float riseRate = 1.6f;
