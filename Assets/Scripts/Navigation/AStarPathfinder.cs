@@ -5,7 +5,8 @@ namespace PolishTanks.Navigation
 {
     /// <summary>
     /// A* over a <see cref="NavGrid"/> in eight directions. Diagonals never cut a corner, so a tank doesn't clip a
-    /// building's edge. A cell is open to an agent when its clearance covers the agent's radius; soft cost makes
+    /// building's edge. A cell is open to an agent when its clearance covers the agent's radius, and costs more when
+    /// it is closer to a wall than the agent's preferred clearance; soft cost makes
     /// crates a detour worth taking unless going round is much longer. A start or goal inside an obstacle (a tank
     /// parked against a wall, a goal set on a building) moves to the nearest open cell first. When the goal can't be
     /// reached the result is <see cref="PathStatus.Partial"/>, ending at the reachable cell closest to it.
@@ -16,6 +17,7 @@ namespace PolishTanks.Navigation
         public const int DefaultSearchRadius = 12;
 
         private const float Diagonal = 1.41421356f;
+        private const float NearWallPenalty = 1.5f;
 
         private static readonly Vector2Int[] Directions =
         {
@@ -55,9 +57,9 @@ namespace PolishTanks.Navigation
             if (!goalReachable)
                 goal = goalCell;
 
-            var cells = Search(start, goal, radius, request.SoftCostWeight, out var reachedGoal);
+            var cells = Search(start, goal, radius, request.SoftCostWeight, request.PreferredClearance, out var reachedGoal);
             var status = reachedGoal && goalReachable && goal == goalCell ? PathStatus.Found : PathStatus.Partial;
-            var points = PathSmoother.Smooth(grid, cells, radius);
+            var points = PathSmoother.Smooth(grid, cells, radius, request.PreferredClearance);
             if (status == PathStatus.Found)
                 points[points.Count - 1] = request.To;
             if (points.Count > 1 && start == grid.WorldToCell(request.From))
@@ -94,7 +96,7 @@ namespace PolishTanks.Navigation
             return false;
         }
 
-        private List<Vector2Int> Search(Vector2Int start, Vector2Int goal, float radius, float softWeight, out bool reachedGoal)
+        private List<Vector2Int> Search(Vector2Int start, Vector2Int goal, float radius, float softWeight, float preferredClearance, out bool reachedGoal)
         {
             stamp++;
             open.Clear();
@@ -144,6 +146,8 @@ namespace PolishTanks.Navigation
                     if (closed[nextIndex] == stamp)
                         continue;
                     var step = (diagonal ? Diagonal : 1f) * (1f + grid.SoftCost(next) * softWeight);
+                    if (grid.Clearance(next) < preferredClearance)
+                        step *= NearWallPenalty;
                     var newCost = cost[current] + step;
                     if (seen[nextIndex] == stamp && newCost >= cost[nextIndex])
                         continue;

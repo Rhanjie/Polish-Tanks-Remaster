@@ -7,9 +7,13 @@ using UnityEngine;
 namespace PolishTanks.Navigation
 {
     /// <summary>
-    /// Drives a tank along a path to a destination: asks <see cref="INavigation"/> for a route sized to the hull,
-    /// then feeds <see cref="TrackedSteering"/> into <see cref="TankMovement"/> waypoint by waypoint. When the tank
-    /// makes no headway (pinned on a crate, another tank in the way) it backs off for a moment and plans again.
+    /// Drives a tank along a path to a destination: asks <see cref="INavigation"/> for a route sized to the hull
+    /// (half its width as the hard limit, half its diagonal as the room it likes for turning on the spot), then feeds
+    /// <see cref="TrackedSteering"/> into <see cref="TankMovement"/> waypoint by waypoint. It moves on to the next
+    /// waypoint early only when the straight line to it is clear, so it doesn't cut inside corners. A route that
+    /// can't get any closer than where the tank already stands counts as failed, not arrived. When the tank
+    /// makes no headway (pinned on a crate, another tank in the way) it backs off for a moment and plans again; it gives
+    /// up (<see cref="PathFailed"/>) after a few replans that bring it no closer to the destination.
     /// It owns the throttle while moving, so the player's <see cref="TankInput"/> must be off; AI and scripted
     /// scenes call <see cref="MoveTo"/> and <see cref="Stop"/>. A wreck stops on its own.
     /// </summary>
@@ -37,6 +41,8 @@ namespace PolishTanks.Navigation
         [SerializeField, Min(0f)] private float backOffTime = 1f;
         [SerializeField, Min(0)] private int maxReplans = 3;
 
+        private const float ProgressForFreshReplans = 5f;
+
         [Inject] private INavigation injectedNavigation;
 
         private readonly List<Vector2> path = new List<Vector2>();
@@ -50,6 +56,7 @@ namespace PolishTanks.Navigation
         private float checkpointTime;
         private float backOffUntil;
         private int replans;
+        private float closestToDestination;
 
         public event Action<TankPathFollower> Arrived;
         public event Action<TankPathFollower> PathFailed;
@@ -66,14 +73,18 @@ namespace PolishTanks.Navigation
         public PathStatus LastStatus { get; private set; } = PathStatus.NoPath;
         public IReadOnlyList<Vector2> Path => path;
 
-        public float AgentRadius
+        public float AgentRadius => HullSize.x * 0.5f + clearanceMargin;
+
+        public float PivotRadius => HullSize.magnitude * 0.5f + clearanceMargin;
+
+        private Vector2 HullSize
         {
             get
             {
                 if (hull == null)
-                    return 1.5f;
+                    return new Vector2(2.6f, 4.1f);
                 var scale = hull.transform.lossyScale;
-                return Mathf.Max(hull.size.x * Mathf.Abs(scale.x), 0.1f) * 0.5f + clearanceMargin;
+                return new Vector2(hull.size.x * Mathf.Abs(scale.x), hull.size.y * Mathf.Abs(scale.y));
             }
         }
 
@@ -82,6 +93,7 @@ namespace PolishTanks.Navigation
             Destination = destination;
             HasArrived = false;
             replans = 0;
+            closestToDestination = Vector2.Distance(transform.position, destination);
             return Plan();
         }
 
@@ -107,15 +119,18 @@ namespace PolishTanks.Navigation
         {
             var nav = Navigation;
             path.Clear();
-            if (nav == null)
+            if (nav == null || nav.Grid == null)
             {
                 Debug.LogError($"{name}: no navigation in this scene, can't drive to {Destination}.", this);
                 return Fail();
             }
 
-            var result = nav.FindPath(new PathRequest(transform.position, Destination, AgentRadius, softObstacleAvoidance));
+            var position = (Vector2)transform.position;
+            var result = nav.FindPath(new PathRequest(position, Destination, AgentRadius, softObstacleAvoidance, PivotRadius));
             LastStatus = result.Status;
             if (!result.HasPath)
+                return Fail();
+            if (result.Status == PathStatus.Partial && Vector2.Distance(position, result.Points[result.Points.Count - 1]) < arriveDistance)
                 return Fail();
 
             path.AddRange(result.Points);
@@ -152,8 +167,9 @@ namespace PolishTanks.Navigation
             }
 
             var position = (Vector2)transform.position;
-            while (waypoint < path.Count - 1 && Vector2.Distance(position, path[waypoint]) < waypointDistance)
+            while (waypoint < path.Count - 1 && CanMoveOn(position))
                 waypoint++;
+            TrackProgress(position);
 
             var isFinal = waypoint == path.Count - 1;
             if (isFinal && Vector2.Distance(position, path[waypoint]) < arriveDistance)
@@ -170,6 +186,26 @@ namespace PolishTanks.Navigation
 
             var drive = TrackedSteering.Toward(position, transform.up, path[waypoint], isFinal, steering);
             movement.SetInput(drive.Throttle, drive.Steer);
+        }
+
+        private void TrackProgress(Vector2 position)
+        {
+            var distance = Vector2.Distance(position, Destination);
+            if (distance > closestToDestination - ProgressForFreshReplans)
+                return;
+            closestToDestination = distance;
+            replans = 0;
+        }
+
+        private bool CanMoveOn(Vector2 position)
+        {
+            var distance = Vector2.Distance(position, path[waypoint]);
+            if (distance < arriveDistance)
+                return true;
+            if (distance >= waypointDistance)
+                return false;
+            var grid = Navigation?.Grid;
+            return grid == null || PathSmoother.IsClear(grid, grid.WorldToCell(position), grid.WorldToCell(path[waypoint + 1]), AgentRadius);
         }
 
         private void Arrive()
