@@ -64,24 +64,24 @@ namespace PolishTanks.UI
 
         private static IEnumerable<Entry> Entries(float kmhPerUnit)
         {
-            yield return new Entry("Masa", s => s.TotalMass / 1000f, "0.0", " t", false);
-            yield return new Entry("Moc na tonę", s => s.PowerToWeight, "0.0", " KM/t", true);
-            yield return new Entry("Prędkość", s => s.Drive.maxForwardSpeed * kmhPerUnit, "0", " km/h", true);
-            yield return new Entry("Przyspieszenie", s => s.Drive.acceleration, "0.0", "", true);
-            yield return new Entry("Skręt kadłuba", s => s.Drive.turnRate, "0", "°/s", true);
-            yield return new Entry("Obrót wieży", s => s.Turret.maxTraverseSpeed, "0", "°/s", true);
-            yield return new Entry("Przeładowanie", s => s.Gun.reloadTime, "0.00", " s", false);
-            yield return new Entry("Penetracja", s => (s.PenetrationMin + s.PenetrationMax) * 0.5f, "0", " mm", true);
-            yield return new Entry("Obrażenia", s => s.GunDamage, "0", "", true);
-            yield return new Entry("Rozrzut", s => s.GunDispersion, "0.00", "°", false);
-            yield return new Entry("Pancerz przód", s => s.FrontArmor, "0", " mm", true);
-            yield return new Entry("Pancerz bok", s => s.SideArmor, "0", " mm", true);
-            yield return new Entry("Pancerz tył", s => s.RearArmor, "0", " mm", true);
-            yield return new Entry("Wieża przód", s => s.TurretFrontArmor, "0", " mm", true);
-            yield return new Entry("Punkty życia", s => s.HitPoints, "0", "", true);
-            yield return new Entry("Pole widzenia", s => s.ViewRange, "0.0", "", true);
-            yield return new Entry("Amunicja", s => s.AmmoCapacity, "0", "", true);
-            yield return new Entry("Koszt", s => s.Cost, "0", "", false);
+            yield return new Entry(ModulePanelText.Mass, s => s.TotalMass / 1000f, "0.0", ModulePanelText.TonnesUnit, false);
+            yield return new Entry(ModulePanelText.PowerToWeight, s => s.PowerToWeight, "0.0", ModulePanelText.PowerToWeightUnit, true);
+            yield return new Entry(ModulePanelText.TopSpeed, s => s.Drive.maxForwardSpeed * kmhPerUnit, "0", ModulePanelText.SpeedUnit, true);
+            yield return new Entry(ModulePanelText.Acceleration, s => s.Drive.acceleration, "0.0", "", true);
+            yield return new Entry(ModulePanelText.HullTraverse, s => s.Drive.turnRate, "0", ModulePanelText.DegreesPerSecondUnit, true);
+            yield return new Entry(ModulePanelText.TurretTraverse, s => s.Turret.maxTraverseSpeed, "0", ModulePanelText.DegreesPerSecondUnit, true);
+            yield return new Entry(ModulePanelText.Reload, s => s.Gun.reloadTime, "0.00", ModulePanelText.SecondsUnit, false);
+            yield return new Entry(ModulePanelText.Penetration, s => (s.PenetrationMin + s.PenetrationMax) * 0.5f, "0", ModulePanelText.MillimetresUnit, true);
+            yield return new Entry(ModulePanelText.Damage, s => s.GunDamage, "0", "", true);
+            yield return new Entry(ModulePanelText.Dispersion, s => s.GunDispersion, "0.00", ModulePanelText.DegreesUnit, false);
+            yield return new Entry(ModulePanelText.FrontArmor, s => s.FrontArmor, "0", ModulePanelText.MillimetresUnit, true);
+            yield return new Entry(ModulePanelText.SideArmor, s => s.SideArmor, "0", ModulePanelText.MillimetresUnit, true);
+            yield return new Entry(ModulePanelText.RearArmor, s => s.RearArmor, "0", ModulePanelText.MillimetresUnit, true);
+            yield return new Entry(ModulePanelText.TurretFrontArmor, s => s.TurretFrontArmor, "0", ModulePanelText.MillimetresUnit, true);
+            yield return new Entry(ModulePanelText.HitPoints, s => s.HitPoints, "0", "", true);
+            yield return new Entry(ModulePanelText.ViewRange, s => s.ViewRange, "0.0", "", true);
+            yield return new Entry(ModulePanelText.Ammo, s => s.AmmoCapacity, "0", "", true);
+            yield return new Entry(ModulePanelText.Cost, s => s.Cost, "0", "", false);
         }
 
         private static string Format(float value, string format) => value.ToString(format, CultureInfo.InvariantCulture);

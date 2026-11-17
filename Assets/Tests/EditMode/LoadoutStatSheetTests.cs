@@ -15,7 +15,7 @@ namespace PolishTanks.Tests.EditMode
         {
             var lines = LoadoutStatSheet.Build(new TankStats { TotalMass = 30000f }, new TankStats { TotalMass = 25000f }, 1f);
 
-            Assert.That(Row(lines, "Masa").Change, Is.EqualTo(StatChange.Worse));
+            Assert.That(Row(lines, ModulePanelText.Mass).Change, Is.EqualTo(StatChange.Worse));
         }
 
         [Test]
@@ -23,7 +23,7 @@ namespace PolishTanks.Tests.EditMode
         {
             var lines = LoadoutStatSheet.Build(new TankStats { FrontArmor = 80f }, new TankStats { FrontArmor = 50f }, 1f);
 
-            Assert.That(Row(lines, "Pancerz przód").Change, Is.EqualTo(StatChange.Better));
+            Assert.That(Row(lines, ModulePanelText.FrontArmor).Change, Is.EqualTo(StatChange.Better));
         }
 
         [Test]
