@@ -62,6 +62,8 @@ namespace PolishTanks.UI
         private Label description;
         private TextField search;
         private Button undo;
+        private Button random;
+        private Button close;
         private TankController tank;
         private TankInput tankInput;
         private TankStats shownStats;
@@ -102,11 +104,13 @@ namespace PolishTanks.UI
             description = tree.Q<Label>("description");
             search = tree.Q<TextField>("search");
             undo = tree.Q<Button>("undo");
+            random = tree.Q<Button>("random");
+            close = tree.Q<Button>("close");
 
-            search.RegisterValueChangedCallback(_ => Refresh());
+            search.RegisterValueChangedCallback(OnSearchChanged);
             undo.clicked += Undo;
-            tree.Q<Button>("random").clicked += Randomize;
-            tree.Q<Button>("close").clicked += () => SetOpen(false);
+            random.clicked += Randomize;
+            close.clicked += Close;
 
             isOpen = false;
             root.AddToClassList(HiddenClass);
@@ -119,7 +123,17 @@ namespace PolishTanks.UI
         {
             SetOpen(false);
             Unbind();
+            if (search == null)
+                return;
+            search.UnregisterValueChangedCallback(OnSearchChanged);
+            undo.clicked -= Undo;
+            random.clicked -= Randomize;
+            close.clicked -= Close;
         }
+
+        private void OnSearchChanged(ChangeEvent<string> _) => Refresh();
+
+        private void Close() => SetOpen(false);
 
         private void Start() => Bind();
 
@@ -177,16 +191,16 @@ namespace PolishTanks.UI
             if (tank == null)
                 return;
             var snapshot = Snapshot();
-            var check = new LoadoutBuilder(tank.Loadout);
-            change(check);
-            var errors = check.Validate();
+            var builder = new LoadoutBuilder(tank.Loadout);
+            change(builder);
+            var errors = builder.Validate();
             if (errors.Count > 0)
             {
                 ShowStatus(string.Join(" ", errors), true);
                 return;
             }
 
-            if (!tank.Modify(change))
+            if (!tank.Rebuild(builder))
             {
                 ShowStatus("Nie udało się złożyć czołgu, szczegóły w konsoli.", true);
                 return;
@@ -216,15 +230,18 @@ namespace PolishTanks.UI
             if (tank == null || history.Count == 0)
                 return;
             var (asset, copy) = history.Pop();
-            var restored = asset != null ? asset : copy.Build();
-            if (!tank.Apply(restored))
-                LoadoutBuilder.Release(restored);
+            if (asset != null)
+                tank.Apply(asset);
+            else
+                tank.Rebuild(copy);
             ShowDescription(null);
         }
 
         private (TankLoadout asset, LoadoutBuilder copy) Snapshot()
         {
             var loadout = tank.Loadout;
+            if (loadout == null)
+                return (null, new LoadoutBuilder(null));
             return loadout.IsRuntime ? (null, new LoadoutBuilder(loadout)) : (loadout, null);
         }
 
