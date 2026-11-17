@@ -14,6 +14,9 @@ namespace PolishTanks.Weapons
         [Tooltip("Pooled effect spawned where the projectile hits. Optional.")]
         [SerializeField] private PooledEffect impactEffect;
 
+        [Tooltip("Pooled effect spawned where the projectile punches through metal. Falls back to the impact effect.")]
+        [SerializeField] private PooledEffect penetratedEffect;
+
         [Tooltip("Pooled effect spawned when armor stops the projectile. Falls back to the impact effect.")]
         [SerializeField] private PooledEffect blockedEffect;
 
@@ -29,6 +32,7 @@ namespace PolishTanks.Weapons
         public Projectile Prefab => prefab;
         public float Lifetime => lifetime;
         public PooledEffect ImpactEffect => impactEffect;
+        public PooledEffect PenetratedEffect => penetratedEffect;
         public PooledEffect BlockedEffect => blockedEffect;
         public PooledEffect RicochetEffect => ricochetEffect;
         public PooledEffect OtherRicochetEffect => otherRicochetEffect;

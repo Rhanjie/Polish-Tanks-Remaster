@@ -186,7 +186,7 @@ namespace PolishTanks.Weapons
             if (response.Outcome == HitOutcome.Penetrated && response.PassesThrough)
             {
                 Push(hit, direction, shot.Impulse * PassThroughImpulseFactor);
-                PassThrough(hit, response.ResidualPenetration);
+                PassThrough(hit, response.ResidualPenetration, response.Material);
                 return ImpactResult.PassedThrough;
             }
 
@@ -205,18 +205,23 @@ namespace PolishTanks.Weapons
 
             var brokeUp = response.Outcome == HitOutcome.Blocked || (shot.Ricocheted && response.Outcome != HitOutcome.Penetrated);
             var onMetal = response.Material == SurfaceMaterial.Metal;
-            var effects = brokeUp && onMetal && shot.BlockedPool != null ? shot.BlockedPool : shot.ImpactPool;
+            var effects = brokeUp && onMetal && shot.BlockedPool != null ? shot.BlockedPool
+                : response.Outcome == HitOutcome.Penetrated ? PenetrationPool(response.Material)
+                : shot.ImpactPool;
             effects?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
             return ImpactResult.Stopped;
         }
 
-        private void PassThrough(RaycastHit2D hit, float residualPenetration)
+        private void PassThrough(RaycastHit2D hit, float residualPenetration, SurfaceMaterial material)
         {
             shot.PenetrationMin = residualPenetration;
             shot.PenetrationMax = residualPenetration;
             Ignore(hit);
-            shot.ImpactPool?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
+            PenetrationPool(material)?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
         }
+
+        private PrefabPool<PooledEffect> PenetrationPool(SurfaceMaterial material) =>
+            material == SurfaceMaterial.Metal && shot.PenetratedPool != null ? shot.PenetratedPool : shot.ImpactPool;
 
         private void Ignore(RaycastHit2D hit)
         {
