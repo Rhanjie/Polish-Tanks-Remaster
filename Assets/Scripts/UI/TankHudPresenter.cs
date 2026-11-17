@@ -5,8 +5,8 @@ namespace PolishTanks.UI
 {
     /// <summary>
     /// Turns the player tank's state into what the tank HUD shows: a style class per part, the speedometer reading
-    /// and scale, the machine gun belt count, the caption next to the repair key and the name of the part in the
-    /// crew's hands. Speeds come in world units per second and are shown in km/h.
+    /// and scale, the machine gun belt count and the caption next to the repair key. Speeds come in world units per
+    /// second and are shown in km/h. The words come from <see cref="HudText"/>.
     /// </summary>
     public static class TankHudPresenter
     {
@@ -33,25 +33,15 @@ namespace PolishTanks.UI
         public static float GaugeFill(float unitsPerSecond, float kmhPerUnit, int gaugeMaxKmh) =>
             gaugeMaxKmh > 0 ? Mathf.Clamp01(Mathf.Abs(unitsPerSecond) * kmhPerUnit / gaugeMaxKmh) : 0f;
 
-        public static string BeltText(int rounds, int size) => size > 0 ? $"{rounds}/{size}" : "∞";
+        public static string BeltText(int rounds, int size) => size > 0 ? string.Format(HudText.BeltCountFormat, rounds, size) : HudText.UnlimitedBelt;
 
         public static float BeltFill(int rounds, int size) => size > 0 ? Mathf.Clamp01((float)rounds / size) : 1f;
 
         public static string RepairCaption(bool repairing, bool hasWork)
         {
             if (repairing)
-                return "Przerwij";
-            return hasWork ? "Naprawa" : null;
+                return HudText.RepairStop;
+            return hasWork ? HudText.RepairStart : null;
         }
-
-        public static string PartName(PartId id) => id.Part switch
-        {
-            VehiclePart.Engine => "Silnik",
-            VehiclePart.LeftTrack => "Lewa gąsienica",
-            VehiclePart.RightTrack => "Prawa gąsienica",
-            VehiclePart.TurretRing => "Pierścień wieży",
-            VehiclePart.VisionBlock => $"Peryskop {id.Index + 1}",
-            _ => id.Part.ToString(),
-        };
     }
 }

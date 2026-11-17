@@ -205,7 +205,7 @@ namespace PolishTanks.UI
 
             repairKey.text = input != null ? input.RepairKeyLabel : "R";
             repairCaption.text = caption;
-            repairPart.text = repairing && fieldRepair.Current.HasValue ? TankHudPresenter.PartName(fieldRepair.Current.Value) : string.Empty;
+            repairPart.text = repairing && fieldRepair.Current.HasValue ? HudText.PartName(fieldRepair.Current.Value) : string.Empty;
             progressFill.style.width = Length.Percent(repairing ? fieldRepair.Progress * 100f : 0f);
         }
 
@@ -232,7 +232,7 @@ namespace PolishTanks.UI
             var beltFill = changing ? machineGun.MagazineReloadProgress : TankHudPresenter.BeltFill(rounds, beltSize);
             dial.SetWeapons(gunFill, beltFill, changing);
 
-            var gunText = gunFill >= 1f ? "Gotowe" : "Ładowanie";
+            var gunText = gunFill >= 1f ? HudText.GunReady : HudText.GunLoading;
             if (gunText != shownGun)
             {
                 shownGun = gunText;
@@ -240,7 +240,7 @@ namespace PolishTanks.UI
                 gunSwatch.EnableInClassList(LoadingSwatchClass, gunFill < 1f);
             }
 
-            var beltText = changing ? "Taśma" : TankHudPresenter.BeltText(rounds, beltSize);
+            var beltText = changing ? HudText.BeltChange : TankHudPresenter.BeltText(rounds, beltSize);
             if (beltText != shownBelt)
             {
                 shownBelt = beltText;

@@ -45,7 +45,7 @@
             <ui:VisualElement name="repair" class="popup repair" picking-mode="Ignore">
                 <ui:VisualElement class="repair-row" picking-mode="Ignore">
                     <ui:Label name="repairKey" class="repair-key" text="R" picking-mode="Ignore" />
-                    <ui:Label name="repairCaption" class="repair-caption" text="Naprawa" picking-mode="Ignore" />
+                    <ui:Label name="repairCaption" class="repair-caption" text="Repair" picking-mode="Ignore" />
                 </ui:VisualElement>
                 <ui:Label name="repairPart" class="repair-part" text="" picking-mode="Ignore" />
                 <ui:VisualElement name="progress" class="progress" picking-mode="Ignore">
@@ -55,12 +55,12 @@
             <ui:VisualElement name="ammo" class="popup ammo" picking-mode="Ignore">
                 <ui:VisualElement class="ammo-row" picking-mode="Ignore">
                     <ui:VisualElement class="ammo-swatch ammo-swatch--gun" picking-mode="Ignore" />
-                    <ui:Label class="ammo-name" text="Działo" picking-mode="Ignore" />
-                    <ui:Label name="gunState" class="ammo-value" text="Gotowe" picking-mode="Ignore" />
+                    <ui:Label class="ammo-name" text="Gun" picking-mode="Ignore" />
+                    <ui:Label name="gunState" class="ammo-value" text="Ready" picking-mode="Ignore" />
                 </ui:VisualElement>
                 <ui:VisualElement class="ammo-row" picking-mode="Ignore">
                     <ui:VisualElement class="ammo-swatch ammo-swatch--belt" picking-mode="Ignore" />
-                    <ui:Label class="ammo-name" text="KM" picking-mode="Ignore" />
+                    <ui:Label class="ammo-name" text="MG" picking-mode="Ignore" />
                     <ui:Label name="beltState" class="ammo-value" text="150/150" picking-mode="Ignore" />
                 </ui:VisualElement>
             </ui:VisualElement>

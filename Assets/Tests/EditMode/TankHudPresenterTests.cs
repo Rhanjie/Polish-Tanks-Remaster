@@ -33,13 +33,13 @@ namespace PolishTanks.Tests.EditMode
         [Test]
         public void RepairCaption_Repairing_ReturnsInterrupt()
         {
-            Assert.That(TankHudPresenter.RepairCaption(true, true), Is.EqualTo("Przerwij"));
+            Assert.That(TankHudPresenter.RepairCaption(true, true), Is.EqualTo(HudText.RepairStop));
         }
 
         [Test]
         public void RepairCaption_WorkWaitingAndNotRepairing_ReturnsRepair()
         {
-            Assert.That(TankHudPresenter.RepairCaption(false, true), Is.EqualTo("Naprawa"));
+            Assert.That(TankHudPresenter.RepairCaption(false, true), Is.EqualTo(HudText.RepairStart));
         }
 
         [Test]
