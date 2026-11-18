@@ -33,6 +33,7 @@ namespace PolishTanks.Combat
         public HitOutcome LastOutcome { get; private set; }
         public Vector2 LastFace { get; private set; }
         public float LastCaliber { get; private set; }
+        public Rigidbody2D LastShooter { get; private set; }
         public SurfaceMaterial Surface => profile != null ? profile.Surface : SurfaceMaterial.Metal;
 
         private HealthPool Health
@@ -66,6 +67,7 @@ namespace PolishTanks.Combat
             }
 
             LastCaliber = hit.Caliber;
+            LastShooter = hit.Shooter;
             var localFace = ArmorMath.SnapToFace(transform.InverseTransformDirection(hit.Normal),
                 transform.InverseTransformDirection(hit.Direction));
             Vector2 face = transform.TransformDirection(localFace);
