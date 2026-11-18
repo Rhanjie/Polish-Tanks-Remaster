@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using PolishTanks.CameraRig;
 using PolishTanks.Tank;
 using Reflex.Attributes;
@@ -306,11 +307,10 @@ namespace PolishTanks.Navigation
             if (view == NavigationDebugView.Off)
                 return;
             var trace = navigation != null ? navigation.LastSearch : null;
-            var text = $"Nawigacja (F2): {(view == NavigationDebugView.Grid ? "siatka" : "clearance")}\n"
-                       + "Środkowy przycisk: pokaż drogę do kursora\nShift + środkowy: jedź tam";
+            var text = string.Format(NavigationDebugText.HeaderFormat, NavigationDebugText.ViewName(view)) + "\n" + NavigationDebugText.Help;
             if (trace != null)
-                text += $"\nOstatnie szukanie: {trace.Result.Status}, rozwinięte komórki {trace.ExpandedCells.Count}, "
-                        + $"{trace.Milliseconds:0.0} ms, {trace.Result.Length(trace.From):0} m";
+                text += "\n" + string.Format(CultureInfo.InvariantCulture, NavigationDebugText.LastSearchFormat,
+                    NavigationDebugText.StatusName(trace.Result.Status), trace.ExpandedCells.Count, trace.Milliseconds, trace.Result.Length(trace.From));
             labelStyle ??= new GUIStyle(GUI.skin.box) { alignment = TextAnchor.UpperLeft, fontSize = 13, padding = new RectOffset(8, 8, 6, 6) };
             GUI.Box(new Rect(12f, 12f, 460f, trace != null ? 86f : 66f), text, labelStyle);
         }
