@@ -18,11 +18,13 @@ namespace PolishTanks.AI
     /// spotted. A shell from the player tells the crew where it came from even when they can't see the shooter.
     /// With Scripted Combat on, the orders keep the hull during a fight (for cutscenes) and only the guns react.
     /// Orders are edited in the inspector or set from code with <see cref="SetOrders"/>. The tank must not have an
-    /// enabled <see cref="TankInput"/>. Its own shell results go into <see cref="Penetrations"/> for later tactics.
+    /// enabled <see cref="TankInput"/>. How its main gun shells did goes into <see cref="Penetrations"/> for later tactics.
     /// </summary>
     [RequireComponent(typeof(TankController), typeof(TankPathFollower))]
     public class EnemyTankAI : MonoBehaviour, IShotOutcomeReceiver
     {
+        public const float MinimumShellCaliber = 20f;
+
         private static readonly List<EnemyTankAI> Active = new List<EnemyTankAI>();
 
         [Tooltip("How this tank sees and fights. Empty uses the built-in defaults.")]
@@ -197,7 +199,8 @@ namespace PolishTanks.AI
 
         public void OnShotOutcome(in ShotOutcome outcome)
         {
-            if (outcome.Outcome == HitOutcome.Ignored || outcome.Target == null || player == null || player.Controller == null)
+            if (outcome.Outcome == HitOutcome.Ignored || outcome.Caliber < MinimumShellCaliber || outcome.Target == null
+                || player == null || player.Controller == null)
                 return;
             var hitTank = outcome.Target.GetComponentInParent<TankController>();
             if (hitTank != player.Controller || !hitTank.TryGetComponent<Damageable>(out var armor))
