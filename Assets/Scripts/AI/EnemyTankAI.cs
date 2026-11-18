@@ -15,17 +15,17 @@ namespace PolishTanks.AI
     /// Brain of an enemy tank. Every frame it looks for the player (sight range from the optics and the doctrine, cut by
     /// damaged vision blocks, blocked by buildings), lets the <see cref="UtilityBrain"/> pick what the hull does
     /// (follow the designer's orders, engage, search) and lets the <see cref="Gunner"/> fight whenever the player is
-    /// spotted. A shell from the player tells the crew where it came from even when they can't see the shooter.
+    /// spotted. A shell from the player tells the crew where it came from even when they can't see the shooter, and so
+    /// does a player's shot flying close past; the player's gunfire makes the crew see further for a moment. While the
+    /// player is spotted the crew radios its position to friends within sight range.
     /// With Scripted Combat on, the orders keep the hull during a fight (for cutscenes) and only the guns react.
     /// Orders are edited in the inspector or set from code with <see cref="SetOrders"/>. The tank must not have an
     /// enabled <see cref="TankInput"/>. How its main gun shells did goes into <see cref="Penetrations"/> for later tactics.
     /// </summary>
     [RequireComponent(typeof(TankController), typeof(TankPathFollower))]
-    public class EnemyTankAI : MonoBehaviour, IShotOutcomeReceiver
+    public class EnemyTankAI : MonoBehaviour, IShotOutcomeReceiver, IAiAgent
     {
         public const float MinimumShellCaliber = 20f;
-
-        private static readonly List<EnemyTankAI> Active = new List<EnemyTankAI>();
 
         [Tooltip("How this tank sees and fights. Empty uses the built-in defaults.")]
         [SerializeField] private CombatDoctrine doctrine;
@@ -40,6 +40,8 @@ namespace PolishTanks.AI
 
         private readonly TargetMemory target = new TargetMemory();
         private readonly PenetrationLog penetrations = new PenetrationLog();
+        private readonly SightBoost sightBoost = new SightBoost();
+        private readonly RadioOperator radio = new RadioOperator();
         private TankController controller;
         private Rigidbody2D body;
         private ModuleDamage moduleDamage;
@@ -51,8 +53,6 @@ namespace PolishTanks.AI
         private CombatDoctrine fallbackDoctrine;
         private bool knockedOut;
 
-        public static IReadOnlyList<EnemyTankAI> All => Active;
-
         public CombatDoctrine Doctrine => doctrine != null ? doctrine : FallbackDoctrine;
         public OrderList Orders => orders;
         public TargetMemory Target => target;
@@ -60,6 +60,10 @@ namespace PolishTanks.AI
         public AiBehaviourKind? CurrentBehaviour => brain?.Current?.Kind;
         public bool IsTargetSpotted => context != null && context.IsTargetSpotted;
         public ITankDriver Driver => driver;
+        public string Name => name;
+        public Vector2 Position => transform.position;
+        public bool IsActive => isActiveAndEnabled && !knockedOut;
+        public float NearMissRadius => Doctrine.NearMissRadius;
 
         public bool ScriptedCombat
         {
@@ -79,7 +83,7 @@ namespace PolishTanks.AI
                 var stats = controller != null ? controller.Stats : null;
                 var viewRange = stats != null ? stats.ViewRange : TankStatsCalculator.DefaultViewRange;
                 var visibility = moduleDamage != null && moduleDamage.Model != null ? moduleDamage.Visibility : 1f;
-                return Doctrine.SightRange(viewRange, visibility);
+                return Doctrine.SightRange(viewRange, visibility) * sightBoost.Factor(Time.time);
             }
         }
 
@@ -106,7 +110,13 @@ namespace PolishTanks.AI
 
         public void AddOrder(Order order) => orders.Add(order);
 
-        public void Alert(Vector2 position) => target.Report(position, Time.time);
+        public void Alert(Vector2 position, AlertSource source, float time) => target.Report(position, time);
+
+        public void HearPlayerFire(GunMount mount, float time)
+        {
+            var factor = mount == GunMount.Main ? Doctrine.MainGunRevealFactor : Doctrine.MachineGunRevealFactor;
+            sightBoost.Trigger(time, factor, Doctrine.FireRevealSeconds);
+        }
 
         private void Awake()
         {
@@ -133,14 +143,14 @@ namespace PolishTanks.AI
 
         private void OnEnable()
         {
-            Active.Add(this);
+            AiAgents.Register(this);
             if (damageable != null)
                 damageable.Hit += OnHit;
         }
 
         private void OnDisable()
         {
-            Active.Remove(this);
+            AiAgents.Unregister(this);
             if (damageable != null)
                 damageable.Hit -= OnHit;
             brain.Reset(context);
@@ -167,6 +177,8 @@ namespace PolishTanks.AI
             context.Orders = orders;
 
             Sense();
+            if (context.IsTargetSpotted && Doctrine.RadioAllies)
+                radio.TryBroadcast(this, target.LastKnownPosition, SightRange, Time.time, AiAgents.All);
             brain.Tick(context);
             if (context.IsTargetSpotted)
                 gunner.Engage(context, driver, target.LastKnownPosition);
@@ -196,7 +208,7 @@ namespace PolishTanks.AI
             var shooter = damageable.LastShooter;
             var playerTank = player != null ? player.Controller : null;
             if (shooter != null && playerTank != null && shooter.gameObject == playerTank.gameObject)
-                target.Report(shooter.position, Time.time);
+                Alert(shooter.position, AlertSource.Hit, Time.time);
         }
 
         public void OnShotOutcome(in ShotOutcome outcome)

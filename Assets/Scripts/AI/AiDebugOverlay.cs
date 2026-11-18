@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,9 +7,9 @@ using UnityEngine.InputSystem;
 namespace PolishTanks.AI
 {
     /// <summary>
-    /// Development-build view of every <see cref="EnemyTankAI"/>, toggled in play with F3. Each enemy shows its sight
+    /// Development-build view of every AI unit in <see cref="AiAgents"/>, toggled in play with F3. Each one shows its sight
     /// range as a circle (red while it has the player spotted), a line to where it thinks the player is, and a label with
-    /// what it is doing, its current order, what it knows about the player and how its shells have done per plate.
+    /// what it is doing, its current order, what it knows about the player and, for tanks, how its shells did per plate.
     /// Created on its own in the editor and development builds, so scenes need no setup.
     /// </summary>
     public class AiDebugOverlay : MonoBehaviour
@@ -25,9 +26,9 @@ namespace PolishTanks.AI
         private static readonly Color AlertColor = new Color(1f, 0.25f, 0.15f, 0.9f);
         private static readonly Color LeadColor = new Color(1f, 0.5f, 0.9f, 0.9f);
 
-        private readonly Dictionary<EnemyTankAI, (LineRenderer sight, LineRenderer lead)> lines =
-            new Dictionary<EnemyTankAI, (LineRenderer, LineRenderer)>();
-        private readonly List<EnemyTankAI> stale = new List<EnemyTankAI>();
+        private readonly Dictionary<IAiAgent, (LineRenderer sight, LineRenderer lead)> lines =
+            new Dictionary<IAiAgent, (LineRenderer, LineRenderer)>();
+        private readonly List<IAiAgent> stale = new List<IAiAgent>();
         private readonly StringBuilder text = new StringBuilder();
         private Material lineMaterial;
         private GUIStyle labelStyle;
@@ -67,20 +68,20 @@ namespace PolishTanks.AI
             if (!visible)
                 return;
 
-            foreach (var ai in EnemyTankAI.All)
+            foreach (var ai in AiAgents.All)
                 DrawLines(ai);
             RemoveStaleLines();
         }
 
-        private void DrawLines(EnemyTankAI ai)
+        private void DrawLines(IAiAgent ai)
         {
             if (!lines.TryGetValue(ai, out var pair))
             {
-                pair = (NewLine(ai.name + " sight", true), NewLine(ai.name + " lead", false));
+                pair = (NewLine(ai.Name + " sight", true), NewLine(ai.Name + " lead", false));
                 lines[ai] = pair;
             }
 
-            var centre = (Vector2)ai.transform.position;
+            var centre = ai.Position;
             var color = ai.IsTargetSpotted ? AlertColor : CalmColor;
             pair.sight.startColor = pair.sight.endColor = color;
             pair.sight.positionCount = CircleSegments;
@@ -104,7 +105,7 @@ namespace PolishTanks.AI
         {
             stale.Clear();
             foreach (var ai in lines.Keys)
-                if (ai == null || !ai.isActiveAndEnabled)
+                if ((ai is Object unityObject && unityObject == null) || !ai.IsActive || !AiAgents.All.Contains(ai))
                     stale.Add(ai);
             foreach (var ai in stale)
             {
@@ -154,9 +155,9 @@ namespace PolishTanks.AI
             labelStyle ??= new GUIStyle(GUI.skin.box) { alignment = TextAnchor.UpperLeft, fontSize = 12, wordWrap = false };
 
             GUI.Label(new Rect(10f, 10f, 80f, 22f), AiDebugText.Header, labelStyle);
-            foreach (var ai in EnemyTankAI.All)
+            foreach (var ai in AiAgents.All)
             {
-                var screen = view.WorldToScreenPoint(ai.transform.position);
+                var screen = view.WorldToScreenPoint(ai.Position);
                 if (screen.z < 0f)
                     continue;
                 var rect = new Rect(screen.x - LabelWidth * 0.5f, Screen.height - screen.y - LabelHeight - 40f, LabelWidth, LabelHeight);
@@ -164,7 +165,7 @@ namespace PolishTanks.AI
             }
         }
 
-        private string Describe(EnemyTankAI ai)
+        private string Describe(IAiAgent ai)
         {
             text.Clear();
             var order = ai.Orders.Current;
@@ -181,8 +182,11 @@ namespace PolishTanks.AI
                 text.AppendFormat(AiDebugText.TargetAgeFormat, awareness, target.SecondsSinceContact(Time.time));
             else
                 text.AppendFormat(AiDebugText.TargetFormat, awareness);
-            text.AppendLine();
-            text.Append(AiDebugText.SideCounts(ai.Penetrations));
+            if (ai is EnemyTankAI tank)
+            {
+                text.AppendLine();
+                text.Append(AiDebugText.SideCounts(tank.Penetrations));
+            }
             return text.ToString();
         }
     }
