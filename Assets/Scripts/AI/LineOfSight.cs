@@ -8,7 +8,8 @@ namespace PolishTanks.AI
     /// <summary>
     /// Whether a tank crew can see a point. Buildings, walls and trees block the view. Triggers, the two tanks
     /// themselves, low cover, impassable ground (water) and loose props (crates, barrels, other tanks and wrecks: anything
-    /// on a dynamic body) don't, because a crew sits higher than they are.
+    /// on a dynamic body) don't, because a crew sits higher than they are. <see cref="ClearDistance"/> tells how far the
+    /// view reaches in one direction.
     /// </summary>
     public static class LineOfSight
     {
@@ -25,6 +26,17 @@ namespace PolishTanks.AI
                 return false;
             }
             return true;
+        }
+
+        public static float ClearDistance(Vector2 from, Vector2 direction, float maxDistance, Rigidbody2D viewer)
+        {
+            var filter = new ContactFilter2D { useTriggers = false };
+            Physics2D.Raycast(from, direction.normalized, filter, Hits, maxDistance);
+            var clear = maxDistance;
+            foreach (var hit in Hits)
+                if (hit.distance < clear && BlocksSight(hit, viewer, null))
+                    clear = hit.distance;
+            return clear;
         }
 
         private static bool BlocksSight(RaycastHit2D hit, Rigidbody2D viewer, Rigidbody2D target)

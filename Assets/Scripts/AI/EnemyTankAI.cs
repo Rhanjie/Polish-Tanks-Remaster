@@ -15,7 +15,8 @@ namespace PolishTanks.AI
     /// Brain of an enemy tank. Every frame it looks for the player (sight range from the optics and the doctrine, cut by
     /// damaged vision blocks, blocked by buildings), lets the <see cref="UtilityBrain"/> pick what the hull does
     /// (follow the designer's orders, engage, search) and lets the <see cref="Gunner"/> fight whenever the player is
-    /// spotted. A shell from the player tells the crew where it came from even when they can't see the shooter, and so
+    /// spotted. Once hunting, the crew keeps the player in view along a clear line well past the sight range, and a lost
+    /// player is searched for in phases (see <see cref="SearchBehaviour"/>). A shell from the player tells the crew where it came from even when they can't see the shooter, and so
     /// does a player's shot flying close past; the player's gunfire makes the crew see further for a moment. While the
     /// player is spotted the crew radios its position to friends within sight range.
     /// With Scripted Combat on, the orders keep the hull during a fight (for cutscenes) and only the guns react.
@@ -37,6 +38,7 @@ namespace PolishTanks.AI
         [SerializeField] private bool scriptedCombat;
 
         [Inject] private PlayerTank player;
+        [Inject] private INavigation navigation;
 
         private readonly TargetMemory target = new TargetMemory();
         private readonly PenetrationLog penetrations = new PenetrationLog();
@@ -139,7 +141,12 @@ namespace PolishTanks.AI
                 Debug.LogWarning($"{name}: EnemyTankAI and an enabled TankInput both drive this tank.", this);
         }
 
-        private void Start() => orders.Prepare(new OrderContext(driver, Time.time));
+        private void Start()
+        {
+            var follower = GetComponent<TankPathFollower>();
+            context.SearchSpace = new WorldSearchSpace(follower.Navigation != null ? follower.Navigation : navigation, follower.AgentRadius, body);
+            orders.Prepare(new OrderContext(driver, Time.time));
+        }
 
         private void OnEnable()
         {
@@ -197,7 +204,8 @@ namespace PolishTanks.AI
             }
 
             Vector2 targetPosition = playerTank.transform.position;
-            var visible = Vector2.Distance(driver.Position, targetPosition) <= SightRange
+            var distance = Vector2.Distance(driver.Position, targetPosition);
+            var visible = Perception.InReach(distance, SightRange, Doctrine.PursuitRangeFactor, target.IsKnown)
                 && LineOfSight.IsClear(driver.Position, targetPosition, body, playerTank.GetComponent<Rigidbody2D>());
             target.Observe(visible, targetPosition, Time.time);
             target.Forget(Time.time, Doctrine.MemorySeconds);

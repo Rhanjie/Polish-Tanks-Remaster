@@ -75,12 +75,12 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
-        public void Tick_LeadMovesPastNewLeadDistance_ReplansToTheNewPosition()
+        public void Tick_FreshReportWhileDriving_ReplansToTheNewPosition()
         {
             rig.WithDoctrine("searchLostTarget", true);
             var search = new SearchBehaviour();
             search.Enter(rig.Context);
-            var moved = Lead + new Vector2(SearchBehaviour.NewLeadDistance + 1f, 0f);
+            var moved = Lead + new Vector2(2f, 0f);
             rig.Target.Report(moved, 1f);
 
             search.Tick(rig.Context);
@@ -89,12 +89,11 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
-        public void Tick_LeadMovesLessThanNewLeadDistance_KeepsTheRoute()
+        public void Tick_NoNewReport_KeepsTheRoute()
         {
             rig.WithDoctrine("searchLostTarget", true);
             var search = new SearchBehaviour();
             search.Enter(rig.Context);
-            rig.Target.Report(Lead + new Vector2(SearchBehaviour.NewLeadDistance - 1f, 0f), 1f);
 
             search.Tick(rig.Context);
 
