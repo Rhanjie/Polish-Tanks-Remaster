@@ -182,6 +182,7 @@ namespace PolishTanks.Weapons
 
             if (response.Outcome == HitOutcome.Ricochet && !canBounce)
                 response = new HitResponse(HitOutcome.Blocked, response.Normal, response.Material);
+            ReportOutcome(hit, response.Outcome);
 
             if (response.Outcome == HitOutcome.Penetrated && response.PassesThrough)
             {
@@ -210,6 +211,12 @@ namespace PolishTanks.Weapons
                 : shot.ImpactPool;
             effects?.Get(hit.point, Quaternion.LookRotation(Vector3.forward, hit.normal));
             return ImpactResult.Stopped;
+        }
+
+        private void ReportOutcome(RaycastHit2D hit, HitOutcome outcome)
+        {
+            if (shot.Shooter != null && shot.Shooter.TryGetComponent<IShotOutcomeReceiver>(out var receiver))
+                receiver.OnShotOutcome(new ShotOutcome(hit.collider, outcome, hit.point, shot.Caliber));
         }
 
         private void PassThrough(RaycastHit2D hit, float residualPenetration, SurfaceMaterial material)
