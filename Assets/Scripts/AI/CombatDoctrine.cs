@@ -25,7 +25,7 @@ namespace PolishTanks.AI
         [Tooltip("How close in degrees the barrel must be to the aim point before the gun fires.")]
         [SerializeField, Min(0.1f)] private float aimTolerance = 2f;
         [Tooltip("Smallest number of seconds between main gun shots, on top of the gun's own reload.")]
-        [SerializeField, Min(0f)] private float shotInterval = 8f;
+        [SerializeField, Min(0f)] private float shotInterval = 5f;
         [Tooltip("Seconds the machine guns fire in each burst. Zero keeps them silent.")]
         [SerializeField, Min(0f)] private float burstSeconds = 1.2f;
         [Tooltip("Seconds between machine-gun bursts.")]
