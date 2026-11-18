@@ -8,7 +8,7 @@ namespace PolishTanks.AI
     /// </summary>
     public sealed class AiContext
     {
-        public AiContext(ITankDriver driver, OrderList orders, TargetMemory target, CombatDoctrine doctrine)
+        public AiContext(IUnitDriver driver, OrderList orders, TargetMemory target, CombatDoctrine doctrine)
         {
             Driver = driver;
             Orders = orders;
@@ -16,7 +16,7 @@ namespace PolishTanks.AI
             Doctrine = doctrine;
         }
 
-        public ITankDriver Driver { get; }
+        public IUnitDriver Driver { get; }
         public OrderList Orders { get; set; }
         public TargetMemory Target { get; }
         public CombatDoctrine Doctrine { get; set; }

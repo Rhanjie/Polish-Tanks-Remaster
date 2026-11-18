@@ -25,10 +25,9 @@ namespace PolishTanks.AI
         public bool IsEngaged => engaged;
         public float NextShotTime => nextShot;
 
-        public void Engage(AiContext context, Vector2 target)
+        public void Engage(AiContext context, ITankDriver driver, Vector2 target)
         {
             var doctrine = context.Doctrine;
-            var driver = context.Driver;
             if (!engaged)
             {
                 engaged = true;

@@ -169,7 +169,7 @@ namespace PolishTanks.AI
             Sense();
             brain.Tick(context);
             if (context.IsTargetSpotted)
-                gunner.Engage(context, target.LastKnownPosition);
+                gunner.Engage(context, driver, target.LastKnownPosition);
             else if (gunner.IsEngaged)
                 gunner.CeaseFire(driver);
             driver.ApplyIdleAim();

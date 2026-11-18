@@ -30,7 +30,7 @@ namespace PolishTanks.Tests.EditMode
         {
             rig.Context.Time = time;
             rig.Context.DeltaTime = deltaTime;
-            gunner.Engage(rig.Context, Target);
+            gunner.Engage(rig.Context, rig.Driver, Target);
         }
 
         [Test]
