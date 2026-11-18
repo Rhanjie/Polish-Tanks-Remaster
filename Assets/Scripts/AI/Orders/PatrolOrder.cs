@@ -6,7 +6,8 @@ namespace PolishTanks.AI.Orders
 {
     /// <summary>
     /// Drive a route point by point, pausing at each. A looping patrol never ends; one that doesn't loop is done after
-    /// the last point. After a fight the tank heads back to the point it was going to. A point no route reaches is skipped.
+    /// the last point. After a fight the tank heads back to the point it was going to. A point no route reaches is skipped,
+    /// and the patrol gives up once no point in a whole round can be reached.
     /// </summary>
     [Serializable]
     public class PatrolOrder : Order
@@ -17,6 +18,7 @@ namespace PolishTanks.AI.Orders
         [SerializeField] private bool loop = true;
 
         private int next;
+        private int unreachableInRow;
         private float waitUntil = float.NegativeInfinity;
         private bool waiting;
 
@@ -69,6 +71,9 @@ namespace PolishTanks.AI.Orders
             if (driver.IsMoving)
                 return OrderStatus.Running;
 
+            unreachableInRow = driver.HasArrived ? 0 : unreachableInRow + 1;
+            if (unreachableInRow >= points.Count)
+                return OrderStatus.Done;
             next++;
             waiting = true;
             waitUntil = driver.HasArrived ? context.Time + pause : context.Time;
@@ -80,6 +85,7 @@ namespace PolishTanks.AI.Orders
         public override void Reset()
         {
             next = 0;
+            unreachableInRow = 0;
             waiting = false;
         }
     }

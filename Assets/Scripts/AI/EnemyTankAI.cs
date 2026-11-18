@@ -129,6 +129,8 @@ namespace PolishTanks.AI
                 Debug.LogWarning($"{name}: EnemyTankAI and an enabled TankInput both drive this tank.", this);
         }
 
+        private void Start() => orders.Prepare(new OrderContext(driver, Time.time));
+
         private void OnEnable()
         {
             Active.Add(this);
@@ -203,7 +205,8 @@ namespace PolishTanks.AI
                 || player == null || player.Controller == null)
                 return;
             var hitTank = outcome.Target.GetComponentInParent<TankController>();
-            if (hitTank != player.Controller || !hitTank.TryGetComponent<Damageable>(out var armor))
+            if (hitTank != player.Controller || !hitTank.TryGetComponent<Damageable>(out var armor)
+                || armor.IsDead || armor.LastOutcome != outcome.Outcome)
                 return;
             penetrations.Record(armor.LastResult.Side, outcome.Outcome == HitOutcome.Penetrated);
         }
@@ -221,7 +224,10 @@ namespace PolishTanks.AI
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = new Color(1f, 0.4f, 0.2f, 0.6f);
-            DrawCircle(transform.position, Application.isPlaying ? SightRange : Doctrine.SightRange(TankStatsCalculator.DefaultViewRange, 1f));
+            if (Application.isPlaying)
+                DrawCircle(transform.position, SightRange);
+            else if (doctrine != null)
+                DrawCircle(transform.position, doctrine.SightRange(TankStatsCalculator.DefaultViewRange, 1f));
 
             Gizmos.color = new Color(1f, 0.85f, 0.2f, 0.9f);
             Vector2 previous = transform.position;

@@ -6,9 +6,11 @@ namespace PolishTanks.AI.Orders
 {
     /// <summary>
     /// A tank's scripted orders, run one after another. When the last one is done the list starts over if it loops,
-    /// otherwise the tank stands where it ended up. <see cref="Suspend"/> hands the tank over to combat and
-    /// <see cref="Resume"/> restarts the current order where it left off. Code can replace the whole list with
-    /// <see cref="Set"/> (a cutscene giving new orders) or append with <see cref="Add"/>.
+    /// otherwise the tank stands where it ended up; an order added after that starts on the next tick.
+    /// <see cref="Suspend"/> hands the tank over to combat and <see cref="Resume"/> restarts the current order where it
+    /// left off. <see cref="Prepare"/> begins and suspends the first order once, so orders that remember where they
+    /// started (a guard post) start from where the tank was placed even when a fight comes first. Code can replace the
+    /// whole list with <see cref="Set"/> (a cutscene giving new orders) or append with <see cref="Add"/>.
     /// </summary>
     [Serializable]
     public class OrderList
@@ -19,6 +21,7 @@ namespace PolishTanks.AI.Orders
 
         private int index;
         private bool started;
+        private bool currentBegun;
 
         public IReadOnlyList<Order> Orders => orders;
         public bool Loop
@@ -33,7 +36,7 @@ namespace PolishTanks.AI.Orders
 
         public void Set(IEnumerable<Order> newOrders, bool loopOrders, in OrderContext context)
         {
-            Current?.End(context);
+            EndCurrent(context);
             orders = new List<Order>(newOrders);
             loop = loopOrders;
             Restart();
@@ -45,23 +48,31 @@ namespace PolishTanks.AI.Orders
         {
             index = 0;
             started = false;
+            currentBegun = false;
             foreach (var order in orders)
                 order?.Reset();
+        }
+
+        public void Prepare(in OrderContext context)
+        {
+            Resume(context);
+            Suspend(context);
         }
 
         public void Resume(in OrderContext context)
         {
             started = true;
+            currentBegun = false;
             SkipEmpty();
             if (IsFinished)
                 context.Driver.Stop();
             else
-                orders[index].Begin(context);
+                BeginCurrent(context);
         }
 
         public void Suspend(in OrderContext context)
         {
-            Current?.End(context);
+            EndCurrent(context);
             started = false;
         }
 
@@ -71,19 +82,36 @@ namespace PolishTanks.AI.Orders
                 Resume(context);
 
             var guard = orders.Count + 1;
-            while (!IsFinished && guard-- > 0)
+            while (guard-- > 0)
             {
+                SkipEmpty();
+                if (IsFinished)
+                    return;
+                if (!currentBegun)
+                    BeginCurrent(context);
                 if (orders[index].Tick(context) == OrderStatus.Running)
                     return;
-                orders[index].End(context);
+                EndCurrent(context);
                 Advance();
                 if (IsFinished)
                 {
                     context.Driver.Stop();
                     return;
                 }
-                orders[index].Begin(context);
             }
+        }
+
+        private void BeginCurrent(in OrderContext context)
+        {
+            orders[index].Begin(context);
+            currentBegun = true;
+        }
+
+        private void EndCurrent(in OrderContext context)
+        {
+            if (currentBegun && !IsFinished && orders[index] != null)
+                orders[index].End(context);
+            currentBegun = false;
         }
 
         private void Advance()
