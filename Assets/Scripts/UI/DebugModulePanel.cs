@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using PolishTanks.Tank;
 using PolishTanks.Tank.Modules;
@@ -21,25 +22,9 @@ namespace PolishTanks.UI
     [RequireComponent(typeof(UIDocument))]
     public class DebugModulePanel : MonoBehaviour
     {
-        private const string NoModule = "(brak)";
-        private const string DoesNotFit = "  ✕ nie pasuje";
         private const string HiddenClass = "debug-modules--hidden";
         private const string BetterClass = "stat--better";
         private const string WorseClass = "stat--worse";
-
-        private static readonly Dictionary<ModuleSlot, string> SlotLabels = new Dictionary<ModuleSlot, string>
-        {
-            { ModuleSlot.Hull, "Kadłub" },
-            { ModuleSlot.Engine, "Silnik" },
-            { ModuleSlot.Transmission, "Skrzynia" },
-            { ModuleSlot.Tracks, "Gąsienice" },
-            { ModuleSlot.Turret, "Wieża" },
-            { ModuleSlot.MainGun, "Działo" },
-            { ModuleSlot.CoaxialMachineGun, "KM sprzężony" },
-            { ModuleSlot.HullMachineGun, "KM kadłubowy" },
-            { ModuleSlot.Optics, "Optyka" },
-            { ModuleSlot.Equipment, "Wyposażenie" },
-        };
 
         [SerializeField] private ModuleCatalog catalog;
         [SerializeField] private Key toggleKey = Key.F1;
@@ -202,7 +187,7 @@ namespace PolishTanks.UI
 
             if (!tank.Rebuild(builder))
             {
-                ShowStatus("Nie udało się złożyć czołgu, szczegóły w konsoli.", true);
+                ShowStatus(ModulePanelText.BuildFailed, true);
                 return;
             }
             history.Push(snapshot);
@@ -217,7 +202,7 @@ namespace PolishTanks.UI
             var snapshot = Snapshot();
             if (!tank.Apply(loadout))
             {
-                ShowStatus($"Preset {loadout.DisplayName} jest niepoprawny, szczegóły w konsoli.", true);
+                ShowStatus(string.Format(ModulePanelText.PresetInvalidFormat, loadout.DisplayName), true);
                 return;
             }
             history.Push(snapshot);
@@ -288,9 +273,12 @@ namespace PolishTanks.UI
             var current = new LoadoutBuilder(tank.Loadout);
             var filter = search.value != null ? search.value.Trim() : string.Empty;
 
-            loadoutName.text = tank.Loadout.DisplayName
-                              + (tank.Loadout.IsRuntime ? " (zmieniony)" : string.Empty)
-                              + (tank.IsDestroyed ? " (wrak)" : string.Empty);
+            var title = tank.Loadout.DisplayName;
+            if (tank.Loadout.IsRuntime)
+                title = string.Format(ModulePanelText.ModifiedLoadoutFormat, title);
+            if (tank.IsDestroyed)
+                title = string.Format(ModulePanelText.WreckFormat, title);
+            loadoutName.text = title;
             undo.SetEnabled(history.Count > 0);
 
             slotList.Clear();
@@ -303,7 +291,7 @@ namespace PolishTanks.UI
         private void AddSlotRow(ModuleSlot slot, LoadoutBuilder current, string filter)
         {
             var fitted = current.Get(slot);
-            var slotMatches = Matches(SlotLabels[slot], filter);
+            var slotMatches = Matches(ModulePanelText.SlotName(slot), filter);
             var options = Options(slot)
                 .Where(module => slotMatches || module == fitted || Matches(module, filter))
                 .ToList();
@@ -316,7 +304,7 @@ namespace PolishTanks.UI
 
             var row = new VisualElement();
             row.AddToClassList("slot-row");
-            var label = new Label(SlotLabels[slot]);
+            var label = new Label(ModulePanelText.SlotName(slot));
             label.AddToClassList("slot-row__label");
             row.Add(label);
 
@@ -342,9 +330,9 @@ namespace PolishTanks.UI
             equipmentList.Clear();
             var hull = current.Hull;
             var capacity = hull != null ? hull.EquipmentSlots : 0;
-            equipmentTitle.text = $"{SlotLabels[ModuleSlot.Equipment]} {current.Equipment.Count}/{capacity}";
+            equipmentTitle.text = string.Format(ModulePanelText.EquipmentTitleFormat, current.Equipment.Count, capacity);
 
-            var slotMatches = Matches(SlotLabels[ModuleSlot.Equipment], filter);
+            var slotMatches = Matches(ModulePanelText.SlotName(ModuleSlot.Equipment), filter);
             foreach (var module in Options(ModuleSlot.Equipment))
             {
                 var item = (EquipmentModule)module;
@@ -401,7 +389,7 @@ namespace PolishTanks.UI
             }
             if (!current.CanFit(module))
             {
-                ShowStatus($"{module.DisplayName} nie pasuje do kadłuba {current.Hull.DisplayName}.", true);
+                ShowStatus(string.Format(ModulePanelText.DoesNotFitHullFormat, module.DisplayName, current.Hull.DisplayName), true);
                 Refresh();
                 return;
             }
@@ -431,9 +419,9 @@ namespace PolishTanks.UI
         private static string Caption(TankModule module, LoadoutBuilder current)
         {
             if (module == null)
-                return NoModule;
-            var caption = $"{module.DisplayName}  ·  T{module.Tier}  ·  {module.Mass / 1000f:0.0} t";
-            return current.CanFit(module) ? caption : caption + DoesNotFit;
+                return ModulePanelText.NoModule;
+            var caption = string.Format(CultureInfo.InvariantCulture, ModulePanelText.ModuleCaptionFormat, module.DisplayName, module.Tier, module.Mass / 1000f);
+            return current.CanFit(module) ? caption : string.Format(ModulePanelText.DoesNotFitFormat, caption);
         }
 
         private static bool Matches(TankModule module, string filter)
@@ -456,7 +444,7 @@ namespace PolishTanks.UI
         private void ShowDescription(TankModule module)
         {
             var text = module != null && !string.IsNullOrWhiteSpace(module.Description)
-                ? $"{module.DisplayName}: {module.Description}"
+                ? string.Format(ModulePanelText.ModuleDescriptionFormat, module.DisplayName, module.Description)
                 : string.Empty;
             description.text = text;
             description.EnableInClassList(HiddenClass, string.IsNullOrEmpty(text));
