@@ -13,8 +13,10 @@ namespace PolishTanks.Infantry
     /// <summary>
     /// Brain of an enemy soldier, built on the same parts as the tank AI: it sees the player within its profile's view
     /// range (blocked by buildings, wider right after the player fires), remembers and searches like a tank, radios the
-    /// player's position to friends in sight range, and follows the same designer orders. In a fight it closes to
-    /// rifle range and fires short bursts while it stands facing the player; a grenadier runs in and throws an anti-tank
+    /// player's position to friends in sight range, and follows the same designer orders. In a fight it runs for the
+    /// nearest cover (crates, barrels, low walls, the far side of a friendly tank) and fires short bursts from there,
+    /// also while running but with much worse aim; with no cover around it closes to rifle range in the open. Its shots
+    /// clear the cover it crouches behind. A grenadier runs in and throws an anti-tank
     /// grenade at the side of the tank facing it whenever one is ready. Any tank, friend or foe, driving at the soldier
     /// makes it try to jump aside, unless it is busy firing or throwing at that moment.
     /// </summary>
@@ -29,6 +31,10 @@ namespace PolishTanks.Infantry
         private const float GrenadeStandOff = 0.4f;
         private const float FireLaneHalfWidth = 0.4f;
         private const float OwnBlastMargin = 0.6f;
+        private const float CoverSearchRadius = 12f;
+        private const float CoverRefreshInterval = 0.4f;
+        private const float RunningSpreadFactor = 3f;
+        private const float RifleCoverClearance = 2.5f;
 
         [SerializeField] private InfantryProfile profile;
         [Tooltip("How this soldier sees, reacts and searches. Empty uses the built-in defaults.")]
@@ -45,6 +51,12 @@ namespace PolishTanks.Infantry
         private readonly SightBoost sightBoost = new SightBoost();
         private readonly RadioOperator radio = new RadioOperator();
         private readonly List<TankThreat> threats = new List<TankThreat>();
+        private static readonly List<Collider2D> SpotColliders = new List<Collider2D>(8);
+        private readonly List<CoverObject> coverObjects = new List<CoverObject>();
+        private readonly List<Vector2> takenSpots = new List<Vector2>();
+        private Vector2? coverSpot;
+        private CoverObject cover;
+        private float nextCoverRefresh;
         private GiveWayPlanner giveWay;
         private InfantryMover mover;
         private InfantryHealth health;
@@ -73,6 +85,7 @@ namespace PolishTanks.Infantry
         public float SightRange => Doctrine.SightRange(Profile.ViewRange, 1f) * sightBoost.Factor(Time.time);
         public IUnitDriver Driver => driver;
         public bool HasGrenades => arms != null && arms.HasGrenades;
+        public Vector2? CoverSpot => coverSpot;
 
         private CombatDoctrine FallbackDoctrine
         {
@@ -126,7 +139,7 @@ namespace PolishTanks.Infantry
             brain = new UtilityBrain(new AiBehaviour[]
             {
                 new FollowOrdersBehaviour(),
-                new InfantryEngageBehaviour(FightingDistance),
+                new InfantryEngageBehaviour(FightingDistance, () => coverSpot, IsClosingIn),
                 new SearchBehaviour(),
                 new GiveWayBehaviour(() => sideStep, driver),
             });
@@ -175,12 +188,12 @@ namespace PolishTanks.Infantry
             if (context.IsTargetSpotted && Doctrine.RadioAllies)
                 radio.TryBroadcast(this, target.LastKnownPosition, SightRange, Time.time, AiAgents.All);
             WatchForTanks();
+            UpdateCover();
             driver.Running = target.IsKnown;
             brain.Tick(context);
             if (context.IsTargetSpotted && !(brain.Current is GiveWayBehaviour))
             {
-                if (!driver.IsMoving)
-                    driver.AimAt(target.LastKnownPosition);
+                driver.AimAt(target.LastKnownPosition);
                 Fight();
             }
             driver.ApplyIdleAim();
@@ -215,6 +228,71 @@ namespace PolishTanks.Infantry
             sideStep = planned && !arms.IsBusy(Time.time) ? step : (Vector2?)null;
         }
 
+        private bool IsClosingIn()
+        {
+            if (!arms.IsGrenadeReady(Time.time))
+                return false;
+            return Vector2.Distance(Position, target.LastKnownPosition) <= arms.Grenades.maxRange * 2f;
+        }
+
+        private void UpdateCover()
+        {
+            if (!context.IsTargetSpotted && !target.IsKnown)
+            {
+                coverSpot = null;
+                return;
+            }
+            if (Time.time < nextCoverRefresh)
+                return;
+            nextCoverRefresh = Time.time + CoverRefreshInterval;
+
+            var threat = target.LastKnownPosition;
+            CoverScanner.Scan(Position, CoverSearchRadius, coverObjects);
+            if (coverSpot.HasValue && TryRefreshCurrent(threat))
+                return;
+
+            takenSpots.Clear();
+            foreach (var agent in AiAgents.All)
+                if (!ReferenceEquals(agent, this) && agent is EnemyInfantryAI mate && mate.coverSpot.HasValue)
+                    takenSpots.Add(mate.coverSpot.Value);
+            var navigation = mover.Navigation;
+            coverSpot = CoverFinder.TryFind(Position, threat, coverObjects, takenSpots, CoverSearchRadius,
+                point => IsFreeSpot(point, navigation), out var spot, out cover)
+                ? spot
+                : (Vector2?)null;
+        }
+
+        private bool IsFreeSpot(Vector2 point, Navigation.INavigation navigation)
+        {
+            if (navigation != null && !navigation.IsWalkable(point, mover.AgentRadius))
+                return false;
+            var filter = new ContactFilter2D { useTriggers = false };
+            var count = Physics2D.OverlapCircle(point, mover.AgentRadius, filter, SpotColliders);
+            for (var i = 0; i < count; i++)
+                if (SpotColliders[i].attachedRigidbody != body)
+                    return false;
+            return true;
+        }
+
+        private bool TryRefreshCurrent(Vector2 threat)
+        {
+            foreach (var candidate in coverObjects)
+            {
+                if (Vector2.Distance(candidate.Centre, cover.Centre) > candidate.Radius + 0.5f)
+                    continue;
+                cover = candidate;
+                var spot = CoverFinder.SpotBehind(cover, threat);
+                if (CoverFinder.Shields(cover, coverSpot.Value, threat))
+                    return true;
+                if (!IsFreeSpot(spot, mover.Navigation))
+                    break;
+                coverSpot = spot;
+                return true;
+            }
+            coverSpot = null;
+            return false;
+        }
+
         private float FightingDistance()
         {
             var grenades = arms.Grenades;
@@ -229,10 +307,10 @@ namespace PolishTanks.Infantry
             var aim = target.LastKnownPosition;
             var toTarget = aim - Position;
             var distance = toTarget.magnitude;
-            if (driver.IsMoving || distance <= 0.01f || Vector2.Angle(driver.Forward, toTarget) > FacingTolerance)
+            if (distance <= 0.01f || Vector2.Angle(driver.Forward, toTarget) > FacingTolerance)
                 return;
 
-            if (arms.IsGrenadeReady(Time.time) && distance <= arms.Grenades.maxRange)
+            if (!driver.IsMoving && arms.IsGrenadeReady(Time.time) && distance <= arms.Grenades.maxRange)
             {
                 var grenadeAim = GrenadeAim(playerTank.GetComponent<Rigidbody2D>(), aim);
                 if (IsSafeToThrow(grenadeAim))
@@ -244,7 +322,7 @@ namespace PolishTanks.Infantry
             if (distance <= arms.Rifle.range
                 && FireLane.IsClear(Position + toTarget / distance * MuzzleOffset, aim, this, FireLaneHalfWidth, arms.Rifle.spread, AiAgents.All)
                 && arms.TryShoot(Time.time))
-                FireRifle(arms.Spread(toTarget / distance));
+                FireRifle(arms.Spread(toTarget / distance, driver.IsMoving ? RunningSpreadFactor : 1f));
         }
 
         private void FireRifle(Vector2 direction)
@@ -267,6 +345,7 @@ namespace PolishTanks.Infantry
                 PenetrationMax = rifle.penetrationMax,
                 Caliber = rifle.caliber,
                 FiredFrom = origin,
+                CoverClearance = RifleCoverClearance,
                 ImpactPool = EffectPool(definition.ImpactEffect, definition),
                 PenetratedPool = EffectPool(definition.PenetratedEffect, definition),
                 BlockedPool = EffectPool(definition.BlockedEffect, definition),

@@ -38,7 +38,10 @@ namespace PolishTanks.Infantry
         private bool replanned;
         private float bestDistance;
         private float progressClock;
+        private const float FaceHoldSeconds = 0.1f;
+
         private Vector2? facePoint;
+        private float faceUntil;
 
         public bool IsMoving { get; private set; }
         public bool HasArrived { get; private set; }
@@ -72,7 +75,11 @@ namespace PolishTanks.Infantry
                 body.linearVelocity = Vector2.zero;
         }
 
-        public void FaceThisFrame(Vector2 point) => facePoint = point;
+        public void FaceThisFrame(Vector2 point)
+        {
+            facePoint = point;
+            faceUntil = Time.time + FaceHoldSeconds;
+        }
 
         private void Begin(Vector2 destination, bool run)
         {
@@ -118,8 +125,7 @@ namespace PolishTanks.Infantry
                 velocity = Walk(position);
             body.linearVelocity = velocity;
 
-            var look = facePoint.HasValue ? facePoint.Value - position : velocity;
-            facePoint = null;
+            var look = facePoint.HasValue && Time.time <= faceUntil ? facePoint.Value - position : velocity;
             if (look.sqrMagnitude > 1e-4f)
             {
                 var targetAngle = Mathf.Atan2(look.y, look.x) * Mathf.Rad2Deg - 90f;

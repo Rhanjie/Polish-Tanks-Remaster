@@ -57,9 +57,9 @@ namespace PolishTanks.Infantry
             busyUntil = time + grenades.windup;
         }
 
-        public Vector2 Spread(Vector2 direction)
+        public Vector2 Spread(Vector2 direction, float factor = 1f)
         {
-            var angle = (random01() * 2f - 1f) * rifle.spread;
+            var angle = (random01() * 2f - 1f) * rifle.spread * factor;
             return Quaternion.Euler(0f, 0f, angle) * direction;
         }
 
