@@ -2490,7 +2490,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
   mount: 0
-  coverClearance: 2.5
+  coverClearance: 6
 --- !u!82 &5182477013711721048
 AudioSource:
   m_ObjectHideFlags: 0
@@ -8955,7 +8955,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
   mount: 1
-  coverClearance: 5
+  coverClearance: 9
 --- !u!82 &1692216228074053076
 AudioSource:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using PolishTanks.Navigation;
 using PolishTanks.Tank;
+using PolishTanks.Weapons;
 using UnityEngine;
 
 namespace PolishTanks.AI
@@ -8,7 +9,8 @@ namespace PolishTanks.AI
     /// <see cref="ITankDriver"/> over a real tank: the hull drives through <see cref="TankPathFollower"/>, the turret
     /// through <see cref="TurretAimer"/>, and the main gun, coaxial gun and hull machine gun through <see cref="TankGun"/>.
     /// <see cref="ApplyIdleAim"/> runs at the end of the AI's frame and points the turret at the watch point (or straight
-    /// ahead) when nothing aimed it that frame.
+    /// ahead) when nothing aimed it that frame. The hull machine gun sits too low to fire over crates and barrels, so it
+    /// holds fire while one is in its line.
     /// </summary>
     public sealed class TankDriver : ITankDriver
     {
@@ -21,6 +23,7 @@ namespace PolishTanks.AI
         private readonly TankGun coaxialGun;
         private readonly TankGun hullGun;
         private readonly BallMount ballMount;
+        private readonly Rigidbody2D body;
         private Vector2? watchPoint;
         private bool aimedThisFrame;
         private bool pathFailed;
@@ -34,6 +37,7 @@ namespace PolishTanks.AI
             coaxialGun = TankGun.Find(tank, GunMount.Coaxial);
             hullGun = TankGun.Find(tank, GunMount.Hull);
             ballMount = tank.GetComponentInChildren<BallMount>(true);
+            body = tank.GetComponent<Rigidbody2D>();
             follower.PathFailed += _ => pathFailed = true;
         }
 
@@ -71,7 +75,8 @@ namespace PolishTanks.AI
             if (coaxialGun != null)
                 coaxialGun.SetTrigger(held);
             if (hullGun != null)
-                hullGun.SetTrigger(held && ballMount != null && ballMount.IsOnTarget);
+                hullGun.SetTrigger(held && ballMount != null && ballMount.IsOnTarget
+                    && !LowCover.IsInLine(hullGun.Muzzle.position, target, body));
         }
 
         public void ApplyIdleAim()
