@@ -10,7 +10,8 @@ namespace PolishTanks.Infantry
     /// point by point; <see cref="StepTo"/> goes straight to a nearby point without a route (jumping out of a tank's way).
     /// The body is dynamic and light, so tanks shove a soldier aside. When it stops making progress it asks for a new
     /// route once and gives up after that. The soldier faces the point it was told to look at this frame, otherwise
-    /// where it walks.
+    /// where it walks. A route that ends short of the destination (the destination can't be reached) counts as failed
+    /// once the soldier stands at its end.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class InfantryMover : MonoBehaviour, ISelfMovingAgent
@@ -142,6 +143,12 @@ namespace PolishTanks.Infantry
             {
                 IsMoving = false;
                 HasArrived = true;
+                return Vector2.zero;
+            }
+            if (waypoint == route.Count - 1 && Vector2.Distance(position, route[waypoint]) <= WaypointReach)
+            {
+                Fail();
+                route.Clear();
                 return Vector2.zero;
             }
 

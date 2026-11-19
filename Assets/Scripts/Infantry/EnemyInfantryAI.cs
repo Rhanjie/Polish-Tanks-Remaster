@@ -28,6 +28,7 @@ namespace PolishTanks.Infantry
         private const float MuzzleOffset = 0.45f;
         private const float GrenadeStandOff = 0.4f;
         private const float FireLaneHalfWidth = 0.4f;
+        private const float OwnBlastMargin = 0.6f;
 
         [SerializeField] private InfantryProfile profile;
         [Tooltip("How this soldier sees, reacts and searches. Empty uses the built-in defaults.")]
@@ -177,7 +178,11 @@ namespace PolishTanks.Infantry
             driver.Running = target.IsKnown;
             brain.Tick(context);
             if (context.IsTargetSpotted && !(brain.Current is GiveWayBehaviour))
+            {
+                if (!driver.IsMoving)
+                    driver.AimAt(target.LastKnownPosition);
                 Fight();
+            }
             driver.ApplyIdleAim();
         }
 
@@ -227,11 +232,14 @@ namespace PolishTanks.Infantry
             if (driver.IsMoving || distance <= 0.01f || Vector2.Angle(driver.Forward, toTarget) > FacingTolerance)
                 return;
 
-            var grenades = arms.Grenades;
-            if (arms.IsGrenadeReady(Time.time) && distance >= grenades.minRange && distance <= grenades.maxRange)
+            if (arms.IsGrenadeReady(Time.time) && distance <= arms.Grenades.maxRange)
             {
-                ThrowGrenade(playerTank.GetComponent<Rigidbody2D>(), aim);
-                return;
+                var grenadeAim = GrenadeAim(playerTank.GetComponent<Rigidbody2D>(), aim);
+                if (IsSafeToThrow(grenadeAim))
+                {
+                    ThrowGrenade(grenadeAim);
+                    return;
+                }
             }
             if (distance <= arms.Rifle.range
                 && FireLane.IsClear(Position + toTarget / distance * MuzzleOffset, aim, body, FireLaneHalfWidth)
@@ -270,7 +278,24 @@ namespace PolishTanks.Infantry
         private PrefabPool<PooledEffect> EffectPool(PooledEffect effect, ProjectileDefinition definition) =>
             effect != null && pools != null ? pools.For(effect, definition.PrewarmCount) : null;
 
-        private void ThrowGrenade(Rigidbody2D tankBody, Vector2 fallback)
+        private Vector2 GrenadeAim(Rigidbody2D tankBody, Vector2 fallback)
+        {
+            if (tankBody == null)
+                return fallback;
+            var edge = tankBody.ClosestPoint(Position);
+            var outward = Position - edge;
+            return edge + (outward.sqrMagnitude > 1e-6f ? outward.normalized * GrenadeStandOff : Vector2.zero);
+        }
+
+        private bool IsSafeToThrow(Vector2 aim)
+        {
+            var grenades = arms.Grenades;
+            var distance = Vector2.Distance(Position, aim);
+            return distance >= grenades.minRange
+                && distance >= grenades.blast.radius + grenades.scatter + mover.AgentRadius + OwnBlastMargin;
+        }
+
+        private void ThrowGrenade(Vector2 aim)
         {
             var grenades = arms.Grenades;
             arms.Throw(Time.time);
@@ -278,13 +303,6 @@ namespace PolishTanks.Infantry
             if (pools == null || !grenades.IsCarried)
                 return;
 
-            var aim = fallback;
-            if (tankBody != null)
-            {
-                var edge = tankBody.ClosestPoint(Position);
-                var outward = Position - edge;
-                aim = edge + (outward.sqrMagnitude > 1e-6f ? outward.normalized * GrenadeStandOff : Vector2.zero);
-            }
             var scatterAngle = Random.value * Mathf.PI * 2f;
             var landing = aim + new Vector2(Mathf.Cos(scatterAngle), Mathf.Sin(scatterAngle)) * grenades.scatter * Random.value;
             var flight = Vector2.Distance(Position, landing) * grenades.secondsPerMetre;
