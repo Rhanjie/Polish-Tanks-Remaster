@@ -21,7 +21,7 @@ namespace PolishTanks.Infantry
     [RequireComponent(typeof(InfantryMover), typeof(InfantryHealth))]
     public class EnemyInfantryAI : MonoBehaviour, IAiAgent
     {
-        private const float ThreatScanRadius = 10f;
+        private const float ThreatScanRadius = 14f;
         private const float ThreatScanInterval = 0.1f;
         private const float FacingTolerance = 12f;
         private const float RifleRangeShare = 0.8f;

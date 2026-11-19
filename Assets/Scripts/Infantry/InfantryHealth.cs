@@ -16,7 +16,7 @@ namespace PolishTanks.Infantry
     public class InfantryHealth : MonoBehaviour, IProjectileHitHandler, IBlastReceiver
     {
         [Tooltip("Speed in m/s a tank must drive into the soldier to run it over.")]
-        [SerializeField, Min(0f)] private float crushSpeed = 1.5f;
+        [SerializeField, Min(0f)] private float crushSpeed = 2f;
         [SerializeField] private PooledEffect bloodEffect;
         [Tooltip("Seconds the body takes to sink and fade out.")]
         [SerializeField, Min(0.1f)] private float sinkSeconds = 3f;
