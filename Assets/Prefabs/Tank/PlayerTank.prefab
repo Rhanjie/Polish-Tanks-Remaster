@@ -2491,6 +2491,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
   mount: 0
   coverClearance: 6
+  lowCoverHoldDistance: 0
 --- !u!82 &5182477013711721048
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2698,7 +2699,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f276cfca65c3bfe4984e17f0c3f827e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.BallMount
-  arc: 15
+  arc: 20
   traverseSpeed: 90
 --- !u!1 &3020770536975762780
 GameObject:
@@ -3486,6 +3487,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
   mount: 2
   coverClearance: 0
+  lowCoverHoldDistance: 4
 --- !u!82 &2417485468883760161
 AudioSource:
   m_ObjectHideFlags: 0
@@ -8956,6 +8958,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.TankGun
   mount: 1
   coverClearance: 9
+  lowCoverHoldDistance: 0
 --- !u!82 &1692216228074053076
 AudioSource:
   m_ObjectHideFlags: 0

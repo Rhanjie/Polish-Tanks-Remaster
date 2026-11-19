@@ -11,6 +11,7 @@ namespace PolishTanks.Tank
     /// A tank weapon (main gun or coaxial MG): reload and belt feed, pooled projectiles,
     /// recoil on the hull, barrel kick, camera shake, muzzle flash and smoke. Sits on the muzzle object:
     /// its up axis is the barrel, the flash and smoke are children, and the hull and barrel recoil are found in its parents.
+    /// A gun mounted too low to fire over crates (the hull machine gun) can hold fire while one stands close in front.
     /// </summary>
     public class TankGun : MonoBehaviour
     {
@@ -18,6 +19,9 @@ namespace PolishTanks.Tank
 
         [Tooltip("Low cover (crates, barrels) within this distance of the muzzle is fired over. 0 for guns mounted low on the hull.")]
         [SerializeField, Min(0f)] private float coverClearance = 2.5f;
+
+        [Tooltip("Hold fire while low cover (a crate, a barrel) is closer than this in front of the muzzle. For guns too low to fire over it; 0 never holds.")]
+        [SerializeField, Min(0f)] private float lowCoverHoldDistance;
 
         private const int MaxShotsPerFrame = 8;
         private static readonly RaycastHit2D[] BarrelHits = new RaycastHit2D[8];
@@ -94,9 +98,17 @@ namespace PolishTanks.Tank
 
         public void SetTrigger(bool held) => triggerHeld = held;
 
+        public bool IsMaskedByLowCover()
+        {
+            if (lowCoverHoldDistance <= 0f)
+                return false;
+            Vector2 muzzle = transform.position;
+            return LowCover.IsInLine(muzzle, muzzle + (Vector2)transform.up * lowCoverHoldDistance, ownerBody);
+        }
+
         public bool TryFire()
         {
-            if (!isActiveAndEnabled || !magazine.CanFire || !reload.TryConsume())
+            if (!isActiveAndEnabled || !magazine.CanFire || IsMaskedByLowCover() || !reload.TryConsume())
                 return false;
             magazine.Consume();
 

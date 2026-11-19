@@ -32,5 +32,5 @@ MonoBehaviour:
   muzzleVelocity: 755
   impactImpulse: 0
   shakeForce: 0.02
-  arc: 15
+  arc: 20
   traverseSpeed: 90
