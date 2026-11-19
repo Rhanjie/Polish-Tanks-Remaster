@@ -22,6 +22,7 @@ namespace PolishTanks.Tests.PlayMode
         [SetUp]
         public void SetUp()
         {
+            sweeps.Clear();
             fixture = new WeaponFixture();
             prefab = fixture.CreateProjectilePrefab();
             Projectile.Swept += Record;
