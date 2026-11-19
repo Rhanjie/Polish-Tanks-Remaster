@@ -248,13 +248,13 @@ namespace PolishTanks.Infantry
 
             var threat = target.LastKnownPosition;
             CoverScanner.Scan(Position, CoverSearchRadius, coverObjects);
-            if (coverSpot.HasValue && TryRefreshCurrent(threat))
-                return;
-
             takenSpots.Clear();
             foreach (var agent in AiAgents.All)
                 if (!ReferenceEquals(agent, this) && agent is EnemyInfantryAI mate && mate.coverSpot.HasValue)
                     takenSpots.Add(mate.coverSpot.Value);
+            if (coverSpot.HasValue && TryRefreshCurrent(threat))
+                return;
+
             var navigation = mover.Navigation;
             coverSpot = CoverFinder.TryFind(Position, threat, coverObjects, takenSpots, CoverSearchRadius,
                 point => IsFreeSpot(point, navigation), out var spot, out cover)
@@ -284,7 +284,7 @@ namespace PolishTanks.Infantry
                 var spot = CoverFinder.SpotBehind(cover, threat);
                 if (CoverFinder.Shields(cover, coverSpot.Value, threat))
                     return true;
-                if (!IsFreeSpot(spot, mover.Navigation))
+                if (!IsFreeSpot(spot, mover.Navigation) || CoverFinder.IsTaken(spot, takenSpots))
                     break;
                 coverSpot = spot;
                 return true;

@@ -21,7 +21,7 @@ MonoBehaviour:
     damage: 6
     penetrationMin: 5
     penetrationMax: 8
-    impactImpulse: 0.2
+    impactImpulse: 0.04
     spread: 5
     burstShots: 3
     shotInterval: 0.3

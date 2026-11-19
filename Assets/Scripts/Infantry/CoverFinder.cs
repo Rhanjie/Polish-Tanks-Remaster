@@ -55,7 +55,7 @@ namespace PolishTanks.Infantry
             return best < float.PositiveInfinity;
         }
 
-        private static bool IsTaken(Vector2 spot, IReadOnlyList<Vector2> taken)
+        public static bool IsTaken(Vector2 spot, IReadOnlyList<Vector2> taken)
         {
             foreach (var other in taken)
                 if (Vector2.Distance(spot, other) < TakenRadius)
