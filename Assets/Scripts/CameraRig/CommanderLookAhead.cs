@@ -9,6 +9,7 @@ namespace PolishTanks.CameraRig
     /// The commander's binoculars: shifts the follow camera toward the cursor so the player sees further where
     /// they aim. Uses <see cref="LookAheadMath"/> and eases the shift through a <see cref="CinemachineCameraOffset"/>.
     /// Stays centred until the pointer has reported a position, since an untouched mouse reads as the screen corner.
+    /// <see cref="Frozen"/> holds the current shift, e.g. while the mouse is busy with a menu.
     /// </summary>
     [RequireComponent(typeof(CinemachineCamera), typeof(CinemachineCameraOffset))]
     public class CommanderLookAhead : MonoBehaviour
@@ -44,9 +45,11 @@ namespace PolishTanks.CameraRig
                 cameraOffset.Offset = Vector3.zero;
         }
 
+        public bool Frozen { get; set; }
+
         private void LateUpdate()
         {
-            if (input == null)
+            if (input == null || Frozen)
                 return;
             var pointer = input.PointerScreenPosition;
             pointerSeen |= pointer != Vector2.zero;
