@@ -18,7 +18,8 @@ namespace PolishTanks.AI
     /// spotted. Once hunting, the crew keeps the player in view along a clear line well past the sight range, and a lost
     /// player is searched for in phases (see <see cref="SearchBehaviour"/>). A shell from the player tells the crew where it came from even when they can't see the shooter, and so
     /// does a player's shot flying close past; the player's gunfire makes the crew see further for a moment. While the
-    /// player is spotted the crew radios its position to friends within sight range.
+    /// player is spotted the crew radios its position to friends within sight range. It eases off and steers away from
+    /// its own soldiers in its lane (<see cref="InfantryCaution"/>).
     /// With Scripted Combat on, the orders keep the hull during a fight (for cutscenes) and only the guns react.
     /// Orders are edited in the inspector or set from code with <see cref="SetOrders"/>. The tank must not have an
     /// enabled <see cref="TankInput"/>. How its main gun shells did goes into <see cref="Penetrations"/> for later tactics.
@@ -50,6 +51,7 @@ namespace PolishTanks.AI
         private ModuleDamage moduleDamage;
         private Damageable damageable;
         private TankDriver driver;
+        private TankPathFollower follower;
         private UtilityBrain brain;
         private Gunner gunner;
         private AiContext context;
@@ -66,6 +68,7 @@ namespace PolishTanks.AI
         public string Name => name;
         public Vector2 Position => transform.position;
         public bool IsActive => isActiveAndEnabled && !knockedOut;
+        public bool IsOnFoot => false;
         public float NearMissRadius => Doctrine.NearMissRadius;
 
         public bool ScriptedCombat
@@ -127,7 +130,8 @@ namespace PolishTanks.AI
             body = GetComponent<Rigidbody2D>();
             moduleDamage = GetComponent<ModuleDamage>();
             damageable = GetComponent<Damageable>();
-            driver = new TankDriver(gameObject, GetComponent<TankPathFollower>());
+            follower = GetComponent<TankPathFollower>();
+            driver = new TankDriver(gameObject, follower);
             gunner = new Gunner(() => Random.value);
             brain = new UtilityBrain(new AiBehaviour[]
             {
@@ -144,7 +148,6 @@ namespace PolishTanks.AI
 
         private void Start()
         {
-            var follower = GetComponent<TankPathFollower>();
             context.SearchSpace = new WorldSearchSpace(follower.Navigation != null ? follower.Navigation : navigation, follower.AgentRadius, body);
             orders.Prepare(new OrderContext(driver, Time.time));
         }
@@ -193,6 +196,9 @@ namespace PolishTanks.AI
                     FireLane.IsClear(driver.Position, target.LastKnownPosition, body, FireLaneHalfWidth));
             else if (gunner.IsEngaged)
                 gunner.CeaseFire(driver);
+            InfantryCaution.Yield(driver.Position, driver.Forward, AiAgents.All, out var speedLimit, out var steerBias);
+            follower.SpeedLimit = speedLimit;
+            follower.SteerBias = steerBias;
             driver.ApplyIdleAim();
         }
 

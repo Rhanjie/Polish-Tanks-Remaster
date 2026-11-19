@@ -34,10 +34,10 @@ namespace PolishTanks.Infantry
             penetrationMin = 5f,
             penetrationMax = 8f,
             impactImpulse = 0.2f,
-            spread = 6f,
+            spread = 5f,
             burstShots = 3,
             shotInterval = 0.3f,
-            burstPause = 3.5f,
+            burstPause = 1.6f,
         };
     }
 }

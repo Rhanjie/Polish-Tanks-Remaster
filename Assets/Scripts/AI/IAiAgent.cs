@@ -14,6 +14,7 @@ namespace PolishTanks.AI
         string Name { get; }
         Vector2 Position { get; }
         bool IsActive { get; }
+        bool IsOnFoot { get; }
         float SightRange { get; }
         float NearMissRadius { get; }
         TargetMemory Target { get; }

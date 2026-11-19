@@ -60,6 +60,7 @@ namespace PolishTanks.Infantry
         public string Name => name;
         public Vector2 Position => transform.position;
         public bool IsActive => isActiveAndEnabled && health != null && !health.IsDead;
+        public bool IsOnFoot => true;
         public CombatDoctrine Doctrine => doctrine != null ? doctrine : FallbackDoctrine;
         public InfantryProfile Profile => profile != null ? profile : FallbackProfile;
         public TargetMemory Target => target;

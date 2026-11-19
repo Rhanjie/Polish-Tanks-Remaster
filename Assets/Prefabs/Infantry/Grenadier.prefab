@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.06, y: 1.06, z: 1}
+  m_LocalScale: {x: 3.2, y: 3.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1190609475950504596}
@@ -191,7 +191,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.32
+  m_Radius: 0.42
 --- !u!114 &8126679500122933158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,7 +207,7 @@ MonoBehaviour:
   walkSpeed: 2.6
   runSpeed: 4.2
   turnSpeed: 540
-  agentRadius: 0.4
+  agentRadius: 0.45
   arriveDistance: 0.6
   stuckSeconds: 1.5
 --- !u!114 &6742374954180992462

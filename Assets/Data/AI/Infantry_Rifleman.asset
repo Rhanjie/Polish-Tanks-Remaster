@@ -22,10 +22,10 @@ MonoBehaviour:
     penetrationMin: 5
     penetrationMax: 8
     impactImpulse: 0.2
-    spread: 6
+    spread: 5
     burstShots: 3
     shotInterval: 0.3
-    burstPause: 3.5
+    burstPause: 1.6
   grenades:
     prefab: {fileID: 0}
     cooldown: 20
