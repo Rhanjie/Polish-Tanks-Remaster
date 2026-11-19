@@ -9,7 +9,8 @@ namespace PolishTanks.Damage
     /// Which parts a hit can knock out, by the plate it struck. Side hits threaten the track on that side,
     /// even when the shell does not get through (scaled down). Everything else needs a penetration:
     /// the engine from the rear, vision blocks from the front, the turret ring from any side.
-    /// Each part rolls on its own, so one shell can do several kinds of damage.
+    /// Each part rolls on its own, so one shell can do several kinds of damage. An explosion next to the hull (a
+    /// grenade) also rolls for the track on its side, from any direction and whether or not it got through.
     /// Machine-gun bullets roll separately: on the front or side they can damage a vision block or, more often,
     /// blind one for a moment.
     /// </summary>
@@ -36,6 +37,14 @@ namespace PolishTanks.Damage
                 result.Add(VehiclePart.VisionBlock);
             if (chances.HasTurretRing && Hits(chances.TurretRingJam, random))
                 result.Add(VehiclePart.TurretRing);
+        }
+
+        public static void RollBlast(bool leftSide, in PartDamageChances chances, float blastTrackFactor, Func<float> random,
+            List<VehiclePart> result)
+        {
+            result.Clear();
+            if (chances.HasTracks && Hits(Mathf.Clamp01(chances.TrackBreak * blastTrackFactor), random))
+                result.Add(leftSide ? VehiclePart.LeftTrack : VehiclePart.RightTrack);
         }
 
         public static SmallArmsEffect RollSmallArms(HitSide side, in PartDamageChances chances,

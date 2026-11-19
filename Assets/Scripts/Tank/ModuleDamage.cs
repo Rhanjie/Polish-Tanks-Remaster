@@ -11,7 +11,8 @@ namespace PolishTanks.Tank
     /// <summary>
     /// Wears tank parts down when hits land, using the break chances from the fitted modules, and pushes the result
     /// into the drive and turret. Each hit moves a part one step, from intact to damaged to destroyed. A track snapping
-    /// at speed drags the hull round toward the dead side; a destroyed engine stops the tank and starts a fire that
+    /// at speed drags the hull round toward the dead side, and side hits that glance off or stop in the plate can still
+    /// break it, as can a grenade going off next to the hull; a destroyed engine stops the tank and starts a fire that
     /// eats hit points until it burns out. Rounds below the settings' minimum calibre only threaten the vision blocks:
     /// now and then one gets damaged, more often it is blinded for a moment. A loadout with a different part layout
     /// keeps the damage of shared parts.
@@ -165,12 +166,19 @@ namespace PolishTanks.Tank
                 OnSmallArmsHit(result.Side);
                 return;
             }
-            if (outcome != HitOutcome.Penetrated && outcome != HitOutcome.Blocked)
+            if (outcome == HitOutcome.Ignored)
                 return;
 
             var leftSide = Vector2.Dot(damageable.LastFace, transform.right) < 0f;
             PartHitRules.Roll(result.Side, leftSide, outcome == HitOutcome.Penetrated, chances,
                 settings.NonPenetratingTrackFactor, Dice, rolled);
+            foreach (var part in rolled)
+                Break(part);
+
+            if (!damageable.LastWasExplosive)
+                return;
+            var blastOnLeft = Vector2.Dot(damageable.LastPoint - (Vector2)transform.position, transform.right) < 0f;
+            PartHitRules.RollBlast(blastOnLeft, chances, settings.BlastTrackFactor, Dice, rolled);
             foreach (var part in rolled)
                 Break(part);
         }

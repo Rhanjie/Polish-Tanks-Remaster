@@ -57,7 +57,7 @@ namespace PolishTanks.Weapons
 
             var power = Power(distance, blast.radius);
             var hit = new ProjectileHit(point, outward, -outward, blast.damage, 0f, source,
-                blast.penetrationMin * power, blast.penetrationMax * power, blast.caliber, true);
+                blast.penetrationMin * power, blast.penetrationMax * power, blast.caliber, true, true);
             collider.GetComponentsInParent(false, Handlers);
             foreach (var handler in Handlers)
                 handler.OnProjectileHit(hit);

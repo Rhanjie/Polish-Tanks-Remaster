@@ -15,7 +15,10 @@ namespace PolishTanks.Damage
         [SerializeField, Min(0f)] private float minCaliber = 20f;
 
         [Tooltip("Track break chance for a side hit that does not penetrate, as a fraction of the module's chance.")]
-        [SerializeField, Range(0f, 1f)] private float nonPenetratingTrackFactor = 0.4f;
+        [SerializeField, Range(0f, 1f)] private float nonPenetratingTrackFactor = 0.7f;
+
+        [Tooltip("Extra track break roll for an explosion (a grenade) next to the hull, from any side, as a multiple of the module's chance. It comes on top of the normal roll.")]
+        [SerializeField, Range(0f, 5f)] private float blastTrackFactor = 3f;
 
         [Header("Thrown track")]
         [Tooltip("How hard the dead track drags the hull round when it snaps at speed. Scales with speed and mass.")]
@@ -68,6 +71,7 @@ namespace PolishTanks.Damage
 
         public float MinCaliber => minCaliber;
         public float NonPenetratingTrackFactor => nonPenetratingTrackFactor;
+        public float BlastTrackFactor => blastTrackFactor;
         public float TrackYank => trackYank;
         public float DamagedTrackPull => damagedTrackPull;
         public float SmallArmsBlockDamageChance => smallArmsBlockDamageChance;

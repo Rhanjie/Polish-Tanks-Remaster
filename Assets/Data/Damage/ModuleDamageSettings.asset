@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ModuleDamageSettings
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Damage.ModuleDamageSettings
   minCaliber: 20
-  nonPenetratingTrackFactor: 0.4
+  nonPenetratingTrackFactor: 0.7
+  blastTrackFactor: 3
   trackYank: 0.6
   crippledCrawl: 0.05
   damagedTrackPull: 0.12
