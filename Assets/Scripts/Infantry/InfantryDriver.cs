@@ -30,6 +30,8 @@ namespace PolishTanks.Infantry
 
         public void Stop() => mover.Stop();
 
+        public void StepTo(Vector2 point) => mover.StepTo(point);
+
         public void AimAt(Vector2 point)
         {
             aimedThisFrame = true;
