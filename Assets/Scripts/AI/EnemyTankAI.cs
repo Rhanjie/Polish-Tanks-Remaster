@@ -29,6 +29,7 @@ namespace PolishTanks.AI
     {
         public const float MinimumShellCaliber = 20f;
         public const float FireLaneHalfWidth = 0.6f;
+        public const float FireLaneSpread = 3f;
 
         [Tooltip("How this tank sees and fights. Empty uses the built-in defaults.")]
         [SerializeField] private CombatDoctrine doctrine;
@@ -193,7 +194,7 @@ namespace PolishTanks.AI
             brain.Tick(context);
             if (context.IsTargetSpotted)
                 gunner.Engage(context, driver, target.LastKnownPosition,
-                    FireLane.IsClear(driver.Position, target.LastKnownPosition, body, FireLaneHalfWidth));
+                    FireLane.IsClear(driver.Position, target.LastKnownPosition, this, FireLaneHalfWidth, FireLaneSpread, AiAgents.All));
             else if (gunner.IsEngaged)
                 gunner.CeaseFire(driver);
             InfantryCaution.Yield(driver.Position, driver.Forward, AiAgents.All, out var speedLimit, out var steerBias);

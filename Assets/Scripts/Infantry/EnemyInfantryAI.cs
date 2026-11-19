@@ -242,7 +242,7 @@ namespace PolishTanks.Infantry
                 }
             }
             if (distance <= arms.Rifle.range
-                && FireLane.IsClear(Position + toTarget / distance * MuzzleOffset, aim, body, FireLaneHalfWidth)
+                && FireLane.IsClear(Position + toTarget / distance * MuzzleOffset, aim, this, FireLaneHalfWidth, arms.Rifle.spread, AiAgents.All)
                 && arms.TryShoot(Time.time))
                 FireRifle(arms.Spread(toTarget / distance));
         }
