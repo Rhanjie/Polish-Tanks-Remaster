@@ -27,6 +27,7 @@ namespace PolishTanks.AI
     public class EnemyTankAI : MonoBehaviour, IShotOutcomeReceiver, IAiAgent
     {
         public const float MinimumShellCaliber = 20f;
+        public const float FireLaneHalfWidth = 0.6f;
 
         [Tooltip("How this tank sees and fights. Empty uses the built-in defaults.")]
         [SerializeField] private CombatDoctrine doctrine;
@@ -188,7 +189,8 @@ namespace PolishTanks.AI
                 radio.TryBroadcast(this, target.LastKnownPosition, SightRange, Time.time, AiAgents.All);
             brain.Tick(context);
             if (context.IsTargetSpotted)
-                gunner.Engage(context, driver, target.LastKnownPosition);
+                gunner.Engage(context, driver, target.LastKnownPosition,
+                    FireLane.IsClear(driver.Position, target.LastKnownPosition, body, FireLaneHalfWidth));
             else if (gunner.IsEngaged)
                 gunner.CeaseFire(driver);
             driver.ApplyIdleAim();

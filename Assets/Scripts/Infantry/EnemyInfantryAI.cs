@@ -27,6 +27,7 @@ namespace PolishTanks.Infantry
         private const float RifleRangeShare = 0.8f;
         private const float MuzzleOffset = 0.45f;
         private const float GrenadeStandOff = 0.4f;
+        private const float FireLaneHalfWidth = 0.4f;
 
         [SerializeField] private InfantryProfile profile;
         [Tooltip("How this soldier sees, reacts and searches. Empty uses the built-in defaults.")]
@@ -231,7 +232,9 @@ namespace PolishTanks.Infantry
                 ThrowGrenade(playerTank.GetComponent<Rigidbody2D>(), aim);
                 return;
             }
-            if (distance <= arms.Rifle.range && arms.TryShoot(Time.time))
+            if (distance <= arms.Rifle.range
+                && FireLane.IsClear(Position + toTarget / distance * MuzzleOffset, aim, body, FireLaneHalfWidth)
+                && arms.TryShoot(Time.time))
                 FireRifle(arms.Spread(toTarget / distance));
         }
 
