@@ -13,9 +13,18 @@ MonoBehaviour:
   m_Name: Doctrine_Tutorial
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.AI.CombatDoctrine
   sightRangeFactor: 1.8
-  memorySeconds: 12
+  memorySeconds: 60
   reactionTime: 0.6
   searchLostTarget: 0
+  pursuitRangeFactor: 2.5
+  lookSeconds: 1
+  searchSeconds: 15
+  roamRadius: 14
+  mainGunRevealFactor: 1.6
+  machineGunRevealFactor: 1.25
+  fireRevealSeconds: 4
+  nearMissRadius: 4
+  radioAllies: 1
   aimJitter: 6
   aimTolerance: 2
   shotInterval: 8

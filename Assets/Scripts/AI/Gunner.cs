@@ -7,7 +7,8 @@ namespace PolishTanks.AI
     /// The AI gunner, carried over from the old sandbox sentry: lays the turret on the target with a fresh random
     /// offset after every main gun shot (so hits land on different plates and at different angles), fires when the
     /// barrel is on the aim point and the doctrine's shot interval has passed, and fires the machine guns in bursts
-    /// while on target. It works whatever the hull is doing, also during scripted combat.
+    /// while on target. It holds fire while a friend stands in the line of fire. It works whatever the hull is doing,
+    /// also during scripted combat.
     /// </summary>
     public sealed class Gunner
     {
@@ -25,10 +26,9 @@ namespace PolishTanks.AI
         public bool IsEngaged => engaged;
         public float NextShotTime => nextShot;
 
-        public void Engage(AiContext context, Vector2 target)
+        public void Engage(AiContext context, ITankDriver driver, Vector2 target, bool laneClear = true)
         {
             var doctrine = context.Doctrine;
-            var driver = context.Driver;
             if (!engaged)
             {
                 engaged = true;
@@ -38,7 +38,7 @@ namespace PolishTanks.AI
 
             var origin = driver.Position;
             driver.AimAt(origin + (Vector2)(Quaternion.Euler(0f, 0f, jitter) * (target - origin)));
-            var onTarget = Mathf.Abs(driver.AimError) <= doctrine.AimTolerance;
+            var onTarget = laneClear && Mathf.Abs(driver.AimError) <= doctrine.AimTolerance;
 
             if (onTarget && context.Time >= nextShot && driver.FireMainGun())
             {

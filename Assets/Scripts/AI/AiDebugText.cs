@@ -24,6 +24,7 @@ namespace PolishTanks.AI
             AiBehaviourKind.FollowOrders => "orders",
             AiBehaviourKind.Engage => "engage",
             AiBehaviourKind.Search => "search",
+            AiBehaviourKind.GiveWay => "give way",
             _ => Idle,
         };
 

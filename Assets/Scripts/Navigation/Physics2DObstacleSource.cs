@@ -5,8 +5,8 @@ using UnityEngine;
 namespace PolishTanks.Navigation
 {
     /// <summary>
-    /// Reads obstacles from the scene's 2D colliders without needing physics layers. Triggers and tanks are skipped
-    /// (tanks move, they are avoided while driving, not baked). Colliders on dynamic bodies, the crates and barrels a
+    /// Reads obstacles from the scene's 2D colliders without needing physics layers. Triggers, tanks and soldiers are skipped
+    /// (they move, so they are avoided while moving, not baked). Colliders on dynamic bodies, the crates and barrels a
     /// tank can push or shoot apart, become soft cost. Everything else (buildings, walls, trees, wrecks, map edges)
     /// is solid.
     /// </summary>
@@ -42,7 +42,7 @@ namespace PolishTanks.Navigation
             kind = ObstacleKind.Solid;
             if (collider == null || collider.isTrigger || !collider.enabled)
                 return false;
-            if (collider.GetComponentInParent<TankController>() != null)
+            if (collider.GetComponentInParent<TankController>() != null || collider.GetComponentInParent<ISelfMovingAgent>() != null)
                 return false;
             var body = collider.attachedRigidbody;
             if (body != null && body.bodyType == RigidbodyType2D.Dynamic)

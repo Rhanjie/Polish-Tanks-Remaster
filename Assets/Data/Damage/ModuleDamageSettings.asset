@@ -12,9 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea807e01dd3064a45a3f81eec4acd608, type: 3}
   m_Name: ModuleDamageSettings
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Damage.ModuleDamageSettings
+  minCaliber: 20
   nonPenetratingTrackFactor: 0.4
   trackYank: 0.6
   crippledCrawl: 0.05
+  damagedTrackPull: 0.12
+  smallArmsBlockDamageChance: 0.01
+  smallArmsBlindChance: 0.07
+  blindSeconds: 1.2
+  blindStrength: 0.85
   fireDuration: 12
   fireTickInterval: 1.5
   fireTickDamage: 0.03
+  engineRepair: 8
+  trackRepair: 6
+  turretRingRepair: 5
+  visionBlockRepair: 3

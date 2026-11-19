@@ -15,7 +15,8 @@ namespace PolishTanks.Navigation
     /// makes no headway (pinned on a crate, another tank in the way) it backs off for a moment and plans again; it gives
     /// up (<see cref="PathFailed"/>) after a few replans that bring it no closer to the destination.
     /// It owns the throttle while moving, so the player's <see cref="TankInput"/> must be off; AI and scripted
-    /// scenes call <see cref="MoveTo"/> and <see cref="Stop"/>. A wreck stops on its own.
+    /// scenes call <see cref="MoveTo"/> and <see cref="Stop"/>. A wreck stops on its own. <see cref="SpeedLimit"/> and
+    /// <see cref="SteerBias"/> let the AI ease off and lean the steering, e.g. around its own soldiers.
     /// </summary>
     [RequireComponent(typeof(TankMovement))]
     public class TankPathFollower : MonoBehaviour
@@ -72,6 +73,10 @@ namespace PolishTanks.Navigation
         public Vector2 Destination { get; private set; }
         public PathStatus LastStatus { get; private set; } = PathStatus.NoPath;
         public IReadOnlyList<Vector2> Path => path;
+
+        public float SpeedLimit { get; set; } = 1f;
+
+        public float SteerBias { get; set; }
 
         public float AgentRadius => HullSize.x * 0.5f + clearanceMargin;
 
@@ -185,7 +190,7 @@ namespace PolishTanks.Navigation
             }
 
             var drive = TrackedSteering.Toward(position, transform.up, path[waypoint], isFinal, steering);
-            movement.SetInput(drive.Throttle, drive.Steer);
+            movement.SetInput(drive.Throttle * SpeedLimit, Mathf.Clamp(drive.Steer + SteerBias, -1f, 1f));
         }
 
         private void TrackProgress(Vector2 position)

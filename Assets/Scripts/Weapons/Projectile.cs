@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using PolishTanks.Combat;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace PolishTanks.Weapons
 {
@@ -10,6 +12,7 @@ namespace PolishTanks.Weapons
     /// with reduced power; after that any hit that fails to penetrate breaks it up. A target that lets it pass
     /// through is ignored from then on and the shot carries on with the penetration it has left.
     /// Low cover close to where it was fired is flown over, as if the barrel cleared it.
+    /// <see cref="Swept"/> reports the stretch it covered every frame, so the AI can notice shots flying past.
     /// </summary>
     public class Projectile : PooledBehaviour
     {
@@ -27,6 +30,8 @@ namespace PolishTanks.Weapons
         private static readonly List<RaycastHit2D> Hits = new List<RaycastHit2D>(16);
 
         private static readonly List<IProjectileHitHandler> Handlers = new List<IProjectileHitHandler>(4);
+
+        public static event Action<Rigidbody2D, Vector2, Vector2> Swept;
 
         private ProjectileShot shot;
         private Vector2 velocity;
@@ -98,6 +103,17 @@ namespace PolishTanks.Weapons
             if (!IsSpawned || deltaTime <= 0f)
                 return;
 
+            Vector2 start = transform.position;
+            var shooter = shot.Shooter;
+            Fly(deltaTime);
+            Swept?.Invoke(shooter, start, transform.position);
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetOnPlay() => Swept = null;
+
+        private void Fly(float deltaTime)
+        {
             var speed = velocity.magnitude;
             if (speed <= 0f)
             {

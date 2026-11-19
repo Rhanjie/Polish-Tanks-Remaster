@@ -1,15 +1,15 @@
 namespace PolishTanks.AI.Orders
 {
-    /// <summary>What an order gets to work with: the tank's controls and the current time.</summary>
+    /// <summary>What an order gets to work with: the unit's controls and the current time.</summary>
     public readonly struct OrderContext
     {
-        public OrderContext(ITankDriver driver, float time)
+        public OrderContext(IUnitDriver driver, float time)
         {
             Driver = driver;
             Time = time;
         }
 
-        public ITankDriver Driver { get; }
+        public IUnitDriver Driver { get; }
         public float Time { get; }
     }
 }
