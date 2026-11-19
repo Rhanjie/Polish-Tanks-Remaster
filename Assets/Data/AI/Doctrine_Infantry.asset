@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef5caf7a858546b44adc950d3cd2c8b8, type: 3}
+  m_Name: Doctrine_Infantry
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.AI.CombatDoctrine
+  sightRangeFactor: 1.6
+  memorySeconds: 60
+  reactionTime: 0.4
+  searchLostTarget: 1
+  pursuitRangeFactor: 2.5
+  lookSeconds: 1
+  searchSeconds: 15
+  roamRadius: 5
+  mainGunRevealFactor: 1.6
+  machineGunRevealFactor: 1.25
+  fireRevealSeconds: 4
+  nearMissRadius: 3
+  radioAllies: 1
+  aimJitter: 6
+  aimTolerance: 2
+  shotInterval: 5
+  burstSeconds: 0
+  burstPause: 3

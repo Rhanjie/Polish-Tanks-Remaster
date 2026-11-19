@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a27dfc2d6a37648875a551f8b91d71, type: 3}
+  m_Name: Infantry_Grenadier
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Infantry.InfantryProfile
+  viewRange: 14
+  rifle:
+    projectile: {fileID: 11400000, guid: edfc9befa49505442ae029074bb4332e, type: 2}
+    range: 26
+    projectileSpeed: 70
+    caliber: 7.6
+    damage: 6
+    penetrationMin: 5
+    penetrationMax: 8
+    impactImpulse: 0.2
+    spread: 4
+    burstShots: 3
+    shotInterval: 0.3
+    burstPause: 2
+  grenades:
+    prefab: {fileID: 3247785552727834029, guid: 7c5a78b8871f232468f918605fb4671f, type: 3}
+    cooldown: 20
+    minRange: 4
+    maxRange: 14
+    scatter: 1.2
+    secondsPerMetre: 0.07
+    fuse: 1.2
+    windup: 0.6
+    blast:
+      radius: 2.5
+      penetrationMin: 30
+      penetrationMax: 45
+      damage: 120
+      caliber: 40
+      impulse: 4
+      effect: {fileID: 6518291198489183723, guid: 7bfb20a8d6ad14c4cbf7986d688327ac, type: 3}
