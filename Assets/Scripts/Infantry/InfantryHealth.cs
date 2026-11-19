@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using PolishTanks.AI;
 using PolishTanks.Tank;
 using PolishTanks.Weapons;
 using Reflex.Attributes;
@@ -10,7 +11,8 @@ namespace PolishTanks.Infantry
 {
     /// <summary>
     /// A soldier's body. Bullets and shells wound it through <see cref="WoundModel"/> and stop in it; a blast hurts it by
-    /// distance; a tank driving into it faster than <see cref="crushSpeed"/> runs it over (a slow one only shoves it).
+    /// distance; a stray ricochet from a friendly AI gun flies past instead (an enemy squad around the player's tank
+    /// would otherwise cut itself down with bullets glancing off its armor); a tank driving into it faster than <see cref="crushSpeed"/> runs it over (a slow one only shoves it).
     /// On death the colliders go at once, blood bursts out and the body sinks into the ground and fades away.
     /// </summary>
     public class InfantryHealth : MonoBehaviour, IProjectileHitHandler, IBlastReceiver
@@ -36,7 +38,7 @@ namespace PolishTanks.Infantry
 
         public HitResponse OnProjectileHit(in ProjectileHit hit)
         {
-            if (IsDead)
+            if (IsDead || IsFriendlyRicochet(hit))
                 return HitResponse.Ignored;
             var killed = wounds.TakeHit(hit.Caliber, Random.value);
             Wounded?.Invoke(hit.Shooter);
@@ -44,6 +46,9 @@ namespace PolishTanks.Infantry
                 Die(-hit.Direction);
             return new HitResponse(HitOutcome.Penetrated, -hit.Direction, SurfaceMaterial.Other);
         }
+
+        private bool IsFriendlyRicochet(in ProjectileHit hit) =>
+            hit.Ricocheted && hit.Shooter != null && hit.Shooter.TryGetComponent<IAiAgent>(out _) && TryGetComponent<IAiAgent>(out _);
 
         public void OnBlast(Vector2 centre, float distance, in BlastSettings blast, Rigidbody2D source)
         {
