@@ -11,8 +11,10 @@ namespace PolishTanks.UI
     /// <summary>
     /// Pause menu and defeat screen of a gameplay scene. The pause key opens and closes the pause menu, which stops the
     /// game and holds the player's tank. When the player's tank is destroyed the defeat screen comes up after a short
-    /// delay. Both offer a restart, which reloads the scene, and quitting the game. <see cref="GameLoopState"/> decides
-    /// what is shown; this component reads the input and the tank and writes to the UI tree.
+    /// delay, which waits while another menu holds the game. Its Restart button takes keyboard focus only once the fire
+    /// button is let go, so Enter held for the gun can't restart by accident. Both screens offer a restart, which
+    /// reloads the scene, and quitting the game. <see cref="GameLoopState"/> decides what is shown; this component
+    /// reads the input and the tank and writes to the UI tree.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class GameMenu : MonoBehaviour
@@ -36,6 +38,7 @@ namespace PolishTanks.UI
         private Button defeatQuit;
         private TankController tank;
         private TankInput tankInput;
+        private bool focusDefeatOnTriggerRelease;
 
         public GameLoopPhase Phase => state != null ? state.Phase : GameLoopPhase.Playing;
 
@@ -96,7 +99,13 @@ namespace PolishTanks.UI
                 Bind();
             if (input != null && input.PausePressedThisFrame)
                 state.TogglePause();
-            state.Tick(Time.unscaledDeltaTime);
+            var heldByOthers = state.Phase == GameLoopPhase.Playing && gamePause != null && gamePause.IsPaused;
+            state.Tick(heldByOthers ? 0f : Time.unscaledDeltaTime);
+            if (focusDefeatOnTriggerRelease && (input == null || !input.FireHeld))
+            {
+                focusDefeatOnTriggerRelease = false;
+                defeatRestart.Focus();
+            }
         }
 
         private void Bind()
@@ -151,7 +160,7 @@ namespace PolishTanks.UI
             if (phase == GameLoopPhase.Paused)
                 resume.Focus();
             else if (phase == GameLoopPhase.Defeated)
-                defeatRestart.Focus();
+                focusDefeatOnTriggerRelease = true;
         }
 
         private void Resume() => state.Resume();

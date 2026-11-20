@@ -150,6 +150,7 @@ namespace PolishTanks.UI
             if (isOpen)
             {
                 HoldTank(true);
+                Pause(pauseWhileOpen);
                 Refresh();
             }
         }

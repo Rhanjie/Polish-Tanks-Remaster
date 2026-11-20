@@ -41,7 +41,7 @@ namespace PolishTanks.Tank
         private void Update()
         {
             var keyboard = Keyboard.current;
-            if (keyboard == null || tankInput == null || !tankInput.isActiveAndEnabled || damage.Model == null)
+            if (keyboard == null || tankInput == null || !tankInput.isActiveAndEnabled || tankInput.IsHeld || damage.Model == null)
                 return;
 
             if (keyboard.digit1Key.wasPressedThisFrame) Break(VehiclePart.Engine);
