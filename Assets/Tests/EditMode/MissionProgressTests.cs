@@ -3,7 +3,10 @@ using PolishTanks.Missions;
 
 namespace PolishTanks.Tests.EditMode
 {
-    /// <summary><see cref="MissionProgress"/>: ordered primaries, early kills, survive timing, win, loss and respect.</summary>
+    /// <summary>
+    /// <see cref="MissionProgress"/>: ordered primaries, start markers, early kills, survive timing,
+    /// avoid objectives, win, loss and respect.
+    /// </summary>
     public class MissionProgressTests
     {
         private static MissionObjective Reach(string id, bool optional = false, int respect = 50) =>
@@ -14,6 +17,9 @@ namespace PolishTanks.Tests.EditMode
 
         private static MissionObjective Survive(string id, float seconds) =>
             new MissionObjective(id, MissionObjectiveKind.Survive, id, false, 50, seconds);
+
+        private static MissionObjective Avoid(string id, string until) =>
+            new MissionObjective(id, MissionObjectiveKind.Avoid, id, true, 40, untilObjectiveId: until);
 
         private static MissionProgress Create(params MissionObjective[] objectives) =>
             new MissionProgress(objectives, default);
@@ -88,6 +94,33 @@ namespace PolishTanks.Tests.EditMode
             progress.EnemyLost(EnemyLoss.Infantry);
 
             Assert.That(progress.TotalRespect, Is.EqualTo(30 + 100 + 20));
+        }
+
+        [Test]
+        public void Begin_WaitingDestroyObjective_StartsOnlyAtItsMarkerAndCountsEarlyKills()
+        {
+            var markerFirst = new MissionObjective("t", MissionObjectiveKind.Destroy, "t", startMarker: true);
+            var progress = Create(Reach("a"), markerFirst, Reach("b"));
+            progress.Reached("a");
+            progress.TargetDestroyed("t");
+            var beforeMarker = progress.CurrentPrimary.State;
+
+            progress.Begin("t");
+
+            Assert.That(beforeMarker, Is.EqualTo(ObjectiveState.Waiting));
+            Assert.That(progress.CurrentPrimary.Objective.Id, Is.EqualTo("b"));
+        }
+
+        [Test]
+        public void Violated_AvoidObjective_FailsAndOnlyAnUntouchedOneCompletesWithItsObjective()
+        {
+            var progress = Create(Reach("a"), Reach("b"), Avoid("clean", "a"), Avoid("touched", "a"));
+            progress.Violated("touched");
+
+            progress.Reached("a");
+
+            Assert.That(progress.Objectives[2].State, Is.EqualTo(ObjectiveState.Completed));
+            Assert.That(progress.Objectives[3].State, Is.EqualTo(ObjectiveState.Failed));
         }
     }
 }
