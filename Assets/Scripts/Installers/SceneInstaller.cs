@@ -1,4 +1,5 @@
 using PolishTanks.CameraRig;
+using PolishTanks.GameLoop;
 using PolishTanks.Navigation;
 using PolishTanks.Tank;
 using PolishTanks.Weapons;
@@ -9,7 +10,7 @@ using UnityEngine;
 namespace PolishTanks.Installers
 {
     /// <summary>
-    /// Bindings for a gameplay scene: its camera, camera shake, the player's tank, the object pools and its path
+    /// Bindings for a gameplay scene: its camera, camera shake, the player's tank, the game pause, the object pools and its path
     /// finding (a <see cref="NoNavigation"/> stand-in when the scene has no <see cref="NavigationGridSource"/>).
     /// Must be a child of the scene's SceneScope (ContainerScope) object.
     /// </summary>
@@ -26,6 +27,7 @@ namespace PolishTanks.Installers
             builder.RegisterValue(new GameCamera(gameCamera), new[] { typeof(IGameCamera) });
             builder.RegisterValue(new CinemachineCameraShake(cameraShakeSource), new[] { typeof(ICameraShake) });
             builder.RegisterValue(new PlayerTank(playerTank));
+            builder.RegisterValue(new GamePause(), new[] { typeof(IGamePause) });
             var sceneNavigation = navigation != null ? navigation.Navigation : new NoNavigation();
             builder.RegisterValue(sceneNavigation, new[] { typeof(INavigation) });
 

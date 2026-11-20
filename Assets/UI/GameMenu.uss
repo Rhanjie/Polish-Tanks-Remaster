@@ -1,0 +1,76 @@
+.game-menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(6, 7, 5, 0.62);
+}
+
+.game-menu--defeat {
+    background-color: rgba(24, 6, 4, 0.7);
+}
+
+.game-menu--hidden {
+    display: none;
+}
+
+.game-menu__card {
+    min-width: 320px;
+    padding: 28px 36px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(200, 200, 180, 0.35);
+    background-color: rgba(12, 14, 10, 0.9);
+    align-items: stretch;
+}
+
+.game-menu__title {
+    font-size: 34px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(222, 218, 196);
+    margin-bottom: 18px;
+    letter-spacing: 2px;
+}
+
+.game-menu__title--defeat {
+    color: rgb(236, 112, 76);
+    margin-bottom: 6px;
+}
+
+.game-menu__subtitle {
+    font-size: 15px;
+    -unity-text-align: middle-center;
+    color: rgba(222, 218, 196, 0.75);
+    margin-bottom: 20px;
+    white-space: normal;
+}
+
+.game-menu__button {
+    height: 42px;
+    margin: 4px 0;
+    font-size: 18px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgba(200, 200, 180, 0.3);
+    background-color: rgb(40, 44, 34);
+    color: rgb(222, 218, 196);
+}
+
+.game-menu__button:hover,
+.game-menu__button:focus {
+    background-color: rgb(70, 78, 56);
+    border-color: rgb(130, 214, 100);
+}
+
+.game-menu__button:active {
+    background-color: rgb(96, 108, 74);
+}
+
+.game-menu__button--quiet {
+    background-color: rgba(40, 44, 34, 0.5);
+    color: rgba(222, 218, 196, 0.75);
+}

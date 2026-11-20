@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PolishTanks.CameraRig;
 using PolishTanks.Controls;
 using Reflex.Attributes;
@@ -10,6 +11,8 @@ namespace PolishTanks.Tank
     /// The repair key starts or stops a <see cref="FieldRepair"/>; while it runs the tank stays put and holds fire
     /// (the turret still aims), and only the repair key calls it off.
     /// The machine gun button fires the coaxial gun and, while the cursor lies inside its arc, the hull machine gun too.
+    /// Menus <see cref="Hold"/> it while they are open: the tank stops and ignores the player until every holder lets go,
+    /// and a fire button still pressed from clicking the menu has to be released before it fires again.
     /// Disable it to drive the tank from code (tests, AI).
     /// </summary>
     [RequireComponent(typeof(TankMovement))]
@@ -25,6 +28,22 @@ namespace PolishTanks.Tank
         private TankGun hullGun;
         private BallMount ballMount;
         private FieldRepair repair;
+        private readonly HashSet<object> holders = new HashSet<object>();
+        private bool waitForTriggerRelease;
+
+        public bool IsHeld => holders.Count > 0;
+
+        public void Hold(object holder)
+        {
+            if (holder != null && holders.Add(holder) && holders.Count == 1)
+                Stop();
+        }
+
+        public void Release(object holder)
+        {
+            if (holder != null && holders.Remove(holder) && holders.Count == 0)
+                waitForTriggerRelease = true;
+        }
 
         private void Awake()
         {
@@ -37,7 +56,9 @@ namespace PolishTanks.Tank
             repair = GetComponent<FieldRepair>();
         }
 
-        private void OnDisable()
+        private void OnDisable() => Stop();
+
+        private void Stop()
         {
             if (movement != null)
                 movement.SetInput(0f, 0f);
@@ -51,10 +72,14 @@ namespace PolishTanks.Tank
 
         private void Update()
         {
-            if (input == null)
+            if (input == null || IsHeld)
                 return;
 
+            if (waitForTriggerRelease && !input.FireHeld && !input.SecondaryFireHeld)
+                waitForTriggerRelease = false;
+
             var repairing = UpdateRepair();
+            var canFire = !repairing && !waitForTriggerRelease;
 
             if (movement != null)
             {
@@ -75,10 +100,10 @@ namespace PolishTanks.Tank
                 }
             }
 
-            UpdateTrigger(gun, !repairing && input.FireHeld, !repairing && input.FirePressedThisFrame);
-            UpdateTrigger(coaxialGun, !repairing && input.SecondaryFireHeld, !repairing && input.SecondaryFirePressedThisFrame);
-            UpdateTrigger(hullGun, !repairing && hullGunCovers && input.SecondaryFireHeld,
-                !repairing && hullGunCovers && input.SecondaryFirePressedThisFrame);
+            UpdateTrigger(gun, canFire && input.FireHeld, canFire && input.FirePressedThisFrame);
+            UpdateTrigger(coaxialGun, canFire && input.SecondaryFireHeld, canFire && input.SecondaryFirePressedThisFrame);
+            UpdateTrigger(hullGun, canFire && hullGunCovers && input.SecondaryFireHeld,
+                canFire && hullGunCovers && input.SecondaryFirePressedThisFrame);
         }
 
         private bool UpdateRepair()

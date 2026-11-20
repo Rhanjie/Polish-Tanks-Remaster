@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="GameMenu.uss" />
+    <ui:VisualElement name="pauseScreen" class="game-menu game-menu--hidden">
+        <ui:VisualElement class="game-menu__card">
+            <ui:Label text="Paused" class="game-menu__title" />
+            <ui:Button name="resume" text="Resume" class="game-menu__button" />
+            <ui:Button name="restart" text="Restart" class="game-menu__button" />
+            <ui:Button name="quit" text="Quit" class="game-menu__button game-menu__button--quiet" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="defeatScreen" class="game-menu game-menu--defeat game-menu--hidden">
+        <ui:VisualElement class="game-menu__card">
+            <ui:Label text="Tank destroyed" class="game-menu__title game-menu__title--defeat" />
+            <ui:Label text="The crew bailed out. The mission is lost." class="game-menu__subtitle" />
+            <ui:Button name="restart" text="Restart" class="game-menu__button" />
+            <ui:Button name="quit" text="Quit" class="game-menu__button game-menu__button--quiet" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
