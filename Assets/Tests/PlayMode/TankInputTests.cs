@@ -19,6 +19,7 @@ namespace PolishTanks.Tests.PlayMode
         private FakePlayerInput input;
         private Rigidbody2D body;
         private TankGun gun;
+        private TankInput tankInput;
         private int shots;
 
         [SetUp]
@@ -44,7 +45,7 @@ namespace PolishTanks.Tests.PlayMode
             gun.Settings = new GunSettings { reloadTime = 100f, projectileSpeed = 10f };
             gun.Fired += _ => shots++;
 
-            root.AddComponent<TankInput>();
+            tankInput = root.AddComponent<TankInput>();
 
             GameObjectInjector.InjectRecursive(root, container);
             root.SetActive(true);
@@ -87,6 +88,39 @@ namespace PolishTanks.Tests.PlayMode
             yield return null;
             yield return null;
 
+            Assert.That(shots, Is.EqualTo(1));
+        }
+
+        [UnityTest]
+        public IEnumerator Update_HeldByMenu_IgnoresThrottle()
+        {
+            tankInput.Hold(this);
+            input.Move = new Vector2(0f, 1f);
+
+            for (var i = 0; i < 10; i++)
+                yield return new WaitForFixedUpdate();
+
+            Assert.That(body.linearVelocity.y, Is.Zero);
+        }
+
+        [UnityTest]
+        public IEnumerator Update_FireHeldThroughRelease_FiresOnlyAfterPressedAgain()
+        {
+            input.FireHeld = true;
+            tankInput.Hold(this);
+            tankInput.Release(this);
+            yield return null;
+            yield return null;
+            var shotsWhileStillHeld = shots;
+
+            input.FireHeld = false;
+            yield return null;
+            input.FireHeld = true;
+            input.FirePressedThisFrame = true;
+            yield return null;
+            yield return null;
+
+            Assert.That(shotsWhileStillHeld, Is.Zero);
             Assert.That(shots, Is.EqualTo(1));
         }
     }
