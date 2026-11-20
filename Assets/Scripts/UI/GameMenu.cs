@@ -14,7 +14,7 @@ namespace PolishTanks.UI
     /// game and holds the player's tank. Losing the player's tank or winning the scene's mission brings up the end
     /// screen after a short delay, which waits while another menu holds the game; in a mission it lists the objectives
     /// and the respect earned. The end screen's Restart button takes keyboard focus only once the fire button is let
-    /// go, and the end screen holds a tank that is still alive, so Enter held for the gun can't restart by accident.
+    /// go, and the end screen holds a tank that is still alive, so a button held for the gun can't restart by accident.
     /// Both screens offer a restart, which reloads the scene, and the main menu (quitting the game when the build has
     /// no main menu scene). <see cref="GameLoopState"/> decides what is shown; this component reads the input, the tank
     /// and the mission and writes to the UI tree.
