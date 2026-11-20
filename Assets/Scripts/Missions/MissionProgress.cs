@@ -5,8 +5,10 @@ namespace PolishTanks.Missions
 {
     /// <summary>
     /// Rules of a running mission without any scene. Primary objectives open one at a time in list order and the
-    /// mission is won when the last one is done; optional objectives are open from the start and only add respect.
-    /// A zone counts only while its objective is open; targets destroyed early count as soon as theirs opens.
+    /// mission is won when the last one is done; one with a start marker waits (<see cref="ObjectiveState.Waiting"/>)
+    /// until <see cref="Begin"/>. Optional objectives are open from the start and only add respect; an Avoid objective
+    /// fails on <see cref="Violated"/> and is done when its closing objective or the won mission is.
+    /// A zone counts only while its objective is in progress; targets destroyed early count as soon as theirs begins.
     /// Losing the player's tank (<see cref="Fail"/>) loses the mission. Whatever is still open at the end is missed.
     /// Respect is the sum of completed objectives and enemy losses.
     /// </summary>
@@ -36,7 +38,8 @@ namespace PolishTanks.Missions
         public MissionOutcome Outcome { get; private set; }
 
         public ObjectiveStatus CurrentPrimary =>
-            objectives.Find(status => !status.Objective.Optional && status.State == ObjectiveState.Active);
+            objectives.Find(status => !status.Objective.Optional
+                && (status.State == ObjectiveState.Waiting || status.State == ObjectiveState.Active));
 
         public int ObjectiveRespect
         {
@@ -69,6 +72,30 @@ namespace PolishTanks.Missions
             foreach (var status in objectives)
                 if (IsDestroyObjective(status, id) && status.Objective.TargetCount == 0)
                     status.Required = Math.Max(1, count);
+        }
+
+        public void Begin(string id)
+        {
+            var current = CurrentPrimary;
+            if (Outcome != MissionOutcome.Running || current == null || current.State != ObjectiveState.Waiting
+                || current.Objective.Id != id)
+                return;
+            Activate(current);
+        }
+
+        public void Violated(string id)
+        {
+            if (Outcome != MissionOutcome.Running)
+                return;
+            for (var i = 0; i < objectives.Count; i++)
+            {
+                var status = objectives[i];
+                if (status.Objective.Id != id || status.Objective.Kind != MissionObjectiveKind.Avoid
+                    || status.State != ObjectiveState.Active)
+                    continue;
+                status.State = ObjectiveState.Failed;
+                ObjectiveChanged?.Invoke(status);
+            }
         }
 
         public void Reached(string id)
@@ -133,15 +160,36 @@ namespace PolishTanks.Missions
                 return;
             status.State = ObjectiveState.Completed;
             ObjectiveChanged?.Invoke(status);
+            CloseAvoidObjectivesEndingWith(status.Objective.Id);
             if (status.Objective.Optional)
                 return;
             var next = OpenNextPrimary();
             if (next == null)
                 End(MissionOutcome.Won);
-            else if (next.Objective.Kind == MissionObjectiveKind.Destroy && next.Count >= next.Required)
-                Complete(next);
-            else
+            else if (next.State == ObjectiveState.Waiting)
                 ObjectiveChanged?.Invoke(next);
+            else
+                Activate(next);
+        }
+
+        private void Activate(ObjectiveStatus status)
+        {
+            status.State = ObjectiveState.Active;
+            if (status.Objective.Kind == MissionObjectiveKind.Destroy && status.Count >= status.Required)
+                Complete(status);
+            else
+                ObjectiveChanged?.Invoke(status);
+        }
+
+        private void CloseAvoidObjectivesEndingWith(string id)
+        {
+            for (var i = 0; i < objectives.Count; i++)
+            {
+                var status = objectives[i];
+                if (status.Objective.Kind == MissionObjectiveKind.Avoid && status.State == ObjectiveState.Active
+                    && !string.IsNullOrEmpty(status.Objective.UntilObjectiveId) && status.Objective.UntilObjectiveId == id)
+                    Complete(status);
+            }
         }
 
         private ObjectiveStatus OpenNextPrimary()
@@ -149,7 +197,7 @@ namespace PolishTanks.Missions
             var next = objectives.Find(status => !status.Objective.Optional && status.State == ObjectiveState.Pending);
             if (next == null)
                 return null;
-            next.State = ObjectiveState.Active;
+            next.State = next.Objective.StartMarker ? ObjectiveState.Waiting : ObjectiveState.Active;
             return next;
         }
 
@@ -159,8 +207,13 @@ namespace PolishTanks.Missions
                 return;
             Outcome = outcome;
             foreach (var status in objectives)
-                if (status.State == ObjectiveState.Active || status.State == ObjectiveState.Pending)
-                    status.State = ObjectiveState.Failed;
+            {
+                if (status.State == ObjectiveState.Completed || status.State == ObjectiveState.Failed)
+                    continue;
+                var kept = outcome == MissionOutcome.Won && status.Objective.Kind == MissionObjectiveKind.Avoid
+                    && status.State == ObjectiveState.Active;
+                status.State = kept ? ObjectiveState.Completed : ObjectiveState.Failed;
+            }
             Ended?.Invoke(outcome);
         }
     }
