@@ -87,6 +87,7 @@ namespace PolishTanks.Audio
             if (source == null || source.clip == null)
                 return;
             source.loop = true;
+            source.ignoreListenerPause = true;
             source.volume = startVolume;
             source.Play();
         }

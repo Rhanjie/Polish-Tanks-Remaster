@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using PolishTanks.CameraRig;
+using PolishTanks.GameLoop;
 using PolishTanks.Tank;
 using PolishTanks.Tank.Modules;
 using Reflex.Attributes;
@@ -37,6 +37,7 @@ namespace PolishTanks.UI
         [SerializeField] private bool pauseWhileOpen = true;
 
         [Inject] private PlayerTank playerTank;
+        [Inject] private IGamePause gamePause;
 
         private readonly Stack<(TankLoadout asset, LoadoutBuilder copy)> history = new Stack<(TankLoadout asset, LoadoutBuilder copy)>();
         private VisualElement root;
@@ -58,8 +59,6 @@ namespace PolishTanks.UI
         private TankStats shownStats;
         private TankStats previousStats;
         private bool isOpen;
-        private bool paused;
-        private float timeScaleBeforePause = 1f;
 
         public bool IsOpen => isOpen;
 
@@ -165,27 +164,22 @@ namespace PolishTanks.UI
 
         private void Pause(bool pause)
         {
-            if (pause == paused)
+            if (gamePause == null)
                 return;
-            paused = pause;
             if (pause)
-            {
-                timeScaleBeforePause = Time.timeScale;
-                Time.timeScale = 0f;
-            }
+                gamePause.Hold(this);
             else
-            {
-                Time.timeScale = timeScaleBeforePause;
-            }
-            foreach (var lookAhead in FindObjectsByType<CommanderLookAhead>())
-                lookAhead.Frozen = pause;
+                gamePause.Release(this);
         }
 
         private void HoldTank(bool hold)
         {
             if (tankInput == null)
                 return;
-            tankInput.enabled = !hold && !tank.IsDestroyed;
+            if (hold)
+                tankInput.Hold(this);
+            else
+                tankInput.Release(this);
         }
 
         private void OnStatsApplied(TankStats stats)
