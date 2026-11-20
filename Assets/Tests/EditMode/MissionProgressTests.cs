@@ -5,7 +5,7 @@ namespace PolishTanks.Tests.EditMode
 {
     /// <summary>
     /// <see cref="MissionProgress"/>: ordered primaries, start markers, early kills, survive timing,
-    /// avoid objectives, win, loss and respect.
+    /// avoid objectives, optionals opened by a primary, win, loss and respect.
     /// </summary>
     public class MissionProgressTests
     {
@@ -121,6 +121,25 @@ namespace PolishTanks.Tests.EditMode
 
             Assert.That(progress.Objectives[2].State, Is.EqualTo(ObjectiveState.Completed));
             Assert.That(progress.Objectives[3].State, Is.EqualTo(ObjectiveState.Failed));
+        }
+
+        [Test]
+        public void Begin_ObjectiveWithTiedOptional_OpensItOnlyThenSoATouchBeforeDoesNotCount()
+        {
+            var marked = new MissionObjective("a", MissionObjectiveKind.Reach, "a", startMarker: true);
+            var clean = new MissionObjective("clean", MissionObjectiveKind.Avoid, "clean", true, 40,
+                untilObjectiveId: "a", openWithObjectiveId: "a");
+            var progress = Create(marked, clean);
+            progress.Violated("clean");
+            var beforeMarker = progress.Objectives[1].State;
+
+            progress.Begin("a");
+            var afterMarker = progress.Objectives[1].State;
+            progress.Reached("a");
+
+            Assert.That(beforeMarker, Is.EqualTo(ObjectiveState.Pending));
+            Assert.That(afterMarker, Is.EqualTo(ObjectiveState.Active));
+            Assert.That(progress.Objectives[1].State, Is.EqualTo(ObjectiveState.Completed));
         }
     }
 }
