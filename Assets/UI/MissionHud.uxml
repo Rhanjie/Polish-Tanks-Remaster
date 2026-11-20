@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="MissionHud.uss" />
+    <ui:VisualElement name="missionHud" class="mission-hud mission-hud--hidden" picking-mode="Ignore">
+        <ui:VisualElement class="mission-panel" picking-mode="Ignore">
+            <ui:Label name="missionTitle" class="mission-title" picking-mode="Ignore" />
+            <ui:VisualElement name="objectives" class="mission-objectives" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="notice" class="mission-notice" picking-mode="Ignore">
+            <ui:Label name="noticeCaption" class="mission-notice__caption" picking-mode="Ignore" />
+            <ui:Label name="noticeText" class="mission-notice__text" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
