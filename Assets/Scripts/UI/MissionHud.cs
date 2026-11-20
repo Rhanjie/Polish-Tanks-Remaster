@@ -9,8 +9,9 @@ namespace PolishTanks.UI
     /// <summary>
     /// Objective panels in the top corner. The main panel shows the mission title and the current primary objective
     /// with its count or timer; while that objective waits for its start marker it is dimmed and a hint says to drive
-    /// into the circle. A separate panel lists every optional objective as open, done or missed. When an objective is
-    /// done or a new one opens, a short notice slides in below; notices raised together are shown one after another.
+    /// into the circle. A separate panel lists every optional objective that has opened as open, done or missed. When an
+    /// objective is done or a new one opens, a short notice slides in below; notices raised together are shown one after
+    /// another.
     /// Hidden in scenes without a mission.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
@@ -107,9 +108,9 @@ namespace PolishTanks.UI
             progress.Ended += OnEnded;
             title.text = mission.Definition != null ? mission.Definition.Title : string.Empty;
             root.RemoveFromClassList(HiddenClass);
-            var current = progress.CurrentPrimary;
-            if (current != null)
-                announced.Add(current);
+            foreach (var status in progress.Objectives)
+                if (status.State != ObjectiveState.Pending)
+                    announced.Add(status);
             Rebuild();
         }
 
@@ -127,7 +128,7 @@ namespace PolishTanks.UI
             var hasOptional = false;
             foreach (var status in progress.Objectives)
             {
-                if (!status.Objective.Optional)
+                if (!status.Objective.Optional || status.State == ObjectiveState.Pending)
                     continue;
                 hasOptional = true;
                 AddRow(optionalList, status);
@@ -152,8 +153,9 @@ namespace PolishTanks.UI
                 notices.Enqueue((MissionText.ObjectiveComplete, status.Objective.Description));
             else if (status.State == ObjectiveState.Failed)
                 notices.Enqueue((MissionText.ObjectiveFailed, status.Objective.Description));
-            else if (!status.Objective.Optional && announced.Add(status))
-                notices.Enqueue((MissionText.NewObjective, status.Objective.Description));
+            else if (status.State != ObjectiveState.Pending && announced.Add(status))
+                notices.Enqueue((status.Objective.Optional ? MissionText.NewOptionalObjective : MissionText.NewObjective,
+                    status.Objective.Description));
             Rebuild();
         }
 

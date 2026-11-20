@@ -7,7 +7,8 @@ namespace PolishTanks.Missions
     /// One objective of a <see cref="MissionDefinition"/>. Scene objects find it by <see cref="Id"/>: a
     /// <see cref="MissionZone"/> for Reach, every <see cref="MissionTarget"/> with the id for Destroy.
     /// Primary objectives are played in list order; with <see cref="StartMarker"/> one waits until the player drives
-    /// into its start marker. Optional ones stay open the whole mission and only add respect. An Avoid objective fails
+    /// into its start marker. Optional ones only add respect; they are open from the start, or from the moment the
+    /// objective named in <see cref="OpenWithObjectiveId"/> begins, until the end. An Avoid objective fails
     /// when the player's tank touches one of its <see cref="MissionObstacle"/>s and is done once the objective named in
     /// <see cref="UntilObjectiveId"/> is (or the mission is won).
     /// </summary>
@@ -28,10 +29,12 @@ namespace PolishTanks.Missions
         [SerializeField] private bool startMarker;
         [Tooltip("Avoid: done once this objective is done. Empty means at the end of a won mission.")]
         [SerializeField] private string untilObjectiveId;
+        [Tooltip("Optional: opens when this objective begins. Empty means from the start of the mission.")]
+        [SerializeField] private string openWithObjectiveId;
 
         public MissionObjective(string id, MissionObjectiveKind kind, string description, bool optional = false,
             int respect = 50, float surviveSeconds = 60f, int targetCount = 0, bool startMarker = false,
-            string untilObjectiveId = null)
+            string untilObjectiveId = null, string openWithObjectiveId = null)
         {
             this.id = id;
             this.kind = kind;
@@ -42,6 +45,7 @@ namespace PolishTanks.Missions
             this.targetCount = targetCount;
             this.startMarker = startMarker;
             this.untilObjectiveId = untilObjectiveId;
+            this.openWithObjectiveId = openWithObjectiveId;
         }
 
         public string Id => id;
@@ -53,5 +57,6 @@ namespace PolishTanks.Missions
         public int TargetCount => targetCount;
         public bool StartMarker => startMarker;
         public string UntilObjectiveId => untilObjectiveId;
+        public string OpenWithObjectiveId => openWithObjectiveId;
     }
 }

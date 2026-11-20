@@ -16,6 +16,7 @@ namespace PolishTanks.UI
         public const string ObjectiveComplete = "Objective complete";
         public const string ObjectiveFailed = "Objective failed";
         public const string NewObjective = "New objective";
+        public const string NewOptionalObjective = "New optional objective";
         public const string TotalRespect = "Respect earned";
         public const string TanksDestroyedFormat = "Enemy tanks destroyed: {0}";
         public const string ModulesDestroyedFormat = "Enemy modules knocked out: {0}";

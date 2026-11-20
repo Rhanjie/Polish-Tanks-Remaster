@@ -4,7 +4,7 @@
         <ui:VisualElement class="mission-panel" picking-mode="Ignore">
             <ui:Label name="missionTitle" class="mission-title" picking-mode="Ignore" />
             <ui:VisualElement name="currentObjective" class="mission-objectives" picking-mode="Ignore" />
-            <ui:Label name="startHint" text="Drive into the yellow circle to begin" class="mission-hint mission-hud--hidden" picking-mode="Ignore" />
+            <ui:Label name="startHint" text="Drive into the blue circle to begin" class="mission-hint mission-hud--hidden" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement name="optionalPanel" class="mission-panel mission-panel--optional mission-hud--hidden" picking-mode="Ignore">
             <ui:Label text="OPTIONAL" class="mission-title mission-title--optional" picking-mode="Ignore" />
