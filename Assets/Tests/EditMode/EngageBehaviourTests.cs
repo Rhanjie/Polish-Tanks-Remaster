@@ -40,5 +40,18 @@ namespace PolishTanks.Tests.EditMode
 
             Assert.That(new EngageBehaviour().Score(rig.Context), Is.EqualTo(0f));
         }
+
+        [Test]
+        public void TickThenExit_HoldsAnAngledHullHeadingAndReleasesIt()
+        {
+            var engage = new EngageBehaviour(() => 0.9f);
+
+            engage.Tick(rig.Context);
+            var held = rig.Driver.HullHeading;
+            engage.Exit(rig.Context);
+
+            Assert.That(held.HasValue && Vector2.Angle(Vector2.right, held.Value) > 10f, Is.True);
+            Assert.That(rig.Driver.HullHeading, Is.Null);
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using PolishTanks.CameraRig;
 using PolishTanks.Tank;
 using PolishTanks.Tank.Modules;
 using Reflex.Attributes;
@@ -16,7 +17,8 @@ namespace PolishTanks.UI
     /// narrows all slots at once, so a long module list stays usable. Presets load whole loadouts, Random rolls a valid
     /// build, Undo steps back through earlier builds. The stat table shows each stat with its change since the
     /// previous build, green when it helps the crew and red when it hurts. While the panel is open the tank stops
-    /// listening to the player, so clicks on the panel don't fire the gun. Changes made from code through
+    /// listening to the player, so clicks on the panel don't fire the gun, and the game clock and the camera stop, so
+    /// nothing happens while a module is being picked. Changes made from code through
     /// <see cref="TankController.Fit"/> show up here too.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
@@ -31,6 +33,8 @@ namespace PolishTanks.UI
         [Tooltip("km/h shown per world unit per second of tank speed, same as the HUD.")]
         [SerializeField, Min(0.1f)] private float kmhPerUnit = 6.3f;
         [SerializeField] private bool startOpen;
+        [Tooltip("Stop the game clock and hold the camera while the panel is open.")]
+        [SerializeField] private bool pauseWhileOpen = true;
 
         [Inject] private PlayerTank playerTank;
 
@@ -54,6 +58,8 @@ namespace PolishTanks.UI
         private TankStats shownStats;
         private TankStats previousStats;
         private bool isOpen;
+        private bool paused;
+        private float timeScaleBeforePause = 1f;
 
         public bool IsOpen => isOpen;
 
@@ -64,6 +70,7 @@ namespace PolishTanks.UI
             isOpen = open;
             root.EnableInClassList(HiddenClass, !open);
             HoldTank(open);
+            Pause(open && pauseWhileOpen);
             if (open)
                 Refresh();
         }
@@ -154,6 +161,24 @@ namespace PolishTanks.UI
                 tank.StatsApplied -= OnStatsApplied;
             tank = null;
             tankInput = null;
+        }
+
+        private void Pause(bool pause)
+        {
+            if (pause == paused)
+                return;
+            paused = pause;
+            if (pause)
+            {
+                timeScaleBeforePause = Time.timeScale;
+                Time.timeScale = 0f;
+            }
+            else
+            {
+                Time.timeScale = timeScaleBeforePause;
+            }
+            foreach (var lookAhead in FindObjectsByType<CommanderLookAhead>())
+                lookAhead.Frozen = pause;
         }
 
         private void HoldTank(bool hold)

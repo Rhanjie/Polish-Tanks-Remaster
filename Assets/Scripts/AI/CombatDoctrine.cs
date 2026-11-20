@@ -41,6 +41,17 @@ namespace PolishTanks.AI
         [Tooltip("Radio the player's position to friends within sight range while the player is spotted.")]
         [SerializeField] private bool radioAllies = true;
 
+        [Header("Hull")]
+        [Tooltip("Degrees the hull is turned off the line to the target while fighting, so shells hit the front plate at a slant. 0 faces it head on.")]
+        [SerializeField, Range(0f, 45f)] private float hullAngle = 25f;
+        [Tooltip("Degrees the hull sways either way around that angle.")]
+        [SerializeField, Range(0f, 20f)] private float hullSway = 6f;
+        [Tooltip("Seconds for one full sway.")]
+        [SerializeField, Min(0.1f)] private float hullSwayPeriod = 2.5f;
+        [Tooltip("Shortest and longest seconds before the hull swings over to the other side.")]
+        [SerializeField, Min(0.5f)] private float hullSideSwitchMin = 4f;
+        [SerializeField, Min(0.5f)] private float hullSideSwitchMax = 9f;
+
         [Header("Gunnery")]
         [Tooltip("Largest random aim offset in degrees, picked again after every main gun shot.")]
         [SerializeField, Range(0f, 30f)] private float aimJitter = 6f;
@@ -66,6 +77,11 @@ namespace PolishTanks.AI
         public float FireRevealSeconds => fireRevealSeconds;
         public float NearMissRadius => nearMissRadius;
         public bool RadioAllies => radioAllies;
+        public float HullAngle => hullAngle;
+        public float HullSway => hullSway;
+        public float HullSwayPeriod => hullSwayPeriod;
+        public float HullSideSwitchMin => hullSideSwitchMin;
+        public float HullSideSwitchMax => Mathf.Max(hullSideSwitchMin, hullSideSwitchMax);
         public float AimJitter => aimJitter;
         public float AimTolerance => aimTolerance;
         public float ShotInterval => shotInterval;

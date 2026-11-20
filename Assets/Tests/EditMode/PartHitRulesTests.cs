@@ -121,5 +121,28 @@ namespace PolishTanks.Tests.EditMode
 
             Assert.That(effect, Is.EqualTo(SmallArmsEffect.None));
         }
+
+        [TestCase(true, VehiclePart.LeftTrack)]
+        [TestCase(false, VehiclePart.RightTrack)]
+        public void RollBlast_RollBelowScaledChance_BreaksTrackOnBlastSide(bool leftSide, VehiclePart expected)
+        {
+            var chances = Certain;
+            chances.TrackBreak = 0.1f;
+
+            PartHitRules.RollBlast(leftSide, chances, 3f, () => 0.2f, result);
+
+            Assert.That(result, Is.EqualTo(new[] { expected }));
+        }
+
+        [Test]
+        public void RollBlast_RollAboveScaledChance_BreaksNothing()
+        {
+            var chances = Certain;
+            chances.TrackBreak = 0.1f;
+
+            PartHitRules.RollBlast(true, chances, 3f, () => 0.35f, result);
+
+            Assert.That(result, Is.Empty);
+        }
     }
 }

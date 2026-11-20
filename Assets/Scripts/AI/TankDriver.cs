@@ -9,7 +9,7 @@ namespace PolishTanks.AI
     /// <see cref="ITankDriver"/> over a real tank: the hull drives through <see cref="TankPathFollower"/>, the turret
     /// through <see cref="TurretAimer"/>, and the main gun, coaxial gun and hull machine gun through <see cref="TankGun"/>.
     /// <see cref="ApplyIdleAim"/> runs at the end of the AI's frame and points the turret at the watch point (or straight
-    /// ahead) when nothing aimed it that frame. The hull machine gun sits too low to fire over crates and barrels, so it
+    /// ahead) when nothing aimed it that frame, and turns a standing hull toward the held hull heading. The hull machine gun sits too low to fire over crates and barrels, so it
     /// holds fire while one is in its line.
     /// </summary>
     public sealed class TankDriver : ITankDriver
@@ -18,6 +18,8 @@ namespace PolishTanks.AI
 
         private readonly Transform hull;
         private readonly TankPathFollower follower;
+        private readonly TankMovement movement;
+        private Vector2? hullHeading;
         private readonly TurretAimer aimer;
         private readonly TankGun mainGun;
         private readonly TankGun coaxialGun;
@@ -32,6 +34,7 @@ namespace PolishTanks.AI
         {
             hull = tank.transform;
             this.follower = follower;
+            movement = tank.GetComponent<TankMovement>();
             aimer = tank.GetComponentInChildren<TurretAimer>(true);
             mainGun = TankGun.Find(tank, GunMount.Main);
             coaxialGun = TankGun.Find(tank, GunMount.Coaxial);
@@ -57,6 +60,14 @@ namespace PolishTanks.AI
 
         public void Stop() => follower.Stop();
 
+        public void HoldHullHeading(Vector2? heading)
+        {
+            var released = hullHeading.HasValue && !heading.HasValue;
+            hullHeading = heading;
+            if (released && !follower.IsMoving && movement != null)
+                movement.SetInput(0f, 0f);
+        }
+
         public void AimAt(Vector2 point)
         {
             aimedThisFrame = true;
@@ -81,6 +92,8 @@ namespace PolishTanks.AI
 
         public void ApplyIdleAim()
         {
+            if (hullHeading.HasValue && !follower.IsMoving && movement != null)
+                movement.SetInput(0f, HullAngling.Steer(Forward, hullHeading.Value));
             if (!aimedThisFrame && aimer != null)
                 aimer.SetAimPoint(watchPoint ?? Position + Forward * AheadDistance);
             aimedThisFrame = false;

@@ -14,9 +14,10 @@ namespace PolishTanks.Weapons
         public readonly float PenetrationMax;
         public readonly float Caliber;
         public readonly bool Ricocheted;
+        public readonly bool Explosive;
 
         public ProjectileHit(Vector2 point, Vector2 normal, Vector2 direction, float damage, float impulse, Rigidbody2D shooter,
-            float penetrationMin = 0f, float penetrationMax = 0f, float caliber = 0f, bool ricocheted = false)
+            float penetrationMin = 0f, float penetrationMax = 0f, float caliber = 0f, bool ricocheted = false, bool explosive = false)
         {
             Point = point;
             Normal = normal;
@@ -28,6 +29,7 @@ namespace PolishTanks.Weapons
             PenetrationMax = penetrationMax;
             Caliber = caliber;
             Ricocheted = ricocheted;
+            Explosive = explosive;
         }
     }
 }

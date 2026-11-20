@@ -20,6 +20,7 @@ namespace PolishTanks.Tests.EditMode
         public bool HasArrived { get; set; }
         public bool PathFailed { get; set; }
         public float AimError { get; set; }
+        public Vector2? HullHeading { get; private set; }
 
         public Vector2 LastMoveTo => MoveToCalls[MoveToCalls.Count - 1];
 
@@ -53,6 +54,8 @@ namespace PolishTanks.Tests.EditMode
         }
 
         public void SetMachineGuns(bool held, Vector2 target) => MachineGunsHeld = held;
+
+        public void HoldHullHeading(Vector2? heading) => HullHeading = heading;
 
         public void Arrive()
         {
