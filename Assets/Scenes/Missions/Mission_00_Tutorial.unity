@@ -13651,13 +13651,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6695047874482712640, guid: 2669643134cd6e745a1d20d470447327, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 350442911}
   m_SourcePrefab: {fileID: 100100000, guid: 2669643134cd6e745a1d20d470447327, type: 3}
 --- !u!4 &350442909 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7454907326070187840, guid: 2669643134cd6e745a1d20d470447327, type: 3}
   m_PrefabInstance: {fileID: 350442908}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &350442910 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6695047874482712640, guid: 2669643134cd6e745a1d20d470447327, type: 3}
+  m_PrefabInstance: {fileID: 350442908}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &350442911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350442910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: heavy-tank
 --- !u!1001 &351573361
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -768746,7 +768767,7 @@ Transform:
   m_GameObject: {fileID: 1298870691}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 49, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -773011,7 +773032,7 @@ Transform:
   m_GameObject: {fileID: 1426507299}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 281, y: 7.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -778536,7 +778557,7 @@ Transform:
   m_GameObject: {fileID: 1587431548}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 205, y: -8.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -789258,8 +789279,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1849407749}
   - component: {fileID: 1849407748}
-  - component: {fileID: 1849407751}
-  - component: {fileID: 1849407750}
   m_Layer: 0
   m_Name: SceneScope
   m_TagString: Untagged
@@ -789296,32 +789315,6 @@ Transform:
   - {fileID: 2129399898}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1849407750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1849407747}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
-  objectiveId: heavy-tank
---- !u!114 &1849407751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1849407747}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
-  objectiveId: light-tank
 --- !u!1001 &1851610614
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -802433,13 +802426,34 @@ PrefabInstance:
     - {fileID: 3033694629029787339, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2142294423}
   m_SourcePrefab: {fileID: 100100000, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
 --- !u!4 &2142294421 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
   m_PrefabInstance: {fileID: 2142294420}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2142294422 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+  m_PrefabInstance: {fileID: 2142294420}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2142294423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142294422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: light-tank
 --- !u!1001 &2143064765
 PrefabInstance:
   m_ObjectHideFlags: 0
