@@ -34,6 +34,32 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
+        public void Tick_AfterMissionWon_ReachesVictoryOnlyOnceDelayPassed()
+        {
+            var state = new GameLoopState(2f, 1f);
+            state.MissionWon();
+
+            state.Tick(0.9f);
+            var beforeDelay = state.Phase;
+            state.Tick(0.2f);
+
+            Assert.That(beforeDelay, Is.EqualTo(GameLoopPhase.Playing));
+            Assert.That(state.Phase, Is.EqualTo(GameLoopPhase.Victory));
+        }
+
+        [Test]
+        public void PlayerDestroyed_DuringPendingVictory_StaysVictory()
+        {
+            var state = new GameLoopState(0f, 1f);
+            state.MissionWon();
+
+            state.PlayerDestroyed();
+            state.Tick(2f);
+
+            Assert.That(state.Phase, Is.EqualTo(GameLoopPhase.Victory));
+        }
+
+        [Test]
         public void TogglePause_AfterDefeat_StaysDefeated()
         {
             var state = new GameLoopState(0f);
