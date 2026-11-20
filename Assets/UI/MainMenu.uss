@@ -1,0 +1,28 @@
+.main-menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(20, 22, 16);
+}
+
+.main-menu__title {
+    font-size: 56px;
+    -unity-font-style: bold;
+    letter-spacing: 6px;
+    color: rgb(222, 218, 196);
+}
+
+.main-menu__subtitle {
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: rgb(240, 200, 100);
+    margin-bottom: 36px;
+}
+
+.main-menu__card {
+    min-width: 340px;
+}

@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="GameMenu.uss" />
+    <ui:Style src="MainMenu.uss" />
+    <ui:VisualElement class="main-menu">
+        <ui:Label text="POLISH TANKS" class="main-menu__title" />
+        <ui:Label text="Remaster" class="main-menu__subtitle" />
+        <ui:VisualElement class="game-menu__card main-menu__card">
+            <ui:Button name="tutorial" text="Tutorial mission" class="game-menu__button" />
+            <ui:Button name="sandbox" text="Sandbox" class="game-menu__button" />
+            <ui:Button name="quit" text="Quit" class="game-menu__button game-menu__button--quiet" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
