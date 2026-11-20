@@ -36,13 +36,41 @@
     margin-top: 3px;
 }
 
-.mission-objective--optional {
+.mission-panel--optional {
+    margin-top: 8px;
+}
+
+.mission-title--optional {
+    color: rgba(130, 214, 236, 0.85);
+}
+
+.mission-panel--optional .mission-objective {
     font-size: 14px;
-    color: rgba(222, 218, 196, 0.75);
+    color: rgba(222, 218, 196, 0.85);
     border-color: rgba(130, 214, 236, 0.7);
 }
 
-.mission-objective--completed {
+.mission-objective--waiting {
+    color: rgba(240, 236, 214, 0.6);
+    border-color: rgba(240, 200, 100, 0.5);
+}
+
+.mission-objective--failed,
+.mission-panel--optional .mission-objective--failed {
+    color: rgba(236, 112, 76, 0.75);
+    border-color: rgba(236, 112, 76, 0.6);
+}
+
+.mission-hint {
+    margin-top: 4px;
+    font-size: 13px;
+    -unity-font-style: italic;
+    color: rgb(240, 200, 100);
+    white-space: normal;
+}
+
+.mission-objective--completed,
+.mission-panel--optional .mission-objective--completed {
     color: rgb(170, 220, 140);
     border-color: rgb(130, 214, 100);
 }

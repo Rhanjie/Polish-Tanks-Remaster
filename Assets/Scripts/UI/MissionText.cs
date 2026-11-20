@@ -14,13 +14,14 @@ namespace PolishTanks.UI
         public const string TimerFormat = "{0} ({1}:{2:00})";
         public const string RespectFormat = "+{0}";
         public const string ObjectiveComplete = "Objective complete";
+        public const string ObjectiveFailed = "Objective failed";
         public const string NewObjective = "New objective";
         public const string TotalRespect = "Respect earned";
         public const string TanksDestroyedFormat = "Enemy tanks destroyed: {0}";
         public const string ModulesDestroyedFormat = "Enemy modules knocked out: {0}";
         public const string InfantryKilledFormat = "Enemy soldiers killed: {0}";
 
-        public static string Describe(ObjectiveStatus status)
+        public static string Describe(ObjectiveStatus status, bool markOptional = true)
         {
             var objective = status.Objective;
             var text = objective.Kind switch
@@ -31,7 +32,7 @@ namespace PolishTanks.UI
                     Timer(objective.Description, status.TimeLeft),
                 _ => objective.Description,
             };
-            return objective.Optional ? string.Format(OptionalFormat, text) : text;
+            return objective.Optional && markOptional ? string.Format(OptionalFormat, text) : text;
         }
 
         public static string Respect(int amount) => string.Format(RespectFormat, amount);

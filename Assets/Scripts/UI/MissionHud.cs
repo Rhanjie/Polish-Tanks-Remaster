@@ -7,9 +7,10 @@ using UnityEngine.UIElements;
 namespace PolishTanks.UI
 {
     /// <summary>
-    /// Objective tracker in the top corner: the mission title, the current primary objective with its count or timer,
-    /// and the open optional ones. When an objective is done or a new one opens, a short notice slides in under it;
-    /// notices raised together (one objective done, the next one open) are shown one after another.
+    /// Objective panels in the top corner. The main panel shows the mission title and the current primary objective
+    /// with its count or timer; while that objective waits for its start marker it is dimmed and a hint says to drive
+    /// into the circle. A separate panel lists every optional objective as open, done or missed. When an objective is
+    /// done or a new one opens, a short notice slides in below; notices raised together are shown one after another.
     /// Hidden in scenes without a mission.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
@@ -18,8 +19,9 @@ namespace PolishTanks.UI
         private const string HiddenClass = "mission-hud--hidden";
         private const string NoticeVisibleClass = "mission-notice--visible";
         private const string ObjectiveClass = "mission-objective";
-        private const string OptionalClass = "mission-objective--optional";
+        private const string WaitingClass = "mission-objective--waiting";
         private const string CompletedClass = "mission-objective--completed";
+        private const string FailedClass = "mission-objective--failed";
 
         [Tooltip("Seconds a notice stays on screen.")]
         [SerializeField, Min(0.5f)] private float noticeTime = 3.5f;
@@ -31,7 +33,10 @@ namespace PolishTanks.UI
         private readonly HashSet<ObjectiveStatus> announced = new HashSet<ObjectiveStatus>();
         private VisualElement root;
         private Label title;
-        private VisualElement objectiveList;
+        private VisualElement currentList;
+        private Label startHint;
+        private VisualElement optionalPanel;
+        private VisualElement optionalList;
         private VisualElement notice;
         private Label noticeCaption;
         private Label noticeText;
@@ -43,7 +48,10 @@ namespace PolishTanks.UI
             var tree = GetComponent<UIDocument>().rootVisualElement;
             root = tree.Q("missionHud");
             title = tree.Q<Label>("missionTitle");
-            objectiveList = tree.Q("objectives");
+            currentList = tree.Q("currentObjective");
+            startHint = tree.Q<Label>("startHint");
+            optionalPanel = tree.Q("optionalPanel");
+            optionalList = tree.Q("optionalObjectives");
             notice = tree.Q("notice");
             noticeCaption = tree.Q<Label>("noticeCaption");
             noticeText = tree.Q<Label>("noticeText");
@@ -73,7 +81,7 @@ namespace PolishTanks.UI
             {
                 if (status.Objective.Kind != MissionObjectiveKind.Survive || status.State != ObjectiveState.Active)
                     continue;
-                var text = MissionText.Describe(status);
+                var text = MissionText.Describe(status, false);
                 if (label.text != text)
                     label.text = text;
             }
@@ -107,23 +115,34 @@ namespace PolishTanks.UI
 
         private void Rebuild()
         {
-            objectiveList.Clear();
             rows.Clear();
+            currentList.Clear();
+            optionalList.Clear();
+
             var current = progress.CurrentPrimary;
             if (current != null)
-                AddRow(current);
+                AddRow(currentList, current);
+            startHint.EnableInClassList(HiddenClass, current == null || current.State != ObjectiveState.Waiting);
+
+            var hasOptional = false;
             foreach (var status in progress.Objectives)
-                if (status.Objective.Optional && status.State != ObjectiveState.Failed)
-                    AddRow(status);
+            {
+                if (!status.Objective.Optional)
+                    continue;
+                hasOptional = true;
+                AddRow(optionalList, status);
+            }
+            optionalPanel.EnableInClassList(HiddenClass, !hasOptional);
         }
 
-        private void AddRow(ObjectiveStatus status)
+        private void AddRow(VisualElement list, ObjectiveStatus status)
         {
-            var label = new Label(MissionText.Describe(status));
+            var label = new Label(MissionText.Describe(status, false));
             label.AddToClassList(ObjectiveClass);
-            label.EnableInClassList(OptionalClass, status.Objective.Optional);
+            label.EnableInClassList(WaitingClass, status.State == ObjectiveState.Waiting);
             label.EnableInClassList(CompletedClass, status.State == ObjectiveState.Completed);
-            objectiveList.Add(label);
+            label.EnableInClassList(FailedClass, status.State == ObjectiveState.Failed);
+            list.Add(label);
             rows.Add((status, label));
         }
 
@@ -131,7 +150,9 @@ namespace PolishTanks.UI
         {
             if (status.State == ObjectiveState.Completed)
                 notices.Enqueue((MissionText.ObjectiveComplete, status.Objective.Description));
-            else if (status.State == ObjectiveState.Active && !status.Objective.Optional && announced.Add(status))
+            else if (status.State == ObjectiveState.Failed)
+                notices.Enqueue((MissionText.ObjectiveFailed, status.Objective.Description));
+            else if (!status.Objective.Optional && announced.Add(status))
                 notices.Enqueue((MissionText.NewObjective, status.Objective.Description));
             Rebuild();
         }
