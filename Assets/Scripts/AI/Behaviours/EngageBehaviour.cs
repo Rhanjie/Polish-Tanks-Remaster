@@ -2,7 +2,7 @@ namespace PolishTanks.AI.Behaviours
 {
     /// <summary>
     /// The target is in sight and spotted: stop and fight from where the tank stands, with the hull angled to the
-    /// target and swaying (<see cref="HullAngling"/>). Aiming and firing belong to the <see cref="Gunner"/>, which also
+    /// target and swaying (<see cref="HullAngling"/>), unless the doctrine keeps the hull still. Aiming and firing belong to the <see cref="Gunner"/>, which also
     /// shoots while the tank does anything else.
     /// Off while combat is scripted, so the designer's orders keep the hull.
     /// </summary>
@@ -29,7 +29,7 @@ namespace PolishTanks.AI.Behaviours
 
         public override void Tick(AiContext context)
         {
-            if (context.Driver is not ITankDriver tank)
+            if (context.Driver is not ITankDriver tank || !context.Doctrine.TurnHullToFight)
                 return;
             var toTarget = context.Target.LastKnownPosition - tank.Position;
             tank.HoldHullHeading(angling.DesiredForward(toTarget, context.Time, context.Doctrine));

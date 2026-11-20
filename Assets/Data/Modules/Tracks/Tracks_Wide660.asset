@@ -20,7 +20,7 @@ MonoBehaviour:
   tier: 3
   grip: 1.25
   maxSpeedMultiplier: 0.92
-  turnRate: 60
+  turnRate: 40
   turnRateAtSpeedRatio: 0.7
   maxLoad: 60000
   terrainResistance: 0.8
