@@ -3460,6 +3460,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8791731851694367053, guid: f489ba0b66045974f890828080260c99, type: 3}
   m_PrefabInstance: {fileID: 95571807}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &96650376
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2362294506001328357, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_Name
+      value: MissionHud
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2950695695817248076, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 351bf626b8946d94096e9f4ecd451fe1, type: 3}
 --- !u!1001 &97666938
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12540,13 +12597,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 327512545}
   m_SourcePrefab: {fileID: 100100000, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
 --- !u!4 &327512543 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3455774948840645205, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
   m_PrefabInstance: {fileID: 327512542}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &327512544 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+  m_PrefabInstance: {fileID: 327512542}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &327512545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 327512544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: course-barrels
 --- !u!1001 &327595478
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12932,13 +13010,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 334774826}
   m_SourcePrefab: {fileID: 100100000, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
 --- !u!4 &334774824 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3455774948840645205, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
   m_PrefabInstance: {fileID: 334774823}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &334774825 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+  m_PrefabInstance: {fileID: 334774823}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &334774826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 334774825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: course-barrels
 --- !u!1001 &337186075
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -759921,13 +760020,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1060628698}
   m_SourcePrefab: {fileID: 100100000, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
 --- !u!4 &1060628696 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3455774948840645205, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
   m_PrefabInstance: {fileID: 1060628695}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1060628697 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+  m_PrefabInstance: {fileID: 1060628695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1060628698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1060628697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: course-barrels
 --- !u!1001 &1063401340
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -767308,13 +767428,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1257849470}
   m_SourcePrefab: {fileID: 100100000, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
 --- !u!4 &1257849468 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3455774948840645205, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
   m_PrefabInstance: {fileID: 1257849467}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1257849469 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+  m_PrefabInstance: {fileID: 1257849467}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1257849470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257849469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: course-barrels
 --- !u!1001 &1259545313
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -768579,6 +768720,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8791731851694367053, guid: f489ba0b66045974f890828080260c99, type: 3}
   m_PrefabInstance: {fileID: 1291876635}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1298870691
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1298870692}
+  - component: {fileID: 1298870693}
+  m_Layer: 0
+  m_Name: Zone Training Ground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1298870692
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298870691}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2123927593}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1298870693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298870691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e74c910b534edb42b0a0dc595c555c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionZone
+  objectiveId: drive-course
+  radius: 9
 --- !u!1 &1301459066
 GameObject:
   m_ObjectHideFlags: 0
@@ -772798,6 +772985,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8791731851694367053, guid: f489ba0b66045974f890828080260c99, type: 3}
   m_PrefabInstance: {fileID: 1417361863}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1426507299
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1426507300}
+  - component: {fileID: 1426507301}
+  m_Layer: 0
+  m_Name: Zone Market
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1426507300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1426507299}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2123927593}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1426507301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1426507299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e74c910b534edb42b0a0dc595c555c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionZone
+  objectiveId: market
+  radius: 6
 --- !u!1001 &1428851826
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -778277,6 +778510,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8791731851694367053, guid: f489ba0b66045974f890828080260c99, type: 3}
   m_PrefabInstance: {fileID: 1586463202}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1587431548
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1587431549}
+  - component: {fileID: 1587431550}
+  m_Layer: 0
+  m_Name: Zone Workshop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1587431549
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587431548}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2123927593}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1587431550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587431548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e74c910b534edb42b0a0dc595c555c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionZone
+  objectiveId: workshop
+  radius: 5
 --- !u!1001 &1589955013
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -784200,13 +784479,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1734650398}
   m_SourcePrefab: {fileID: 100100000, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
 --- !u!4 &1734650396 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3455774948840645205, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
   m_PrefabInstance: {fileID: 1734650395}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1734650397 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+  m_PrefabInstance: {fileID: 1734650395}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1734650398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734650397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: course-barrels
 --- !u!1001 &1737483066
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -788273,13 +788573,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1830838844}
   m_SourcePrefab: {fileID: 100100000, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
 --- !u!4 &1830838842 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3455774948840645205, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
   m_PrefabInstance: {fileID: 1830838841}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1830838843 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+  m_PrefabInstance: {fileID: 1830838841}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1830838844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1830838843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: course-barrels
 --- !u!1001 &1833660036
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -788937,6 +789258,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1849407749}
   - component: {fileID: 1849407748}
+  - component: {fileID: 1849407751}
+  - component: {fileID: 1849407750}
   m_Layer: 0
   m_Name: SceneScope
   m_TagString: Untagged
@@ -788973,6 +789296,32 @@ Transform:
   - {fileID: 2129399898}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1849407750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849407747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: heavy-tank
+--- !u!114 &1849407751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849407747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: light-tank
 --- !u!1001 &1851610614
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -799960,13 +800309,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2100024852}
   m_SourcePrefab: {fileID: 100100000, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
 --- !u!4 &2100024850 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3455774948840645205, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
   m_PrefabInstance: {fileID: 2100024849}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2100024851 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+  m_PrefabInstance: {fileID: 2100024849}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2100024852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100024851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: course-barrels
 --- !u!1001 &2100096407
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -800132,13 +800502,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2101459291}
   m_SourcePrefab: {fileID: 100100000, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
 --- !u!4 &2101459289 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3455774948840645205, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
   m_PrefabInstance: {fileID: 2101459288}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2101459290 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3286670493697861118, guid: f033efc7c82ff94488b537e4bfd29446, type: 3}
+  m_PrefabInstance: {fileID: 2101459288}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2101459291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2101459290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d501cc0ef3154295f6c697dc922ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionTarget
+  objectiveId: course-barrels
 --- !u!1001 &2103478762
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -801183,6 +801574,54 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8791731851694367053, guid: f489ba0b66045974f890828080260c99, type: 3}
   m_PrefabInstance: {fileID: 2121830435}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2123927591
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2123927593}
+  - component: {fileID: 2123927592}
+  m_Layer: 0
+  m_Name: Mission
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2123927592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123927591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4d5e6bd6073db447a5a52f73bd0e281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionDirector
+  definition: {fileID: 11400000, guid: f415b16037a3fdc48bbb5fa9db88bab0, type: 2}
+--- !u!4 &2123927593
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123927591}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1298870692}
+  - {fileID: 1587431549}
+  - {fileID: 1426507300}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2126868052
 GameObject:
   m_ObjectHideFlags: 0
@@ -801483,6 +801922,7 @@ MonoBehaviour:
   cameraShakeSource: {fileID: 690981732}
   playerTank: {fileID: 1035006131232419062}
   navigation: {fileID: 294676460}
+  mission: {fileID: 2123927592}
 --- !u!1001 &2130476019
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -802540,3 +802980,5 @@ SceneRoots:
   - {fileID: 1025159226}
   - {fileID: 294676461}
   - {fileID: 2037706454}
+  - {fileID: 2123927593}
+  - {fileID: 96650376}

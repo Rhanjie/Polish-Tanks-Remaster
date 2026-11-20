@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d81160400dbbd94c96fa882dd039070, type: 3}
+  m_Name: Mission_00_Tutorial
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionDefinition
+  title: Training ground
+  objectives:
+  - id: drive-course
+    kind: 0
+    description: Drive to the training ground
+    optional: 0
+    respect: 25
+    surviveSeconds: 60
+    targetCount: 0
+  - id: light-tank
+    kind: 1
+    description: Knock out the light tank on the shooting range
+    optional: 0
+    respect: 50
+    surviveSeconds: 60
+    targetCount: 0
+  - id: heavy-tank
+    kind: 1
+    description: Flank and destroy the heavy tank
+    optional: 0
+    respect: 75
+    surviveSeconds: 60
+    targetCount: 0
+  - id: workshop
+    kind: 0
+    description: Get to the insurgent workshop
+    optional: 0
+    respect: 25
+    surviveSeconds: 60
+    targetCount: 0
+  - id: market
+    kind: 0
+    description: Take position in the market square
+    optional: 0
+    respect: 25
+    surviveSeconds: 60
+    targetCount: 0
+  - id: hold-market
+    kind: 2
+    description: Hold the market square
+    optional: 0
+    respect: 100
+    surviveSeconds: 60
+    targetCount: 0
+  - id: course-barrels
+    kind: 1
+    description: Clear the barrels from the driving course
+    optional: 1
+    respect: 30
+    surviveSeconds: 60
+    targetCount: 0
+  respect:
+    tankDestroyed: 100
+    moduleDestroyed: 10
+    infantryKilled: 15
