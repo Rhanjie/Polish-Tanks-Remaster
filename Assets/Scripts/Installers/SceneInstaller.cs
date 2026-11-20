@@ -2,6 +2,7 @@ using PolishTanks.CameraRig;
 using PolishTanks.GameLoop;
 using PolishTanks.Missions;
 using PolishTanks.Navigation;
+using PolishTanks.Radio;
 using PolishTanks.Tank;
 using PolishTanks.Weapons;
 using Reflex.Core;
@@ -11,7 +12,7 @@ using UnityEngine;
 namespace PolishTanks.Installers
 {
     /// <summary>
-    /// Bindings for a gameplay scene: its camera, camera shake, the player's tank, the game pause, the mission (a <see cref="NoMission"/> stand-in
+    /// Bindings for a gameplay scene: its camera, camera shake, the player's tank, the game pause, the radio, the mission (a <see cref="NoMission"/> stand-in
     /// when the scene has no <see cref="MissionDirector"/>), the object pools and its path
     /// finding (a <see cref="NoNavigation"/> stand-in when the scene has no <see cref="NavigationGridSource"/>).
     /// Must be a child of the scene's SceneScope (ContainerScope) object.
@@ -32,6 +33,7 @@ namespace PolishTanks.Installers
             builder.RegisterValue(new CinemachineCameraShake(cameraShakeSource), new[] { typeof(ICameraShake) });
             builder.RegisterValue(new PlayerTank(playerTank));
             builder.RegisterValue(new GamePause(), new[] { typeof(IGamePause) });
+            builder.RegisterValue(new RadioChannel());
             builder.RegisterValue(mission != null ? mission : (IMission)new NoMission(), new[] { typeof(IMission) });
             var sceneNavigation = navigation != null ? navigation.Navigation : new NoNavigation();
             builder.RegisterValue(sceneNavigation, new[] { typeof(INavigation) });
