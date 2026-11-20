@@ -14,13 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Missions.MissionDefinition
   title: Training ground
   objectives:
-  - id: drive-course
+  - id: course
     kind: 0
-    description: Drive to the training ground
+    description: Drive into the middle of the barrel ring
     optional: 0
     respect: 25
     surviveSeconds: 60
     targetCount: 0
+    startMarker: 0
+    untilObjectiveId: 
   - id: light-tank
     kind: 1
     description: Knock out the light tank on the shooting range
@@ -28,13 +30,17 @@ MonoBehaviour:
     respect: 50
     surviveSeconds: 60
     targetCount: 0
+    startMarker: 1
+    untilObjectiveId: 
   - id: heavy-tank
     kind: 1
-    description: Flank and destroy the heavy tank
+    description: Flank the heavy tank and hit its side or rear
     optional: 0
     respect: 75
     surviveSeconds: 60
     targetCount: 0
+    startMarker: 1
+    untilObjectiveId: 
   - id: workshop
     kind: 0
     description: Get to the insurgent workshop
@@ -42,13 +48,8 @@ MonoBehaviour:
     respect: 25
     surviveSeconds: 60
     targetCount: 0
-  - id: market
-    kind: 0
-    description: Take position in the market square
-    optional: 0
-    respect: 25
-    surviveSeconds: 60
-    targetCount: 0
+    startMarker: 0
+    untilObjectiveId: 
   - id: hold-market
     kind: 2
     description: Hold the market square
@@ -56,13 +57,17 @@ MonoBehaviour:
     respect: 100
     surviveSeconds: 60
     targetCount: 0
-  - id: course-barrels
-    kind: 1
-    description: Clear the barrels from the driving course
+    startMarker: 1
+    untilObjectiveId: 
+  - id: clean-run
+    kind: 3
+    description: Reach the barrel ring without touching a barrel or crate
     optional: 1
-    respect: 30
+    respect: 40
     surviveSeconds: 60
     targetCount: 0
+    startMarker: 0
+    untilObjectiveId: course
   respect:
     tankDestroyed: 100
     moduleDestroyed: 10
