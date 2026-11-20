@@ -16,13 +16,14 @@ MonoBehaviour:
   objectives:
   - id: course
     kind: 0
-    description: Drive into the middle of the barrel ring
+    description: Drive around the roundabout to the green circle
     optional: 0
     respect: 25
     surviveSeconds: 60
     targetCount: 0
-    startMarker: 0
+    startMarker: 1
     untilObjectiveId: 
+    openWithObjectiveId: 
   - id: light-tank
     kind: 1
     description: Knock out the light tank on the shooting range
@@ -32,6 +33,7 @@ MonoBehaviour:
     targetCount: 0
     startMarker: 1
     untilObjectiveId: 
+    openWithObjectiveId: 
   - id: heavy-tank
     kind: 1
     description: Flank the heavy tank and hit its side or rear
@@ -41,6 +43,7 @@ MonoBehaviour:
     targetCount: 0
     startMarker: 1
     untilObjectiveId: 
+    openWithObjectiveId: 
   - id: workshop
     kind: 0
     description: Get to the insurgent workshop
@@ -50,6 +53,7 @@ MonoBehaviour:
     targetCount: 0
     startMarker: 0
     untilObjectiveId: 
+    openWithObjectiveId: 
   - id: hold-market
     kind: 2
     description: Hold the market square
@@ -59,15 +63,17 @@ MonoBehaviour:
     targetCount: 0
     startMarker: 1
     untilObjectiveId: 
+    openWithObjectiveId: 
   - id: clean-run
     kind: 3
-    description: Reach the barrel ring without touching a barrel or crate
+    description: Get around the roundabout without touching a barrel or crate
     optional: 1
     respect: 40
     surviveSeconds: 60
     targetCount: 0
     startMarker: 0
     untilObjectiveId: course
+    openWithObjectiveId: course
   respect:
     tankDestroyed: 100
     moduleDestroyed: 10
