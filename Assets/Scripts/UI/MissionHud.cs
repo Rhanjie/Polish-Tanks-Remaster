@@ -9,7 +9,8 @@ namespace PolishTanks.UI
     /// <summary>
     /// Objective panels in the top corner. The main panel shows the mission title and the current primary objective
     /// with its count or timer; while that objective waits for its start marker it is dimmed and a hint says to drive
-    /// into the circle. A separate panel lists every optional objective that has opened as open, done or missed. When an
+    /// into the circle. A separate panel lists every optional objective that has opened; one that is done or missed stays
+    /// there, marked, for a few seconds and then goes away, and so does the panel once it is empty. When an
     /// objective is done or a new one opens, a short notice slides in below; notices raised together are shown one after
     /// another.
     /// Hidden in scenes without a mission.
@@ -26,12 +27,15 @@ namespace PolishTanks.UI
 
         [Tooltip("Seconds a notice stays on screen.")]
         [SerializeField, Min(0.5f)] private float noticeTime = 3.5f;
+        [Tooltip("Seconds a done or missed optional objective stays in its panel.")]
+        [SerializeField, Min(0f)] private float finishedOptionalTime = 4f;
 
         [Inject] private IMission mission;
 
         private readonly List<(ObjectiveStatus status, Label label)> rows = new List<(ObjectiveStatus, Label)>();
         private readonly Queue<(string caption, string text)> notices = new Queue<(string, string)>();
         private readonly HashSet<ObjectiveStatus> announced = new HashSet<ObjectiveStatus>();
+        private readonly Dictionary<ObjectiveStatus, float> optionalHideTimes = new Dictionary<ObjectiveStatus, float>();
         private VisualElement root;
         private Label title;
         private VisualElement currentList;
@@ -43,6 +47,7 @@ namespace PolishTanks.UI
         private Label noticeText;
         private MissionProgress progress;
         private float noticeTimer;
+        private float nextOptionalHide = float.MaxValue;
 
         private void OnEnable()
         {
@@ -87,6 +92,9 @@ namespace PolishTanks.UI
                     label.text = text;
             }
 
+            if (Time.unscaledTime >= nextOptionalHide)
+                Rebuild();
+
             if (noticeTimer > 0f)
             {
                 noticeTimer -= Time.unscaledDeltaTime;
@@ -125,11 +133,18 @@ namespace PolishTanks.UI
                 AddRow(currentList, current);
             startHint.EnableInClassList(HiddenClass, current == null || current.State != ObjectiveState.Waiting);
 
+            nextOptionalHide = float.MaxValue;
             var hasOptional = false;
             foreach (var status in progress.Objectives)
             {
                 if (!status.Objective.Optional || status.State == ObjectiveState.Pending)
                     continue;
+                if (optionalHideTimes.TryGetValue(status, out var hideAt))
+                {
+                    if (Time.unscaledTime >= hideAt)
+                        continue;
+                    nextOptionalHide = Mathf.Min(nextOptionalHide, hideAt);
+                }
                 hasOptional = true;
                 AddRow(optionalList, status);
             }
@@ -149,6 +164,9 @@ namespace PolishTanks.UI
 
         private void OnObjectiveChanged(ObjectiveStatus status)
         {
+            var finished = status.State == ObjectiveState.Completed || status.State == ObjectiveState.Failed;
+            if (status.Objective.Optional && finished && !optionalHideTimes.ContainsKey(status))
+                optionalHideTimes[status] = Time.unscaledTime + finishedOptionalTime;
             if (status.State == ObjectiveState.Completed)
                 notices.Enqueue((MissionText.ObjectiveComplete, status.Objective.Description));
             else if (status.State == ObjectiveState.Failed)
