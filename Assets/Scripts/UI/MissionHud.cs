@@ -8,7 +8,8 @@ namespace PolishTanks.UI
 {
     /// <summary>
     /// Objective tracker in the top corner: the mission title, the current primary objective with its count or timer,
-    /// and the open optional ones. When an objective is done or a new one opens, a short notice slides in under it.
+    /// and the open optional ones. When an objective is done or a new one opens, a short notice slides in under it;
+    /// notices raised together (one objective done, the next one open) are shown one after another.
     /// Hidden in scenes without a mission.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
@@ -26,6 +27,8 @@ namespace PolishTanks.UI
         [Inject] private IMission mission;
 
         private readonly List<(ObjectiveStatus status, Label label)> rows = new List<(ObjectiveStatus, Label)>();
+        private readonly Queue<(string caption, string text)> notices = new Queue<(string, string)>();
+        private readonly HashSet<ObjectiveStatus> announced = new HashSet<ObjectiveStatus>();
         private VisualElement root;
         private Label title;
         private VisualElement objectiveList;
@@ -68,16 +71,23 @@ namespace PolishTanks.UI
 
             foreach (var (status, label) in rows)
             {
+                if (status.Objective.Kind != MissionObjectiveKind.Survive || status.State != ObjectiveState.Active)
+                    continue;
                 var text = MissionText.Describe(status);
                 if (label.text != text)
                     label.text = text;
             }
 
-            if (noticeTimer <= 0f)
-                return;
-            noticeTimer -= Time.unscaledDeltaTime;
-            if (noticeTimer <= 0f)
-                notice.RemoveFromClassList(NoticeVisibleClass);
+            if (noticeTimer > 0f)
+            {
+                noticeTimer -= Time.unscaledDeltaTime;
+                if (noticeTimer <= 0f)
+                    notice.RemoveFromClassList(NoticeVisibleClass);
+            }
+            else if (notices.Count > 0)
+            {
+                ShowNotice(notices.Dequeue());
+            }
         }
 
         private void Bind()
@@ -89,6 +99,9 @@ namespace PolishTanks.UI
             progress.Ended += OnEnded;
             title.text = mission.Definition != null ? mission.Definition.Title : string.Empty;
             root.RemoveFromClassList(HiddenClass);
+            var current = progress.CurrentPrimary;
+            if (current != null)
+                announced.Add(current);
             Rebuild();
         }
 
@@ -117,18 +130,18 @@ namespace PolishTanks.UI
         private void OnObjectiveChanged(ObjectiveStatus status)
         {
             if (status.State == ObjectiveState.Completed)
-                ShowNotice(MissionText.ObjectiveComplete, status.Objective.Description);
-            else if (status.State == ObjectiveState.Active && !status.Objective.Optional && status.Count == 0)
-                ShowNotice(MissionText.NewObjective, status.Objective.Description);
+                notices.Enqueue((MissionText.ObjectiveComplete, status.Objective.Description));
+            else if (status.State == ObjectiveState.Active && !status.Objective.Optional && announced.Add(status))
+                notices.Enqueue((MissionText.NewObjective, status.Objective.Description));
             Rebuild();
         }
 
         private void OnEnded(MissionOutcome _) => root.AddToClassList(HiddenClass);
 
-        private void ShowNotice(string caption, string text)
+        private void ShowNotice((string caption, string text) next)
         {
-            noticeCaption.text = caption;
-            noticeText.text = text;
+            noticeCaption.text = next.caption;
+            noticeText.text = next.text;
             notice.AddToClassList(NoticeVisibleClass);
             noticeTimer = noticeTime;
         }

@@ -75,18 +75,22 @@ namespace PolishTanks.Missions
         {
             if (Outcome != MissionOutcome.Running)
                 return;
-            foreach (var status in objectives.ToArray())
+            for (var i = 0; i < objectives.Count; i++)
+            {
+                var status = objectives[i];
                 if (status.Objective.Id == id && status.Objective.Kind == MissionObjectiveKind.Reach
                     && status.State == ObjectiveState.Active)
                     Complete(status);
+            }
         }
 
         public void TargetDestroyed(string id)
         {
             if (Outcome != MissionOutcome.Running)
                 return;
-            foreach (var status in objectives.ToArray())
+            for (var i = 0; i < objectives.Count; i++)
             {
+                var status = objectives[i];
                 if (!IsDestroyObjective(status, id) || status.State > ObjectiveState.Active)
                     continue;
                 status.Count++;
@@ -101,8 +105,9 @@ namespace PolishTanks.Missions
         {
             if (Outcome != MissionOutcome.Running || deltaTime <= 0f)
                 return;
-            foreach (var status in objectives.ToArray())
+            for (var i = 0; i < objectives.Count; i++)
             {
+                var status = objectives[i];
                 if (status.State != ObjectiveState.Active || status.Objective.Kind != MissionObjectiveKind.Survive)
                     continue;
                 status.TimeLeft = Math.Max(0f, status.TimeLeft - deltaTime);

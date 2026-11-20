@@ -14,9 +14,10 @@ namespace PolishTanks.UI
     /// game and holds the player's tank. Losing the player's tank or winning the scene's mission brings up the end
     /// screen after a short delay, which waits while another menu holds the game; in a mission it lists the objectives
     /// and the respect earned. The end screen's Restart button takes keyboard focus only once the fire button is let
-    /// go, so Enter held for the gun can't restart by accident. Both screens offer a restart, which reloads the scene,
-    /// and the main menu (quitting the game when the build has no main menu scene). <see cref="GameLoopState"/> decides
-    /// what is shown; this component reads the input, the tank and the mission and writes to the UI tree.
+    /// go, and the end screen holds a tank that is still alive, so Enter held for the gun can't restart by accident.
+    /// Both screens offer a restart, which reloads the scene, and the main menu (quitting the game when the build has
+    /// no main menu scene). <see cref="GameLoopState"/> decides what is shown; this component reads the input, the tank
+    /// and the mission and writes to the UI tree.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class GameMenu : MonoBehaviour
@@ -100,7 +101,7 @@ namespace PolishTanks.UI
                 endRestart.clicked -= Restart;
                 endMainMenu.clicked -= GoToMainMenu;
             }
-            Hold(false);
+            Hold(false, false);
             Unbind();
         }
 
@@ -167,24 +168,23 @@ namespace PolishTanks.UI
 
         private void OnPhaseChanged(GameLoopPhase phase)
         {
-            Hold(phase == GameLoopPhase.Paused);
+            Hold(phase == GameLoopPhase.Paused, phase != GameLoopPhase.Playing);
             Show(phase);
         }
 
-        private void Hold(bool hold)
+        private void Hold(bool pause, bool tankControls)
         {
-            if (hold)
-            {
+            if (pause)
                 gamePause?.Hold(this);
-                if (tankInput != null)
-                    tankInput.Hold(this);
-            }
             else
-            {
                 gamePause?.Release(this);
-                if (tankInput != null)
-                    tankInput.Release(this);
-            }
+
+            if (tankInput == null)
+                return;
+            if (tankControls)
+                tankInput.Hold(this);
+            else
+                tankInput.Release(this);
         }
 
         private void Show(GameLoopPhase phase)
@@ -246,14 +246,14 @@ namespace PolishTanks.UI
 
         private void Restart()
         {
-            Hold(false);
+            Hold(false, false);
             var scene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(scene.buildIndex >= 0 ? scene.buildIndex : 0);
         }
 
         private void GoToMainMenu()
         {
-            Hold(false);
+            Hold(false, false);
             if (!string.IsNullOrEmpty(mainMenuScene) && Application.CanStreamedLevelBeLoaded(mainMenuScene))
             {
                 SceneManager.LoadScene(mainMenuScene);
