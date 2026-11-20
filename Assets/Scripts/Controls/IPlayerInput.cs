@@ -15,6 +15,7 @@ namespace PolishTanks.Controls
         bool SecondaryFireHeld { get; }
         bool SecondaryFirePressedThisFrame { get; }
         bool RepairPressedThisFrame { get; }
+        bool PausePressedThisFrame { get; }
         string RepairKeyLabel { get; }
     }
 }

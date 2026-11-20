@@ -13,6 +13,7 @@ namespace PolishTanks.Tests.PlayMode
         public bool SecondaryFireHeld { get; set; }
         public bool SecondaryFirePressedThisFrame { get; set; }
         public bool RepairPressedThisFrame { get; set; }
+        public bool PausePressedThisFrame { get; set; }
         public string RepairKeyLabel { get; set; } = "R";
     }
 }
