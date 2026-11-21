@@ -125,6 +125,13 @@ namespace PolishTanks.Damage
             return true;
         }
 
+        public void RepairAll()
+        {
+            foreach (var id in parts)
+                if (conditions[id] != PartCondition.Intact)
+                    Set(id, PartCondition.Intact);
+        }
+
         public void CopyConditionsFrom(VehicleDamageModel other)
         {
             foreach (var id in parts)
