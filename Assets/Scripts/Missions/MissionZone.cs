@@ -6,7 +6,8 @@ namespace PolishTanks.Missions
 {
     /// <summary>
     /// Circle on the ground for one objective. A Start zone begins its objective when the player's tank drives in
-    /// while the objective waits for it; a Destination zone completes a Reach objective. The mission ignores the zone at
+    /// while the objective waits for it; a Destination zone completes a Reach objective, primary or optional, that is in
+    /// progress. The mission ignores the zone at
     /// any other time, so it can be crossed early. The optional ring shows the circle only while it matters and pulses
     /// so it reads from a distance.
     /// </summary>
@@ -63,12 +64,20 @@ namespace PolishTanks.Missions
 
         private bool IsUsable(MissionProgress progress)
         {
-            var current = progress.CurrentPrimary;
-            if (current == null || current.Objective.Id != objectiveId)
-                return false;
-            return role == MissionZoneRole.Start
-                ? current.State == ObjectiveState.Waiting
-                : current.State == ObjectiveState.Active;
+            if (role == MissionZoneRole.Start)
+            {
+                var current = progress.CurrentPrimary;
+                return current != null && current.Objective.Id == objectiveId && current.State == ObjectiveState.Waiting;
+            }
+            var objectives = progress.Objectives;
+            for (var i = 0; i < objectives.Count; i++)
+            {
+                var status = objectives[i];
+                if (status.Objective.Id == objectiveId && status.Objective.Kind == MissionObjectiveKind.Reach
+                    && status.State == ObjectiveState.Active)
+                    return true;
+            }
+            return false;
         }
 
         private void ShowRing(bool visible)

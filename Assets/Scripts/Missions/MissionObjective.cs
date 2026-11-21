@@ -8,7 +8,8 @@ namespace PolishTanks.Missions
     /// <see cref="MissionZone"/> for Reach, every <see cref="MissionTarget"/> with the id for Destroy.
     /// Primary objectives are played in list order; with <see cref="StartMarker"/> one waits until the player drives
     /// into its start marker. Optional ones only add respect; they are open from the start, or from the moment the
-    /// objective named in <see cref="OpenWithObjectiveId"/> begins, until the end. An Avoid objective fails
+    /// objective named in <see cref="OpenWithObjectiveId"/> begins, or, with <see cref="OpenedByScene"/>, only when
+    /// something in the scene (like a radio cue) opens them. An Avoid objective fails
     /// when the player's tank touches one of its <see cref="MissionObstacle"/>s and is done once the objective named in
     /// <see cref="UntilObjectiveId"/> is (or the mission is won).
     /// </summary>
@@ -31,10 +32,12 @@ namespace PolishTanks.Missions
         [SerializeField] private string untilObjectiveId;
         [Tooltip("Optional: opens when this objective begins. Empty means from the start of the mission.")]
         [SerializeField] private string openWithObjectiveId;
+        [Tooltip("Optional: stays closed until something in the scene, like a radio cue, opens it.")]
+        [SerializeField] private bool openedByScene;
 
         public MissionObjective(string id, MissionObjectiveKind kind, string description, bool optional = false,
             int respect = 50, float surviveSeconds = 60f, int targetCount = 0, bool startMarker = false,
-            string untilObjectiveId = null, string openWithObjectiveId = null)
+            string untilObjectiveId = null, string openWithObjectiveId = null, bool openedByScene = false)
         {
             this.id = id;
             this.kind = kind;
@@ -46,6 +49,7 @@ namespace PolishTanks.Missions
             this.startMarker = startMarker;
             this.untilObjectiveId = untilObjectiveId;
             this.openWithObjectiveId = openWithObjectiveId;
+            this.openedByScene = openedByScene;
         }
 
         public string Id => id;
@@ -58,5 +62,6 @@ namespace PolishTanks.Missions
         public bool StartMarker => startMarker;
         public string UntilObjectiveId => untilObjectiveId;
         public string OpenWithObjectiveId => openWithObjectiveId;
+        public bool OpenedByScene => openedByScene;
     }
 }

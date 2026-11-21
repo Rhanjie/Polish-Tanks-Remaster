@@ -7,8 +7,9 @@ namespace PolishTanks.Missions
     /// Rules of a running mission without any scene. Primary objectives open one at a time in list order and the
     /// mission is won when the last one is done; one with a start marker waits (<see cref="ObjectiveState.Waiting"/>)
     /// until <see cref="Begin"/>. Optional objectives only add respect and open at the start, or together with the
-    /// objective they are tied to; an Avoid objective fails on <see cref="Violated"/> and is done when its closing
-    /// objective or the won mission is.
+    /// objective they are tied to, or when a scene event calls <see cref="Open"/>; one that never opened is left out of
+    /// the result. An Avoid objective fails on <see cref="Violated"/> and is done when its closing objective or the won
+    /// mission is.
     /// A zone counts only while its objective is in progress; targets destroyed early count as soon as theirs begins.
     /// Losing the player's tank (<see cref="Fail"/>) loses the mission. Whatever is still open at the end is missed.
     /// Respect is the sum of completed objectives and enemy losses.
@@ -26,7 +27,8 @@ namespace PolishTanks.Missions
                 if (definition != null)
                     objectives.Add(new ObjectiveStatus(definition));
             foreach (var status in objectives)
-                if (status.Objective.Optional && string.IsNullOrEmpty(status.Objective.OpenWithObjectiveId))
+                if (status.Objective.Optional && !status.Objective.OpenedByScene
+                    && string.IsNullOrEmpty(status.Objective.OpenWithObjectiveId))
                     status.State = ObjectiveState.Active;
             var first = OpenNextPrimary();
             if (first != null && first.State == ObjectiveState.Active)
@@ -84,6 +86,20 @@ namespace PolishTanks.Missions
                 || current.Objective.Id != id)
                 return;
             Activate(current);
+        }
+
+        public void Open(string id)
+        {
+            if (Outcome != MissionOutcome.Running)
+                return;
+            for (var i = 0; i < objectives.Count; i++)
+            {
+                var status = objectives[i];
+                if (!status.Objective.Optional || status.State != ObjectiveState.Pending || status.Objective.Id != id)
+                    continue;
+                status.State = ObjectiveState.Active;
+                ObjectiveChanged?.Invoke(status);
+            }
         }
 
         public void Violated(string id)
@@ -229,7 +245,8 @@ namespace PolishTanks.Missions
             Outcome = outcome;
             foreach (var status in objectives)
             {
-                if (status.State == ObjectiveState.Completed || status.State == ObjectiveState.Failed)
+                if (status.State == ObjectiveState.Completed || status.State == ObjectiveState.Failed
+                    || (status.Objective.Optional && status.State == ObjectiveState.Pending))
                     continue;
                 var kept = outcome == MissionOutcome.Won && status.Objective.Kind == MissionObjectiveKind.Avoid
                     && status.State == ObjectiveState.Active;

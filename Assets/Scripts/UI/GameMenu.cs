@@ -216,6 +216,8 @@ namespace PolishTanks.UI
 
             foreach (var status in progress.Objectives)
             {
+                if (status.State == ObjectiveState.Pending)
+                    continue;
                 var row = AddRow(MissionText.Describe(status), status.EarnedRespect > 0 ? MissionText.Respect(status.EarnedRespect) : string.Empty);
                 row.AddToClassList(status.State == ObjectiveState.Completed ? CompletedClass : MissedClass);
             }
