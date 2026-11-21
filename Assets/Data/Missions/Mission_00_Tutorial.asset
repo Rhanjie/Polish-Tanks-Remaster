@@ -24,6 +24,7 @@ MonoBehaviour:
     startMarker: 1
     untilObjectiveId: 
     openWithObjectiveId: 
+    openedByScene: 0
   - id: light-tank
     kind: 1
     description: Knock out the light tank on the shooting range
@@ -34,9 +35,10 @@ MonoBehaviour:
     startMarker: 1
     untilObjectiveId: 
     openWithObjectiveId: 
+    openedByScene: 0
   - id: heavy-tank
     kind: 1
-    description: Flank the heavy tank and hit its side or rear
+    description: Destroy the heavy tank
     optional: 0
     respect: 75
     surviveSeconds: 60
@@ -44,6 +46,7 @@ MonoBehaviour:
     startMarker: 1
     untilObjectiveId: 
     openWithObjectiveId: 
+    openedByScene: 0
   - id: workshop
     kind: 0
     description: Get to the insurgent workshop
@@ -54,6 +57,7 @@ MonoBehaviour:
     startMarker: 0
     untilObjectiveId: 
     openWithObjectiveId: 
+    openedByScene: 0
   - id: hold-market
     kind: 2
     description: Hold the market square
@@ -64,6 +68,7 @@ MonoBehaviour:
     startMarker: 1
     untilObjectiveId: 
     openWithObjectiveId: 
+    openedByScene: 0
   - id: clean-run
     kind: 3
     description: Get around the roundabout without touching a barrel or crate
@@ -74,6 +79,18 @@ MonoBehaviour:
     startMarker: 0
     untilObjectiveId: course
     openWithObjectiveId: course
+    openedByScene: 0
+  - id: flank-heavy
+    kind: 0
+    description: Drive around to the green circle behind the heavy tank
+    optional: 1
+    respect: 40
+    surviveSeconds: 60
+    targetCount: 0
+    startMarker: 0
+    untilObjectiveId: 
+    openWithObjectiveId: 
+    openedByScene: 1
   respect:
     tankDestroyed: 100
     moduleDestroyed: 10
