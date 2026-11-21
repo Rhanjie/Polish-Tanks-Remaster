@@ -3,7 +3,7 @@ using PolishTanks.Radio;
 
 namespace PolishTanks.Tests.EditMode
 {
-    /// <summary><see cref="RadioChannel"/>: typing out a message, skipping the typing, moving on and queueing.</summary>
+    /// <summary><see cref="RadioChannel"/>: typing out a message, skipping the typing, moving on, queueing and the action after a sequence.</summary>
     public class RadioChannelTests
     {
         private static RadioMessage Message(string text) => new RadioMessage(null, text);
@@ -47,6 +47,23 @@ namespace PolishTanks.Tests.EditMode
             Assert.That(current, Is.SameAs(first));
             Assert.That(next, Is.SameAs(later));
             Assert.That(radio.Current, Is.Null);
+        }
+
+        [Test]
+        public void Play_WithAnAfterAction_RunsItOnlyOnceThePlayerGoesPastTheLastMessage()
+        {
+            var radio = new RadioChannel(1000f);
+            var runs = 0;
+            radio.Play(new[] { Message("One"), Message("Two") }, () => runs++);
+
+            radio.Tick(1f);
+            radio.Confirm();
+            var afterFirst = runs;
+            radio.Tick(1f);
+            radio.Confirm();
+
+            Assert.That(afterFirst, Is.Zero);
+            Assert.That(runs, Is.EqualTo(1));
         }
     }
 }

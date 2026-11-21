@@ -5,7 +5,7 @@ namespace PolishTanks.Tests.EditMode
 {
     /// <summary>
     /// <see cref="MissionProgress"/>: ordered primaries, start markers, early kills, survive timing,
-    /// avoid objectives, optionals opened by a primary, win, loss and respect.
+    /// avoid objectives, optionals opened by a primary or by the scene, win, loss and respect.
     /// </summary>
     public class MissionProgressTests
     {
@@ -140,6 +140,25 @@ namespace PolishTanks.Tests.EditMode
             Assert.That(beforeMarker, Is.EqualTo(ObjectiveState.Pending));
             Assert.That(afterMarker, Is.EqualTo(ObjectiveState.Active));
             Assert.That(progress.Objectives[1].State, Is.EqualTo(ObjectiveState.Completed));
+        }
+
+        [Test]
+        public void Open_SceneOpenedOptional_StaysClosedUntilOpenedAndOneNeverOpenedIsLeftOutAtTheEnd()
+        {
+            var flank = new MissionObjective("flank", MissionObjectiveKind.Reach, "flank", true, openedByScene: true);
+            var unused = new MissionObjective("unused", MissionObjectiveKind.Reach, "unused", true, openedByScene: true);
+            var progress = Create(Reach("a"), Reach("b"), flank, unused);
+            progress.Reached("flank");
+            var beforeOpen = progress.Objectives[2].State;
+
+            progress.Open("flank");
+            progress.Reached("flank");
+            progress.Reached("a");
+            progress.Reached("b");
+
+            Assert.That(beforeOpen, Is.EqualTo(ObjectiveState.Pending));
+            Assert.That(progress.Objectives[2].State, Is.EqualTo(ObjectiveState.Completed));
+            Assert.That(progress.Objectives[3].State, Is.EqualTo(ObjectiveState.Pending));
         }
     }
 }
