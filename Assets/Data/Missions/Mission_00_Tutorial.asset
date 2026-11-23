@@ -59,12 +59,12 @@ MonoBehaviour:
     openWithObjectiveId: 
     openedByScene: 0
   - id: hold-market
-    kind: 2
-    description: Hold the market square
+    kind: 1
+    description: Destroy the tanks attacking the market
     optional: 0
     respect: 100
     surviveSeconds: 60
-    targetCount: 0
+    targetCount: 3
     startMarker: 1
     untilObjectiveId: 
     openWithObjectiveId: 
