@@ -21,6 +21,8 @@ namespace PolishTanks.Missions
 
         public string ObjectiveId => objectiveId;
 
+        public void Assign(string objective) => objectiveId = objective;
+
         private void Awake()
         {
             damageable = GetComponent<Damageable>();
