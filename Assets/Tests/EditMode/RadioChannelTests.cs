@@ -3,7 +3,7 @@ using PolishTanks.Radio;
 
 namespace PolishTanks.Tests.EditMode
 {
-    /// <summary><see cref="RadioChannel"/>: typing out a message, skipping the typing, moving on, queueing and the action after a sequence.</summary>
+    /// <summary><see cref="RadioChannel"/>: typing out a message, skipping the typing, moving on, closing by itself, a new sequence cutting in and the action after a sequence.</summary>
     public class RadioChannelTests
     {
         private static RadioMessage Message(string text) => new RadioMessage(null, text);
@@ -29,23 +29,40 @@ namespace PolishTanks.Tests.EditMode
         }
 
         [Test]
-        public void Play_WhileAMessageIsOn_QueuesBehindItAndTheLastConfirmEmptiesTheRadio()
+        public void Tick_LongerThanTheReadingTime_ClosesTheMessageByItselfAndRunsTheAction()
+        {
+            var radio = new RadioChannel(1000f, 2f, 0.1f);
+            var runs = 0;
+            radio.Play(new[] { Message("Ten chars!") }, () => runs++);
+
+            radio.Tick(1f);
+            radio.Tick(2.9f);
+            var whileReading = radio.Current;
+            radio.Tick(0.2f);
+
+            Assert.That(whileReading, Is.Not.Null);
+            Assert.That(radio.Current, Is.Null);
+            Assert.That(runs, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Play_WhileAMessageIsOn_ReplacesItAtOnceAndStillRunsTheReplacedAction()
         {
             var radio = new RadioChannel(1000f);
-            var first = Message("First");
+            var replacedRuns = 0;
             var later = Message("Later");
-            radio.Play(new[] { first });
+            radio.Play(new[] { Message("First"), Message("Second") }, () => replacedRuns++);
+            radio.Tick(0.002f);
 
             radio.Play(new[] { later });
             var current = radio.Current;
-            radio.Tick(1f);
+            var typedAfterCut = radio.VisibleCharacters;
             radio.Confirm();
-            var next = radio.Current;
-            radio.Tick(1f);
             radio.Confirm();
 
-            Assert.That(current, Is.SameAs(first));
-            Assert.That(next, Is.SameAs(later));
+            Assert.That(current, Is.SameAs(later));
+            Assert.That(typedAfterCut, Is.Zero);
+            Assert.That(replacedRuns, Is.EqualTo(1));
             Assert.That(radio.Current, Is.Null);
         }
 
