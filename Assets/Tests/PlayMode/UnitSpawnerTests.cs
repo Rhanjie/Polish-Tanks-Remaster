@@ -20,6 +20,7 @@ namespace PolishTanks.Tests.PlayMode
         private GameObject template;
         private FakeMission mission;
         private UnitSpawner spawner;
+        private GameObject extra;
 
         [SetUp]
         public void SetUp()
@@ -37,6 +38,8 @@ namespace PolishTanks.Tests.PlayMode
                 Object.Destroy(unit.gameObject);
             foreach (var wave in Object.FindObjectsByType<EnemyWave>(FindObjectsInactive.Include))
                 Object.Destroy(wave.gameObject);
+            if (extra != null)
+                Object.Destroy(extra);
             Object.Destroy(staging);
             container?.Dispose();
         }
@@ -57,7 +60,8 @@ namespace PolishTanks.Tests.PlayMode
         public void Spawn_UnitWithInjectedFields_WakesUpWithItsServicesAndIsTracked()
         {
             Build(null);
-            var parent = new GameObject("Parent").transform;
+            extra = new GameObject("Parent");
+            var parent = extra.transform;
 
             var unit = spawner.Spawn(template, new Vector2(3f, 4f), 90f, parent);
 
@@ -66,7 +70,6 @@ namespace PolishTanks.Tests.PlayMode
             Assert.That(unit.transform.parent, Is.SameAs(parent));
             Assert.That((Vector2)unit.transform.position, Is.EqualTo(new Vector2(3f, 4f)));
             Assert.That(mission.Tracked, Is.EquivalentTo(new[] { unit }));
-            Object.Destroy(parent.gameObject);
         }
 
         [UnityTest]
@@ -78,7 +81,8 @@ namespace PolishTanks.Tests.PlayMode
                 new MissionObjective("attack", MissionObjectiveKind.Destroy, "Attack", targetCount: 2),
             }, default);
             Build(progress);
-            var spawnPoint = new GameObject("Spawn").transform;
+            extra = new GameObject("Spawn");
+            var spawnPoint = extra.transform;
             var waveObject = new GameObject("Wave");
             waveObject.SetActive(false);
             var wave = waveObject.AddComponent<EnemyWave>();
@@ -104,7 +108,6 @@ namespace PolishTanks.Tests.PlayMode
             Assert.That(wave.Spawned, Has.Count.EqualTo(2));
             foreach (var unit in wave.Spawned)
                 Assert.That(unit.GetComponent<MissionTarget>().ObjectiveId, Is.EqualTo("attack"));
-            Object.Destroy(spawnPoint.gameObject);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace PolishTanks.Tests.PlayMode
         private MissionProgress progress;
         private TankRig.BuiltTank tank;
         private GameObject zoneObject;
+        private RadioSequence sequence;
 
         [SetUp]
         public void SetUp()
@@ -40,7 +41,7 @@ namespace PolishTanks.Tests.PlayMode
             zoneObject = new GameObject("Zone");
             zoneObject.SetActive(false);
             var zone = zoneObject.AddComponent<RadioZone>();
-            var sequence = ScriptableObject.CreateInstance<RadioSequence>();
+            sequence = ScriptableObject.CreateInstance<RadioSequence>();
             TankRig.SetField(sequence, "messages", new System.Collections.Generic.List<RadioMessage> { new RadioMessage(null, "Contact") });
             TankRig.SetField(zone, "sequence", sequence);
             TankRig.SetField(zone, "objectiveId", "fight");
@@ -52,6 +53,7 @@ namespace PolishTanks.Tests.PlayMode
         public void TearDown()
         {
             Object.Destroy(zoneObject);
+            Object.Destroy(sequence);
             container.Dispose();
             rig.Dispose();
         }
