@@ -13,8 +13,6 @@ namespace PolishTanks.Missions
     /// </summary>
     public class MissionZone : MonoBehaviour
     {
-        private const int RingSegments = 64;
-
         [SerializeField] private string objectiveId;
         [SerializeField] private MissionZoneRole role = MissionZoneRole.Destination;
         [SerializeField, Min(0.5f)] private float radius = 6f;
@@ -27,29 +25,18 @@ namespace PolishTanks.Missions
         [Inject] private PlayerTank playerTank;
         [Inject] private IMission mission;
 
+        private ZoneRing drawnRing;
+
         public string ObjectiveId => objectiveId;
         public MissionZoneRole Role => role;
 
-        private void Awake()
-        {
-            if (ring == null)
-                return;
-            ring.loop = true;
-            ring.useWorldSpace = false;
-            ring.positionCount = RingSegments;
-            for (var i = 0; i < RingSegments; i++)
-            {
-                var angle = i * Mathf.PI * 2f / RingSegments;
-                ring.SetPosition(i, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * radius);
-            }
-            ring.enabled = false;
-        }
+        private void Awake() => drawnRing = new ZoneRing(ring, radius, ringWidth, pulsePeriod);
 
         private void Update()
         {
             var progress = mission != null ? mission.Progress : null;
             var usable = progress != null && progress.Outcome == MissionOutcome.Running && IsUsable(progress);
-            ShowRing(usable);
+            drawnRing.Show(usable, color, Time.time);
             if (!usable || playerTank == null || playerTank.Controller.IsDestroyed)
                 return;
 
@@ -78,20 +65,6 @@ namespace PolishTanks.Missions
                     return true;
             }
             return false;
-        }
-
-        private void ShowRing(bool visible)
-        {
-            if (ring == null)
-                return;
-            ring.enabled = visible;
-            if (!visible)
-                return;
-            var pulse = 0.5f + 0.5f * Mathf.Sin(Time.time * Mathf.PI * 2f / pulsePeriod);
-            ring.widthMultiplier = ringWidth * (0.8f + 0.4f * pulse);
-            var shown = color;
-            shown.a *= 0.65f + 0.35f * pulse;
-            ring.startColor = ring.endColor = shown;
         }
 
         private void OnDrawGizmos()

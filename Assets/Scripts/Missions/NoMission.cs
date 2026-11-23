@@ -5,5 +5,9 @@ namespace PolishTanks.Missions
     {
         public MissionDefinition Definition => null;
         public MissionProgress Progress => null;
+
+        public void Track(UnityEngine.GameObject unit)
+        {
+        }
     }
 }
