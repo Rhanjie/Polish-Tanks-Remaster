@@ -69,10 +69,14 @@ namespace PolishTanks.Radio
                 return false;
             if (string.IsNullOrEmpty(objectiveId))
                 return true;
-            foreach (var status in progress.Objectives)
+            var objectives = progress.Objectives;
+            for (var i = 0; i < objectives.Count; i++)
+            {
+                var status = objectives[i];
                 if (status.Objective.Id == objectiveId
                     && (status.State == ObjectiveState.Active || status.State == ObjectiveState.Waiting))
                     return true;
+            }
             return false;
         }
 
