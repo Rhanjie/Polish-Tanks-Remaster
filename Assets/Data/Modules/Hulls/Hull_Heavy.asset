@@ -27,5 +27,5 @@ MonoBehaviour:
   frontArmor: 100
   sideArmor: 80
   rearArmor: 60
-  hitPoints: 3200
+  hitPoints: 1800
   equipmentSlots: 3

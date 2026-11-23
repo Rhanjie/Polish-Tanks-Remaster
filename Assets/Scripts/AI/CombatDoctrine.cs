@@ -42,6 +42,8 @@ namespace PolishTanks.AI
         [SerializeField] private bool radioAllies = true;
 
         [Header("Hull")]
+        [Tooltip("Turn the hull towards the target while fighting. Off keeps the hull where it stands (only the turret turns), e.g. for a tutorial target the player should flank.")]
+        [SerializeField] private bool turnHullToFight = true;
         [Tooltip("Degrees the hull is turned off the line to the target while fighting, so shells hit the front plate at a slant. 0 faces it head on.")]
         [SerializeField, Range(0f, 45f)] private float hullAngle = 25f;
         [Tooltip("Degrees the hull sways either way around that angle.")]
@@ -77,6 +79,7 @@ namespace PolishTanks.AI
         public float FireRevealSeconds => fireRevealSeconds;
         public float NearMissRadius => nearMissRadius;
         public bool RadioAllies => radioAllies;
+        public bool TurnHullToFight => turnHullToFight;
         public float HullAngle => hullAngle;
         public float HullSway => hullSway;
         public float HullSwayPeriod => hullSwayPeriod;

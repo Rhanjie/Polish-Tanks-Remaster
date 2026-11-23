@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 79d2062d0a757604db11a044a2c1f3be
+  - enabled: 1
     path: Assets/Scenes/TankSandbox.unity
     guid: 9454b4af86b68b94f8479871b74e3a97
   - enabled: 1

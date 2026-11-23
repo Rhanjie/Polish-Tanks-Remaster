@@ -77,6 +77,14 @@ namespace PolishTanks.Tank
             return true;
         }
 
+        public void RepairAll()
+        {
+            if (Model == null || controller.IsDestroyed)
+                return;
+            Model.RepairAll();
+            Extinguish();
+        }
+
         public void Blind(int block)
         {
             if (Model == null || controller.IsDestroyed)

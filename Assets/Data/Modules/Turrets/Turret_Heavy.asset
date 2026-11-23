@@ -21,8 +21,8 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 43a8bf5f3f0ae9d4f98798e4c18e4f36, type: 3}
   visualScale: 1
   muzzleDistance: 4.9
-  maxTraverseSpeed: 55
-  traverseAcceleration: 120
+  maxTraverseSpeed: 36
+  traverseAcceleration: 60
   responseTime: 0.35
   maxGunMass: 5000
   frontArmor: 110

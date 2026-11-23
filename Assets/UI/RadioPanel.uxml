@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="RadioPanel.uss" />
+    <ui:VisualElement name="radio" class="radio radio--hidden" picking-mode="Ignore">
+        <ui:VisualElement class="radio__portrait-frame" picking-mode="Ignore">
+            <ui:VisualElement name="portrait" class="radio__portrait" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="radio__body" picking-mode="Ignore">
+            <ui:Label name="speaker" class="radio__speaker" picking-mode="Ignore" />
+            <ui:Label name="message" class="radio__text" picking-mode="Ignore" />
+            <ui:Label name="continueHint" text="Enter: continue" class="radio__hint" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

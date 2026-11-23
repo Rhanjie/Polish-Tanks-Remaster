@@ -25,6 +25,12 @@ MonoBehaviour:
   fireRevealSeconds: 4
   nearMissRadius: 4
   radioAllies: 1
+  turnHullToFight: 0
+  hullAngle: 25
+  hullSway: 6
+  hullSwayPeriod: 2.5
+  hullSideSwitchMin: 4
+  hullSideSwitchMax: 9
   aimJitter: 6
   aimTolerance: 2
   shotInterval: 8
