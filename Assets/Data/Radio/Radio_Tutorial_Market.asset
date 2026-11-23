@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c5949bf21646347b625dba2c8c6247, type: 3}
+  m_Name: Radio_Tutorial_Market
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Radio.RadioSequence
+  messages:
+  - speaker: {fileID: 11400000, guid: a2493e43749f7c8498b1075316e035e8, type: 2}
+    text: Enemy tanks are heading for the market from three sides. Get into the fort in the middle and take them on one at a time.
+  - speaker: {fileID: 11400000, guid: a2493e43749f7c8498b1075316e035e8, type: 2}
+    text: Keep your front towards them and go for their sides when you can.
