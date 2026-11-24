@@ -1,0 +1,59 @@
+# Manual: build development for the web and put it on the playtest page, without a release.
+# GitHub lists it in Actions once it is on the default branch (master). After that it can also be
+# started from development ("Use workflow from"), to try workflow changes before a release.
+name: Playtest page
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: playtest-page
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  info:
+    name: Build info
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.info.outputs.sha }}
+      label: ${{ steps.info.outputs.label }}
+      version: ${{ steps.info.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: development
+      - id: info
+        run: |
+          sha=$(git rev-parse HEAD)
+          base=$(bash .github/scripts/project-version.sh)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "label=dev-${sha:0:7}" >> "$GITHUB_OUTPUT"
+          echo "version=$base-dev.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build
+    needs: info
+    uses: ./.github/workflows/_build.yml
+    with:
+      ref: ${{ needs.info.outputs.sha }}
+      version: ${{ needs.info.outputs.version }}
+      artifact-prefix: PolishTanksRemaster-${{ needs.info.outputs.label }}
+      platforms: '["web"]'
+    secrets: inherit
+
+  pages:
+    name: Pages
+    needs: [info, build]
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/_pages.yml
+    with:
+      ref: ${{ needs.info.outputs.sha }}
+      web-artifact: PolishTanksRemaster-${{ needs.info.outputs.label }}-web
+      label: ${{ needs.info.outputs.label }}
+      version: ${{ needs.info.outputs.version }}

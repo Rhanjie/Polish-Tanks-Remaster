@@ -1,4 +1,5 @@
-# Every Friday evening: build development as a playtest pre-release, if it changed since the last one.
+# Every Friday evening: build development as a playtest pre-release, if it changed since the last one,
+# and put its web build on the playtest page (GitHub Pages).
 # Note: GitHub runs scheduled workflows only from the default branch (master), in UTC.
 name: Weekly playtest
 
@@ -97,3 +98,18 @@ jobs:
           prerelease: true
           body_path: notes.md
           files: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-*.zip
+
+  pages:
+    name: Pages
+    needs: [changes, publish]
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/_pages.yml
+    with:
+      ref: ${{ needs.changes.outputs.sha }}
+      web-artifact: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-web
+      label: ${{ needs.changes.outputs.tag }}
+      version: ${{ needs.changes.outputs.version }}
+      release-url: https://github.com/${{ github.repository }}/releases/tag/${{ needs.changes.outputs.tag }}

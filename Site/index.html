@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Polish Tanks Remaster · Dev playtest</title>
+  <meta name="description" content="Weekly development build of Polish Tanks Remaster, a top-down tank action game set in an alternate 1940s Poland. Play it in the browser.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="images/Logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="banner">
+      <img src="images/Logo.png" alt="Polish Tanks" width="1400" height="412">
+    </header>
+
+    <section class="devnote" aria-label="Development build notice">
+      <span class="devnote__tag">Dev build</span>
+      <div class="devnote__text">
+        <p>This is the weekly playtest build from the <code>development</code> branch. It is unfinished, can break at any time and changes every week.</p>
+        <p class="devnote__build" id="build-info">Build information unavailable.</p>
+      </div>
+    </section>
+
+    <section class="player" aria-label="Play in the browser">
+      <div class="player__frame" id="player">
+        <img class="player__poster" src="images/PolishTanks1.png" alt="">
+        <div class="player__start" id="player-start">
+          <button class="btn btn--big" type="button" id="play">Play the dev build</button>
+          <small id="play-note">Desktop browser, keyboard and mouse.</small>
+        </div>
+      </div>
+      <div class="player__bar">
+        <a href="play/index.html" target="_blank" rel="noopener" id="open-window">Open in a full window</a>
+        <a href="#" id="release-notes" hidden>What changed this week</a>
+      </div>
+    </section>
+
+    <div class="cols">
+      <main class="col-main">
+        <p class="tagline">Command an experimental tank built from salvage in an alternate 1940s Poland.</p>
+        <p>Polish Tanks Remaster is a top-down tank action game where armour angles, penetration and damaged modules decide every fight. Keep your thick front towards the enemy, slip around to their weaker sides and put a shell into the engine at the back.</p>
+
+        <h2>Features</h2>
+        <ul>
+          <li>Real armour: strong front, weaker sides, a vulnerable rear with the engine. Shells bounce, stick or punch through.</li>
+          <li>Module damage: engine fires, broken tracks, a jammed turret ring, smashed vision blocks. Patch them in the field or reach the workshop.</li>
+          <li>Enemy tanks that spot you, radio your position to each other and search for you when you break contact.</li>
+          <li>Missions with primary and optional objectives and a respect score.</li>
+          <li>A sandbox to try every module combination.</li>
+        </ul>
+
+        <h2>Controls</h2>
+        <dl class="keys">
+          <dt><kbd>W</kbd> <kbd>S</kbd></dt><dd>Drive forward and back</dd>
+          <dt><kbd>A</kbd> <kbd>D</kbd></dt><dd>Turn the hull</dd>
+          <dt><kbd>Mouse</kbd></dt><dd>Aim the turret</dd>
+          <dt><kbd>LMB</kbd></dt><dd>Main gun</dd>
+          <dt><kbd>RMB</kbd></dt><dd>Machine gun</dd>
+          <dt><kbd>R</kbd></dt><dd>Field repair</dd>
+          <dt><kbd>Enter</kbd></dt><dd>Next radio message</dd>
+          <dt><kbd>Esc</kbd></dt><dd>Pause</dd>
+          <dt><kbd>F4</kbd></dt><dd>Screenshot (Windows build only)</dd>
+        </dl>
+
+        <h2>Feedback</h2>
+        <p>Found a bug or have an idea? Open an issue on <a href="https://github.com/Rhanjie/Polish-Tanks-Remaster/issues">GitHub</a> and mention the build name shown above.</p>
+      </main>
+
+      <aside class="side">
+        <a class="btn btn--wide" id="itch-link" href="#">Play on itch.io</a>
+        <a class="btn btn--wide btn--ghost" href="https://github.com/Rhanjie/Polish-Tanks-Remaster/releases/latest">Download for Windows</a>
+        <a class="btn btn--wide btn--ghost" href="https://github.com/Rhanjie/Polish-Tanks-Remaster/releases">All releases and playtests</a>
+
+        <a class="shot" href="images/PolishTanks1.png"><img src="images/PolishTanks1.png" alt="An enemy tank with a burning engine" loading="lazy"></a>
+        <a class="shot" href="images/PolishTanks2.png"><img src="images/PolishTanks2.png" alt="City streets with ruined tenements" loading="lazy"></a>
+
+        <div class="meta">
+          <div>Status <b>In development</b></div>
+          <div>Platforms <b>Windows, Web (dev)</b></div>
+          <div>Genre <b>Action</b></div>
+          <div>Source <b><a href="https://github.com/Rhanjie/Polish-Tanks-Remaster">GitHub</a></b></div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      Polish Tanks Remaster by Rhanjie. An alternate history: every vehicle, weapon and unit name is made up.
+    </footer>
+  </div>
+  <script src="site.js"></script>
+</body>
+</html>
