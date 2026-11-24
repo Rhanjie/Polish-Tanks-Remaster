@@ -109,8 +109,9 @@ InitTestScene*.unity*
 # IDE (JetBrains Rider)
 .idea/
 
-# Claude Code - osobiste ustawienia (wspoldzielone: CLAUDE.md, .claude/agents/)
-.claude/settings.local.json
+# Claude Code - lokalne pliki, nie trafiaja do repo
+CLAUDE.md
+.claude/
 
 # Pliki lokalne
 custom-rules.md
