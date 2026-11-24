@@ -1,5 +1,5 @@
 (function () {
-  var ITCH_URL = "";
+  var ITCH_URL = "https://rhanjie.itch.io/polish-tanks";
   var GAME_WIDTH = 1280;
   var GAME_HEIGHT = 760;
 
