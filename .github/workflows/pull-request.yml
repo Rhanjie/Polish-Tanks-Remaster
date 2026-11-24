@@ -1,5 +1,5 @@
 # PR -> development: all tests.
-# PR -> master:      all tests + version bump check + Windows build.
+# PR -> master:      all tests + version bump check + Windows and web builds.
 name: Pull request
 
 on:
@@ -46,5 +46,5 @@ jobs:
     uses: ./.github/workflows/_build.yml
     with:
       version: ${{ needs.version.outputs.version }}
-      artifact-name: PolishTanksRemaster-${{ needs.version.outputs.version }}-pr${{ github.event.pull_request.number }}-win64
+      artifact-prefix: PolishTanksRemaster-${{ needs.version.outputs.version }}-pr${{ github.event.pull_request.number }}
     secrets: inherit
