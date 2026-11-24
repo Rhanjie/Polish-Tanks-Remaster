@@ -61,7 +61,12 @@ jobs:
       - name: Zip build
         run: |
           if [ "${{ matrix.platform }}" = "WebGL" ]; then
-            dir=$(dirname "$(find build/WebGL -name index.html -print -quit)")
+            index=$(find build/WebGL -name index.html -print -quit)
+            if [ -z "$index" ]; then
+              echo "::error::No index.html in build/WebGL, the web build is incomplete."
+              exit 1
+            fi
+            dir=$(dirname "$index")
           else
             dir=build/${{ matrix.platform }}
           fi
