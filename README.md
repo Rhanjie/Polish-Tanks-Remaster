@@ -6,6 +6,7 @@
   <a href="https://github.com/Rhanjie/Polish-Tanks-Remaster/actions/workflows/pull-request.yml"><img src="https://github.com/Rhanjie/Polish-Tanks-Remaster/actions/workflows/pull-request.yml/badge.svg" alt="Tests"></a>
   <a href="https://github.com/Rhanjie/Polish-Tanks-Remaster/actions/workflows/release.yml"><img src="https://github.com/Rhanjie/Polish-Tanks-Remaster/actions/workflows/release.yml/badge.svg" alt="Build"></a>
   <a href="https://github.com/Rhanjie/Polish-Tanks-Remaster/releases"><img src="https://img.shields.io/github/v/release/Rhanjie/Polish-Tanks-Remaster?include_prereleases&label=release" alt="Release"></a>
+  <a href="https://rhanjie.github.io/Polish-Tanks-Remaster/"><img src="https://img.shields.io/badge/play-dev%20build-f0c864" alt="Play the dev build"></a>
   <img src="https://img.shields.io/badge/Unity-6000.6-black?logo=unity" alt="Unity 6">
   <img src="https://img.shields.io/badge/platform-Windows-blue" alt="Windows">
 </p>
