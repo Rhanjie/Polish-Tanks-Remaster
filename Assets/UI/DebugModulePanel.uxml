@@ -1,0 +1,26 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="DebugModulePanel.uss" />
+    <ui:VisualElement name="debugModules" class="debug-modules debug-modules--hidden">
+        <ui:VisualElement class="debug-modules__header">
+            <ui:Label text="Modules" class="debug-modules__title" />
+            <ui:Label name="loadoutName" text="" class="debug-modules__loadout" />
+            <ui:Button name="close" text="F1 ✕" class="debug-modules__button debug-modules__close" />
+        </ui:VisualElement>
+        <ui:VisualElement class="debug-modules__toolbar">
+            <ui:VisualElement name="presets" class="debug-modules__presets" />
+            <ui:Button name="random" text="Random" class="debug-modules__button" />
+            <ui:Button name="undo" text="Undo" class="debug-modules__button" />
+        </ui:VisualElement>
+        <ui:TextField name="search" placeholder-text="Search modules or slots…" class="debug-modules__search" />
+        <ui:Label name="status" text="" class="debug-modules__status debug-modules--hidden" />
+        <ui:ScrollView class="debug-modules__scroll">
+            <ui:VisualElement name="slots" class="debug-modules__section" />
+            <ui:Label name="equipmentTitle" text="Equipment" class="debug-modules__heading" />
+            <ui:VisualElement name="equipment" class="debug-modules__section" />
+            <ui:Label name="description" text="" class="debug-modules__description debug-modules--hidden" />
+            <ui:Label text="Stats" class="debug-modules__heading" />
+            <ui:Label name="overload" text="Tracks overloaded: the tank loses speed and acceleration." class="debug-modules__status debug-modules__status--error debug-modules--hidden" />
+            <ui:VisualElement name="stats" class="debug-modules__section" />
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

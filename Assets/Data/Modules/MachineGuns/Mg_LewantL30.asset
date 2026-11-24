@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75074c26658a62748b49c821cc4aab0a, type: 3}
+  m_Name: Mg_LewantL30
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.CoaxialMachineGunModule
+  displayName: Lewant L30 machine gun
+  description: Slower but steadier, with long belts.
+  icon: {fileID: 0}
+  mass: 14
+  cost: 150
+  tier: 2
+  caliber: 7.62
+  roundsPerMinute: 500
+  dispersion: 3.6
+  aimTime: 1
+  shotDispersion: 0.7
+  damage: 9
+  penetrationMin: 7
+  penetrationMax: 11
+  beltSize: 250
+  beltChangeTime: 5
+  projectile: {fileID: 11400000, guid: edfc9befa49505442ae029074bb4332e, type: 2}
+  muzzleVelocity: 850
+  impactImpulse: 0
+  shakeForce: 0.02

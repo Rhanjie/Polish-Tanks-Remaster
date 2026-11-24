@@ -1,0 +1,156 @@
+.game-menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(6, 7, 5, 0.62);
+}
+
+.game-menu--end {
+    background-color: rgba(24, 6, 4, 0.7);
+}
+
+.game-menu--end.game-menu--victory {
+    background-color: rgba(6, 16, 8, 0.66);
+}
+
+.game-menu--end .game-menu__title--victory,
+.game-menu--victory .game-menu__title--defeat,
+.game-menu--victory .game-menu__subtitle--defeat {
+    display: none;
+}
+
+.game-menu--victory .game-menu__title--victory {
+    display: flex;
+}
+
+.game-menu--hidden {
+    display: none;
+}
+
+.game-menu__card {
+    min-width: 320px;
+    padding: 28px 36px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(200, 200, 180, 0.35);
+    background-color: rgba(12, 14, 10, 0.9);
+    align-items: stretch;
+}
+
+.game-menu__title {
+    font-size: 34px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(222, 218, 196);
+    margin-bottom: 18px;
+    letter-spacing: 2px;
+}
+
+.game-menu__card--wide {
+    min-width: 460px;
+    max-width: 620px;
+}
+
+.game-menu__title--victory {
+    color: rgb(150, 220, 110);
+    margin-bottom: 6px;
+}
+
+.game-menu__mission {
+    font-size: 16px;
+    -unity-text-align: middle-center;
+    color: rgba(222, 218, 196, 0.85);
+    margin-bottom: 12px;
+}
+
+.summary {
+    margin-bottom: 18px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.summary-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+}
+
+.summary-row__text {
+    flex-shrink: 1;
+    white-space: normal;
+    font-size: 15px;
+    color: rgb(222, 218, 196);
+}
+
+.summary-row__respect {
+    margin-left: 16px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(240, 200, 100);
+}
+
+.summary-row--completed .summary-row__text {
+    color: rgb(170, 220, 140);
+}
+
+.summary-row--missed .summary-row__text {
+    color: rgba(222, 218, 196, 0.45);
+}
+
+.summary-row--total {
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top-width: 1px;
+    border-color: rgba(200, 200, 180, 0.25);
+}
+
+.summary-row--total .summary-row__text,
+.summary-row--total .summary-row__respect {
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.game-menu__title--defeat {
+    color: rgb(236, 112, 76);
+    margin-bottom: 6px;
+}
+
+.game-menu__subtitle {
+    font-size: 15px;
+    -unity-text-align: middle-center;
+    color: rgba(222, 218, 196, 0.75);
+    margin-bottom: 20px;
+    white-space: normal;
+}
+
+.game-menu__button {
+    height: 42px;
+    margin: 4px 0;
+    font-size: 18px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgba(200, 200, 180, 0.3);
+    background-color: rgb(40, 44, 34);
+    color: rgb(222, 218, 196);
+}
+
+.game-menu__button:hover,
+.game-menu__button:focus {
+    background-color: rgb(70, 78, 56);
+    border-color: rgb(130, 214, 100);
+}
+
+.game-menu__button:active {
+    background-color: rgb(96, 108, 74);
+}
+
+.game-menu__button--quiet {
+    background-color: rgba(40, 44, 34, 0.5);
+    color: rgba(222, 218, 196, 0.75);
+}

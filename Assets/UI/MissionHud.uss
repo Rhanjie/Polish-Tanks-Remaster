@@ -1,0 +1,107 @@
+.mission-hud {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    width: 340px;
+    align-items: stretch;
+}
+
+.mission-hud--hidden {
+    display: none;
+}
+
+.mission-panel {
+    padding: 10px 14px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(200, 200, 180, 0.3);
+    background-color: rgba(12, 14, 10, 0.78);
+}
+
+.mission-title {
+    font-size: 13px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    color: rgba(222, 218, 196, 0.7);
+    margin-bottom: 4px;
+}
+
+.mission-objective {
+    font-size: 16px;
+    white-space: normal;
+    color: rgb(240, 236, 214);
+    padding: 2px 0 2px 10px;
+    border-left-width: 3px;
+    border-color: rgb(240, 200, 100);
+    margin-top: 3px;
+}
+
+.mission-panel--optional {
+    margin-top: 8px;
+}
+
+.mission-title--optional {
+    color: rgba(130, 214, 236, 0.85);
+}
+
+.mission-panel--optional .mission-objective {
+    font-size: 14px;
+    color: rgba(222, 218, 196, 0.85);
+    border-color: rgba(130, 214, 236, 0.7);
+}
+
+.mission-objective--waiting {
+    color: rgba(240, 236, 214, 0.6);
+    border-color: rgba(240, 200, 100, 0.5);
+}
+
+.mission-objective--failed,
+.mission-panel--optional .mission-objective--failed {
+    color: rgba(236, 112, 76, 0.75);
+    border-color: rgba(236, 112, 76, 0.6);
+}
+
+.mission-hint {
+    margin-top: 4px;
+    font-size: 13px;
+    -unity-font-style: italic;
+    color: rgb(240, 200, 100);
+    white-space: normal;
+}
+
+.mission-objective--completed,
+.mission-panel--optional .mission-objective--completed {
+    color: rgb(170, 220, 140);
+    border-color: rgb(130, 214, 100);
+}
+
+.mission-notice {
+    margin-top: 10px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    background-color: rgba(30, 36, 22, 0.9);
+    border-width: 1px;
+    border-color: rgb(130, 214, 100);
+    opacity: 0;
+    translate: 40px 0;
+    transition-property: opacity, translate;
+    transition-duration: 0.35s;
+}
+
+.mission-notice--visible {
+    opacity: 1;
+    translate: 0 0;
+}
+
+.mission-notice__caption {
+    font-size: 12px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    color: rgb(150, 220, 110);
+}
+
+.mission-notice__text {
+    font-size: 16px;
+    white-space: normal;
+    color: rgb(240, 236, 214);
+}

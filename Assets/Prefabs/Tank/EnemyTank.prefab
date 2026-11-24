@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &8431433795846976796
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1330636576298914396, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      propertyPath: m_Name
+      value: EnemyTank
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3033694629029787339, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+    - {fileID: 132134804144245890, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4351936194163325438}
+    - targetCorrespondingSourceObject: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3554154192856318436}
+  m_SourcePrefab: {fileID: 100100000, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+--- !u!1 &6695047874482712640 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3020770536975762780, guid: cc1a8a6c4b5957b45bfb556907c4474a, type: 3}
+  m_PrefabInstance: {fileID: 8431433795846976796}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4351936194163325438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6695047874482712640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08c08bad34910184fb4e48fcf5914d00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Navigation.TankPathFollower
+  steering:
+    fullSteerAngle: 30
+    pivotAngle: 75
+    reverseAngle: 140
+    reverseDistance: 7
+    slowDownDistance: 6
+    minApproachThrottle: 0.3
+  arriveDistance: 1.5
+  waypointDistance: 2.5
+  clearanceMargin: 0.3
+  softObstacleAvoidance: 1
+  stuckTime: 2
+  stuckDistance: 0.6
+  backOffTime: 1
+  maxReplans: 3
+--- !u!114 &3554154192856318436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6695047874482712640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e1d44fe9a7f5cf4abf4de277f3005bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.AI.EnemyTankAI
+  doctrine: {fileID: 11400000, guid: 3f2259b95976fc54fb4731d8b20b841d, type: 2}
+  orders:
+    orders:
+    - rid: 8205074056234926162
+    loop: 0
+  scriptedCombat: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 8205074056234926162
+      type: {class: HoldOrder, ns: PolishTanks.AI.Orders, asm: PolishTanks.Runtime}
+      data: 

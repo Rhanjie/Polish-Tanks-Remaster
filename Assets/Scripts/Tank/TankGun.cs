@@ -1,0 +1,312 @@
+using System;
+using PolishTanks.CameraRig;
+using PolishTanks.Weapons;
+using Reflex.Attributes;
+using UnityEngine;
+using Random = UnityEngine.Random;
+
+namespace PolishTanks.Tank
+{
+    /// <summary>
+    /// A tank weapon (main gun or coaxial MG): reload and belt feed, pooled projectiles,
+    /// recoil on the hull, barrel kick, camera shake, muzzle flash and smoke. Sits on the muzzle object:
+    /// its up axis is the barrel, the flash and smoke are children, and the hull and barrel recoil are found in its parents.
+    /// A gun mounted too low to fire over crates (the hull machine gun) can hold fire while one stands close in front.
+    /// </summary>
+    public class TankGun : MonoBehaviour
+    {
+        [SerializeField] private GunMount mount = GunMount.Main;
+
+        [Tooltip("Low cover (crates, barrels) within this distance of the muzzle is fired over. 0 for guns mounted low on the hull.")]
+        [SerializeField, Min(0f)] private float coverClearance = 2.5f;
+
+        [Tooltip("Hold fire while low cover (a crate, a barrel) is closer than this in front of the muzzle. For guns too low to fire over it; 0 never holds.")]
+        [SerializeField, Min(0f)] private float lowCoverHoldDistance;
+
+        private const int MaxShotsPerFrame = 8;
+        private static readonly RaycastHit2D[] BarrelHits = new RaycastHit2D[8];
+
+        [Inject] private IPoolService pools;
+        [Inject] private ICameraShake cameraShake;
+
+        private GunSettings settings = GunSettings.Default;
+        private SpriteRenderer muzzleFlash;
+        private ParticleSystem muzzleSmoke;
+        private TankMovement recoilTarget;
+        private BarrelRecoil barrelRecoil;
+        private ReloadTimer reload;
+        private bool started;
+        private Magazine magazine;
+        private Rigidbody2D ownerBody;
+        private float flashTimeLeft;
+        private bool triggerHeld;
+        private GunDispersion dispersion;
+        private float lastBarrelAngle;
+
+        public event Action<TankGun> Fired;
+
+        public GunMount Mount => mount;
+        public Transform Muzzle => transform;
+        public Transform MuzzleFlash => muzzleFlash != null ? muzzleFlash.transform : null;
+        public bool IsReloaded => reload == null || reload.IsReady;
+        public float ReloadProgress => reload?.Progress ?? 1f;
+        public int RoundsInMagazine => magazine?.Rounds ?? 0;
+        public bool IsChangingMagazine => magazine != null && magazine.IsReloading;
+        public float MagazineReloadProgress => magazine?.ReloadProgress ?? 1f;
+
+        public Vector2 LastShotDirection { get; private set; }
+
+        public float Dispersion => Spread.Current;
+        public float SettledDispersion => Spread.Settled;
+
+        public float CrewFactor
+        {
+            get => Spread.CrewFactor;
+            set => Spread.CrewFactor = value;
+        }
+
+        private GunDispersion Spread => dispersion ??= new GunDispersion(settings);
+
+        public GunSettings Settings
+        {
+            get => settings;
+            set
+            {
+                var feedChanged = value.magazineSize != settings.magazineSize || !Mathf.Approximately(value.magazineReloadTime, settings.magazineReloadTime);
+                settings = value;
+                Spread.Settings = value;
+                
+                if (reload != null)
+                    reload.ReloadTime = value.reloadTime;
+                    
+                if (magazine != null && feedChanged)
+                    magazine.Configure(value.magazineSize, value.magazineReloadTime);
+                    
+                if (started)
+                    PrewarmPools();
+            }
+        }
+
+        public static TankGun Find(GameObject tank, GunMount mount)
+        {
+            foreach (var gun in tank.GetComponentsInChildren<TankGun>(true))
+                if (gun.mount == mount)
+                    return gun;
+                    
+            return null;
+        }
+
+        public void SetTrigger(bool held) => triggerHeld = held;
+
+        public bool IsMaskedByLowCover()
+        {
+            if (lowCoverHoldDistance <= 0f)
+                return false;
+            Vector2 muzzle = transform.position;
+            return LowCover.IsInLine(muzzle, muzzle + (Vector2)transform.up * lowCoverHoldDistance, ownerBody);
+        }
+
+        public bool TryFire()
+        {
+            if (!isActiveAndEnabled || !magazine.CanFire || IsMaskedByLowCover() || !reload.TryConsume())
+                return false;
+            magazine.Consume();
+
+            Vector2 axis = transform.up;
+            var direction = BallisticsMath.ApplySpread(axis, Spread.Current, Random.value, Random.value);
+            LastShotDirection = direction;
+            Spread.OnShot();
+
+            SpawnProjectile(direction);
+            ApplyRecoil(direction);
+            ShowMuzzleFlash();
+            
+            if (muzzleSmoke != null && settings.smokeParticles > 0)
+                muzzleSmoke.Emit(settings.smokeParticles);
+
+            Fired?.Invoke(this);
+            return true;
+        }
+
+        private void Awake()
+        {
+            reload = new ReloadTimer(settings.reloadTime);
+            magazine = new Magazine(settings.magazineSize, settings.magazineReloadTime);
+            
+            muzzleFlash = GetComponentInChildren<SpriteRenderer>(true);
+            muzzleSmoke = GetComponentInChildren<ParticleSystem>(true);
+            recoilTarget = GetComponentInParent<TankMovement>();
+            barrelRecoil = GetComponentInParent<BarrelRecoil>();
+            
+            if (recoilTarget != null)
+                ownerBody = recoilTarget.GetComponent<Rigidbody2D>();
+                
+            if (muzzleFlash != null)
+                muzzleFlash.enabled = false;
+                
+            lastBarrelAngle = BarrelAngle;
+        }
+
+        private void OnEnable()
+        {
+            lastBarrelAngle = BarrelAngle;
+            Spread.Settle();
+        }
+
+        private void OnDisable()
+        {
+            triggerHeld = false;
+            flashTimeLeft = 0f;
+            
+            if (muzzleFlash != null)
+                muzzleFlash.enabled = false;
+        }
+
+        private void Start()
+        {
+            started = true;
+            PrewarmPools();
+        }
+
+        private void Update()
+        {
+            reload.Tick(Time.deltaTime);
+            magazine.Tick(Time.deltaTime);
+            UpdateDispersion(Time.deltaTime);
+
+            var shots = 0;
+            while (triggerHeld && shots < MaxShotsPerFrame && TryFire())
+                shots++;
+
+            UpdateMuzzleFlash(Time.deltaTime);
+        }
+
+        private float BarrelAngle => transform.eulerAngles.z;
+
+        private void UpdateDispersion(float deltaTime)
+        {
+            var angle = BarrelAngle;
+            var rotationSpeed = deltaTime > 0f ? Mathf.DeltaAngle(lastBarrelAngle, angle) / deltaTime : 0f;
+            lastBarrelAngle = angle;
+            var speed = ownerBody != null ? ownerBody.linearVelocity.magnitude : 0f;
+            Spread.Tick(deltaTime, speed, rotationSpeed);
+        }
+
+        private void PrewarmPools()
+        {
+            var definition = settings.projectile;
+            if (pools == null || definition == null || definition.Prefab == null)
+                return;
+                
+            pools.For(definition.Prefab, definition.PrewarmCount);
+            
+            EffectPool(definition.ImpactEffect, definition);
+            EffectPool(definition.PenetratedEffect, definition);
+            EffectPool(definition.BlockedEffect, definition);
+            EffectPool(definition.RicochetEffect, definition);
+            EffectPool(definition.OtherRicochetEffect, definition);
+        }
+
+        private void SpawnProjectile(Vector2 direction)
+        {
+            var definition = settings.projectile;
+            if (definition == null || definition.Prefab == null)
+                return;
+                
+            if (pools == null)
+            {
+                Debug.LogWarning($"{name}: no {nameof(IPoolService)} injected, the shot has no projectile.", this);
+                return;
+            }
+
+            var origin = ShotOrigin(definition.Prefab.HitMask);
+            var shooterVelocity = ownerBody != null ? ownerBody.linearVelocity : Vector2.zero;
+            var velocity = BallisticsMath.LaunchVelocity(direction, settings.projectileSpeed, shooterVelocity);
+
+            var projectile = pools.For(definition.Prefab, definition.PrewarmCount)
+                .Get(origin, Quaternion.LookRotation(Vector3.forward, direction));
+                
+            projectile.Launch(new ProjectileShot
+            {
+                Velocity = velocity,
+                Lifetime = definition.Lifetime,
+                Shooter = ownerBody,
+                Impulse = settings.impactImpulse,
+                Damage = settings.damage,
+                PenetrationMin = settings.penetrationMin,
+                PenetrationMax = settings.penetrationMax,
+                Caliber = settings.caliber,
+                FiredFrom = origin,
+                CoverClearance = coverClearance,
+                ImpactPool = EffectPool(definition.ImpactEffect, definition),
+                PenetratedPool = EffectPool(definition.PenetratedEffect, definition),
+                BlockedPool = EffectPool(definition.BlockedEffect, definition),
+                RicochetPool = EffectPool(definition.RicochetEffect, definition),
+                OtherRicochetPool = EffectPool(definition.OtherRicochetEffect, definition),
+            });
+        }
+
+        private Vector3 ShotOrigin(LayerMask hitMask)
+        {
+            var muzzle = transform.position;
+            if (transform.parent == null)
+                return muzzle;
+
+            var breech = transform.parent.position;
+            var filter = new ContactFilter2D { useTriggers = false };
+            filter.SetLayerMask(hitMask);
+            
+            var count = Physics2D.Linecast(breech, muzzle, filter, BarrelHits);
+            for (var i = 0; i < count; i++)
+            {
+                var hit = BarrelHits[i];
+                if (ownerBody != null && hit.rigidbody == ownerBody)
+                    continue;
+                    
+                if (hit.collider.GetComponentInParent<LowCover>() != null)
+                    continue;
+                    
+                return breech;
+            }
+            return muzzle;
+        }
+
+        private PrefabPool<PooledEffect> EffectPool(PooledEffect effect, ProjectileDefinition definition) =>
+            effect != null ? pools.For(effect, Mathf.Max(2, definition.PrewarmCount / 3)) : null;
+
+        private void ApplyRecoil(Vector2 direction)
+        {
+            if (recoilTarget != null && settings.recoilImpulse > 0f)
+            {
+                var point = transform.parent != null ? transform.parent.position : transform.position;
+                recoilTarget.AddImpulse(-direction * settings.recoilImpulse, point);
+            }
+
+            if (barrelRecoil != null && settings.barrelKick > 0f)
+                barrelRecoil.Kick(settings.barrelKick, settings.barrelReturnTime);
+
+            var origin = transform.position;
+            cameraShake?.Shake(origin, -direction, settings.shakeForce);
+        }
+
+        private void ShowMuzzleFlash()
+        {
+            if (muzzleFlash == null || settings.muzzleFlashDuration <= 0f)
+                return;
+                
+            flashTimeLeft = settings.muzzleFlashDuration;
+            muzzleFlash.enabled = true;
+        }
+
+        private void UpdateMuzzleFlash(float deltaTime)
+        {
+            if (flashTimeLeft <= 0f)
+                return;
+                
+            flashTimeLeft -= deltaTime;
+            
+            if (flashTimeLeft <= 0f && muzzleFlash != null)
+                muzzleFlash.enabled = false;
+        }
+    }
+}

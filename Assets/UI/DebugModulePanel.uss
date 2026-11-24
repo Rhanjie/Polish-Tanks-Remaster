@@ -1,0 +1,166 @@
+.debug-modules {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 540px;
+    max-height: 92%;
+    padding: 10px 12px;
+    background-color: rgba(12, 14, 10, 0.96);
+    border-width: 1px;
+    border-color: rgba(200, 200, 180, 0.35);
+    border-radius: 6px;
+    color: rgb(222, 218, 196);
+    font-size: 13px;
+}
+
+.debug-modules--hidden {
+    display: none;
+}
+
+.debug-modules__header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.debug-modules__title {
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-right: 8px;
+}
+
+.debug-modules__loadout {
+    flex-grow: 1;
+    color: rgb(130, 214, 236);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.debug-modules__toolbar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.debug-modules__presets {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-grow: 1;
+}
+
+.debug-modules__button {
+    margin: 2px;
+    padding: 2px 8px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(200, 200, 180, 0.3);
+    color: rgb(222, 218, 196);
+}
+
+.debug-modules__button:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.debug-modules__search {
+    margin: 0 0 6px 0;
+}
+
+.debug-modules__status {
+    white-space: normal;
+    margin-bottom: 4px;
+}
+
+.debug-modules__status--error {
+    color: rgb(240, 120, 90);
+}
+
+.debug-modules__scroll {
+    flex-shrink: 1;
+}
+
+.debug-modules__heading {
+    margin-top: 8px;
+    margin-bottom: 2px;
+    -unity-font-style: bold;
+    color: rgb(240, 190, 80);
+}
+
+.debug-modules__description {
+    margin-top: 6px;
+    white-space: normal;
+    color: rgba(222, 218, 196, 0.7);
+    -unity-font-style: italic;
+}
+
+.slot-row {
+    flex-direction: row;
+    align-items: center;
+    height: 24px;
+}
+
+.slot-row__label {
+    width: 100px;
+}
+
+.slot-row__step {
+    width: 24px;
+    margin: 0 2px;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(200, 200, 180, 0.3);
+    color: rgb(222, 218, 196);
+}
+
+.slot-row__step:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.slot-row__dropdown {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0;
+}
+
+.equipment-toggle {
+    margin: 1px 0;
+}
+
+.stat-row {
+    flex-direction: row;
+    height: 18px;
+}
+
+.stat-row__label {
+    width: 130px;
+}
+
+.stat-row__value {
+    width: 110px;
+    -unity-text-align: middle-right;
+}
+
+.stat-row__delta {
+    width: 90px;
+    padding-left: 10px;
+}
+
+.stat--better {
+    color: rgb(120, 214, 100);
+}
+
+.stat--worse {
+    color: rgb(240, 120, 90);
+}
+
+.slot-row__dropdown .unity-base-popup-field__input,
+.debug-modules__search .unity-base-text-field__input {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(200, 200, 180, 0.3);
+    color: rgb(222, 218, 196);
+}
+
+.slot-row__dropdown .unity-base-popup-field__text,
+.slot-row__dropdown .unity-base-popup-field__arrow {
+    color: rgb(222, 218, 196);
+    -unity-background-image-tint-color: rgb(222, 218, 196);
+}

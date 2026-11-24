@@ -1,0 +1,113 @@
+using System;
+using System.Collections.Generic;
+using PolishTanks.CameraRig;
+using PolishTanks.Prototypes;
+using Reflex.Core;
+using Reflex.Injectors;
+using UnityEngine;
+using Object = UnityEngine.Object;
+
+namespace PolishTanks.Tests.PlayMode
+{
+    /// <summary>
+    /// Builds buildings, views, a main camera and roof sprites in code for the view prototype tests.
+    /// Views are created inactive so serialized fields are set and the camera is injected before OnEnable
+    /// runs. Dispose destroys everything immediately, so no MainCamera-tagged object outlives a test.
+    /// </summary>
+    internal sealed class BuildingRig : IDisposable
+    {
+        private readonly List<Object> created = new List<Object>();
+        private Container container;
+
+        public T Track<T>(T obj) where T : Object
+        {
+            created.Add(obj);
+            return obj;
+        }
+
+        public Building CreateBuilding(Vector2 position, Vector2 size, float height)
+        {
+            var go = Track(new GameObject("Building"));
+            go.transform.position = position;
+            var building = go.AddComponent<Building>();
+            building.Configure(size, height);
+            return building;
+        }
+
+        public BuildingCompound CreateCompound(Vector2 position)
+        {
+            var go = Track(new GameObject("Compound"));
+            go.transform.position = position;
+            return go.AddComponent<BuildingCompound>();
+        }
+
+        public Building CreateBlock(BuildingCompound compound, Vector2 localPosition, Vector2 size, float height)
+        {
+            var building = CreateBuilding(Vector2.zero, size, height);
+            building.transform.SetParent(compound.transform, false);
+            building.transform.localPosition = localPosition;
+            return building;
+        }
+
+        public MeshFilter CreateGableRoof()
+        {
+            var filter = Track(new GameObject("GableRoof")).AddComponent<MeshFilter>();
+            filter.gameObject.AddComponent<MeshRenderer>();
+            return filter;
+        }
+
+        public Camera CreateMainCamera(Vector2 position)
+        {
+            var go = Track(new GameObject("TestMainCamera"));
+            go.tag = "MainCamera";
+            go.transform.position = new Vector3(position.x, position.y, -10f);
+            var camera = go.AddComponent<Camera>();
+            camera.orthographic = true;
+            container?.Dispose();
+            container = new ContainerBuilder().RegisterValue(new GameCamera(camera), new[] { typeof(IGameCamera) }).Build();
+            return camera;
+        }
+
+        public SpriteRenderer CreateRoof(Vector3 position)
+        {
+            var texture = Track(new Texture2D(1, 1));
+            var sprite = Track(Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f));
+            var go = Track(new GameObject("Roof"));
+            go.transform.position = position;
+            var renderer = go.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.drawMode = SpriteDrawMode.Tiled;
+            return renderer;
+        }
+
+        public MeshFilter CreateWalls() => Track(new GameObject("Walls")).AddComponent<MeshFilter>();
+
+        public ExtrudedBuildingView CreateExtrudedView(Building building, SpriteRenderer roof, MeshFilter walls, Transform target = null, MeshFilter gableRoof = null)
+        {
+            var go = Track(new GameObject("ExtrudedView"));
+            go.SetActive(false);
+            var view = go.AddComponent<ExtrudedBuildingView>();
+            TankRig.SetField(view, "building", building);
+            TankRig.SetField(view, "roof", roof);
+            TankRig.SetField(view, "walls", walls);
+            if (gableRoof != null)
+                TankRig.SetField(view, "gableRoof", gableRoof);
+            if (target != null)
+                view.SetOcclusionTarget(target);
+            if (container != null)
+                GameObjectInjector.InjectRecursive(go, container);
+            go.SetActive(true);
+            return view;
+        }
+
+        public void Dispose()
+        {
+            container?.Dispose();
+            container = null;
+            foreach (var obj in created)
+                if (obj != null)
+                    Object.DestroyImmediate(obj);
+            created.Clear();
+        }
+    }
+}

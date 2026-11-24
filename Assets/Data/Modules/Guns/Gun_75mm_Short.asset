@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 278f6ac87c365794d849a76a6d0b8b22, type: 3}
+  m_Name: Gun_75mm_Short
+  m_EditorClassIdentifier: PolishTanks.Runtime::PolishTanks.Tank.Modules.MainGunModule
+  displayName: 75 mm short gun
+  description: Cut down from a captured field howitzer. Fast to reload, weak against armor.
+  icon: {fileID: 0}
+  mass: 800
+  cost: 300
+  tier: 1
+  caliber: 75
+  reloadTime: 2
+  muzzleVelocity: 420
+  damage: 110
+  penetrationMin: 30
+  penetrationMax: 45
+  dispersion: 0.6
+  aimTime: 1.6
+  shotDispersion: 2.2
+  ammoCapacity: 80
+  muzzleFlashScale: 0.85
+  muzzleSmoke: 8
+  projectile: {fileID: 11400000, guid: 7044bf6006d36244585fc0a6b0c3df10, type: 2}
+  impactImpulse: 3
+  recoilImpulse: 10
+  shakeForce: 0.35
+  barrelKick: 0.25
+  barrelReturnTime: 0.25

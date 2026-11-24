@@ -1,0 +1,59 @@
+# Reusable: builds the Windows player and uploads it as a zipped artifact.
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Git ref to build (empty = the ref that triggered the caller)
+        type: string
+        default: ''
+      version:
+        description: Version written into Player Settings for this build
+        type: string
+        required: true
+      artifact-name:
+        description: Name of the uploaded artifact and the zip inside it
+        type: string
+        required: true
+
+jobs:
+  build:
+    name: Build Windows
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          lfs: true
+
+      - uses: actions/cache@v6
+        with:
+          path: Library
+          key: Library-StandaloneWindows64-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/ProjectVersion.txt') }}-${{ hashFiles('Assets/**') }}
+          restore-keys: |
+            Library-StandaloneWindows64-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/ProjectVersion.txt') }}-
+            Library-StandaloneWindows64-
+
+      - uses: game-ci/unity-builder@v6
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneWindows64
+          buildName: PolishTanksRemaster
+          versioning: Custom
+          version: ${{ inputs.version }}
+
+      - name: Zip build
+        run: |
+          cd build/StandaloneWindows64
+          zip -qr "$GITHUB_WORKSPACE/${{ inputs.artifact-name }}.zip" .
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.artifact-name }}.zip
+          if-no-files-found: error
