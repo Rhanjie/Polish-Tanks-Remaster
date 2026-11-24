@@ -1,4 +1,4 @@
-# Push to master (merged release PR): tests, Windows and web builds, tag vX.Y.Z and a GitHub Release.
+# Push to master (merged release PR): tests, Windows and web builds, tag vX.Y.Z, a GitHub Release and the vX.Y.Z milestone closed.
 name: Release
 
 on:
@@ -12,6 +12,7 @@ concurrency:
 
 permissions:
   contents: write
+  issues: write
   checks: write
 
 jobs:
@@ -68,3 +69,15 @@ jobs:
           name: Polish Tanks Remaster v${{ needs.version.outputs.version }}
           generate_release_notes: true
           files: PolishTanksRemaster-${{ needs.version.outputs.version }}-*.zip
+      - name: Close the version milestone
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MILESTONE: v${{ needs.version.outputs.version }}
+        run: |
+          number=$(gh api "repos/${{ github.repository }}/milestones?state=open&per_page=100" --jq ".[] | select(.title == \"$MILESTONE\") | .number")
+          if [ -z "$number" ]; then
+            echo "::notice::No open milestone $MILESTONE, nothing to close."
+            exit 0
+          fi
+          gh api -X PATCH "repos/${{ github.repository }}/milestones/$number" -f state=closed > /dev/null
+          echo "Closed milestone $MILESTONE"
