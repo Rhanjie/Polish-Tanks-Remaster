@@ -4,10 +4,8 @@
 
 <p align="center">
   <a href="https://github.com/Rhanjie/Polish-Tanks-Remaster/actions/workflows/pull-request.yml"><img src="https://github.com/Rhanjie/Polish-Tanks-Remaster/actions/workflows/pull-request.yml/badge.svg" alt="Tests"></a>
-  <!-- Restore after the first release lands on master:
   <a href="https://github.com/Rhanjie/Polish-Tanks-Remaster/actions/workflows/release.yml"><img src="https://github.com/Rhanjie/Polish-Tanks-Remaster/actions/workflows/release.yml/badge.svg" alt="Build"></a>
   <a href="https://github.com/Rhanjie/Polish-Tanks-Remaster/releases"><img src="https://img.shields.io/github/v/release/Rhanjie/Polish-Tanks-Remaster?include_prereleases&label=release" alt="Release"></a>
-  -->
   <img src="https://img.shields.io/badge/Unity-6000.6-black?logo=unity" alt="Unity 6">
   <img src="https://img.shields.io/badge/platform-Windows-blue" alt="Windows">
 </p>
@@ -29,8 +27,7 @@ Set in an alternate Second World War, a resource-starved Poland becomes an unlik
 ## Screenshots
 
 <p align="center">
-  <img src="Images/PolishTanks1.png" alt="Gameplay 1" width="420" height="236">
-  <img src="Images/PolishTanks2.png" alt="Gameplay 2" width="420" height="236">
+  <img src="Images/PolishTanks1.png" alt="Gameplay 1" width="48%">&nbsp;&nbsp;<img src="Images/PolishTanks2.png" alt="Gameplay 2" width="48%">
 </p>
 
 ## Technology
