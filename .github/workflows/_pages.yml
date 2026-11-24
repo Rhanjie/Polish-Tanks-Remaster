@@ -1,0 +1,79 @@
+# Reusable: publishes the playtest page (Site/) with a web build in play/ to GitHub Pages.
+name: Pages
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Git ref the build was made from (for Site/, Images/ and the commit shown on the page)
+        type: string
+        required: true
+      web-artifact:
+        description: Name of the artifact from this run holding the zipped web build
+        type: string
+        required: true
+      label:
+        description: Build name shown on the page, e.g. playtest-2026-W48
+        type: string
+        required: true
+      version:
+        description: Version shown on the page
+        type: string
+        required: true
+      release-url:
+        description: Link to the release notes of this build (empty = no link)
+        type: string
+        default: ''
+
+jobs:
+  publish:
+    name: Publish playtest page
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          lfs: true
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{ inputs.web-artifact }}
+          path: web
+
+      - name: Assemble the site
+        env:
+          LABEL: ${{ inputs.label }}
+          VERSION: ${{ inputs.version }}
+          RELEASE_URL: ${{ inputs.release-url }}
+        run: |
+          mkdir -p _site/images _site/play
+          cp -r Site/. _site/
+          cp Images/*.png _site/images/
+          unzip -q web/*.zip -d _site/play
+          if [ ! -f _site/play/index.html ]; then
+            echo "::error::The web build has no index.html at its root."
+            exit 1
+          fi
+          jq -n \
+            --arg label "$LABEL" \
+            --arg version "$VERSION" \
+            --arg sha "$(git rev-parse HEAD)" \
+            --arg date "$(date -u +%Y-%m-%d)" \
+            --arg release "$RELEASE_URL" \
+            --argjson sizeMb "$(du -sm _site/play | cut -f1)" \
+            '{label: $label, version: $version, sha: $sha, date: $date, release: $release, sizeMb: $sizeMb}' \
+            > _site/build.json
+          cat _site/build.json
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v5
