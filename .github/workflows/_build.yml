@@ -16,22 +16,22 @@ on:
         description: Start of the artifact and zip names; the platform (-win64, -web) is appended
         type: string
         required: true
+      platforms:
+        description: JSON list of players to build, from "win64" and "web"
+        type: string
+        default: '["win64", "web"]'
 
 jobs:
   build:
-    name: Build ${{ matrix.name }}
+    name: Build ${{ matrix.suffix == 'web' && 'Web' || 'Windows' }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - name: Windows
-            platform: StandaloneWindows64
-            suffix: win64
-          - name: Web
-            platform: WebGL
-            suffix: web
+        suffix: ${{ fromJSON(inputs.platforms) }}
+    env:
+      PLATFORM: ${{ matrix.suffix == 'web' && 'WebGL' || 'StandaloneWindows64' }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -41,10 +41,10 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: Library
-          key: Library-${{ matrix.platform }}-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/ProjectVersion.txt') }}-${{ hashFiles('Assets/**') }}
+          key: Library-${{ env.PLATFORM }}-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/ProjectVersion.txt') }}-${{ hashFiles('Assets/**') }}
           restore-keys: |
-            Library-${{ matrix.platform }}-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/ProjectVersion.txt') }}-
-            Library-${{ matrix.platform }}-
+            Library-${{ env.PLATFORM }}-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/ProjectVersion.txt') }}-
+            Library-${{ env.PLATFORM }}-
 
       - uses: game-ci/unity-builder@v6
         env:
@@ -52,7 +52,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: ${{ matrix.platform }}
+          targetPlatform: ${{ env.PLATFORM }}
           buildName: PolishTanksRemaster
           versioning: Custom
           version: ${{ inputs.version }}
@@ -60,7 +60,7 @@ jobs:
       # itch.io needs index.html at the root of the web zip, so zip the folder that holds it.
       - name: Zip build
         run: |
-          if [ "${{ matrix.platform }}" = "WebGL" ]; then
+          if [ "${{ env.PLATFORM }}" = "WebGL" ]; then
             index=$(find build/WebGL -name index.html -print -quit)
             if [ -z "$index" ]; then
               echo "::error::No index.html in build/WebGL, the web build is incomplete."
@@ -68,7 +68,7 @@ jobs:
             fi
             dir=$(dirname "$index")
           else
-            dir=build/${{ matrix.platform }}
+            dir=build/${{ env.PLATFORM }}
           fi
           cd "$dir"
           zip -qr "$GITHUB_WORKSPACE/${{ inputs.artifact-prefix }}-${{ matrix.suffix }}.zip" .
