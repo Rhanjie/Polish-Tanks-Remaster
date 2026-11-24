@@ -8,8 +8,9 @@ namespace PolishTanks.Screenshots
     /// <summary>
     /// Saves a PNG of the game view to the Screenshots folder next to the game (the project folder in the editor)
     /// when the Screenshot action (F4) is pressed, and names the file on screen for a moment. The notice is left out
-    /// of the shot itself. Created on its own in desktop builds and the editor, so scenes need no setup; web builds
-    /// get none, since a browser game has no folder of its own to save to.
+    /// of the shot itself, and Alt+F4 takes no shot, since it closes the window. Created on its own in desktop builds
+    /// and the editor, so scenes need no setup; web builds get none, since a browser game has no folder of its own
+    /// to save to.
     /// </summary>
     public class ScreenshotCapturer : MonoBehaviour
     {
@@ -25,7 +26,7 @@ namespace PolishTanks.Screenshots
         private int captureFrame = -1;
         private GUIStyle noticeStyle;
 
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL || UNITY_EDITOR
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Create()
         {
@@ -47,8 +48,14 @@ namespace PolishTanks.Screenshots
 
         private void Update()
         {
-            if (screenshot != null && screenshot.WasPressedThisFrame())
+            if (screenshot != null && screenshot.WasPressedThisFrame() && !AltHeld())
                 Capture();
+        }
+
+        private static bool AltHeld()
+        {
+            var keyboard = Keyboard.current;
+            return keyboard != null && keyboard.altKey.isPressed;
         }
 
         private void Capture()
