@@ -62,7 +62,7 @@ jobs:
     with:
       ref: ${{ needs.changes.outputs.sha }}
       version: ${{ needs.changes.outputs.version }}
-      artifact-name: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-win64
+      artifact-prefix: PolishTanksRemaster-${{ needs.changes.outputs.tag }}
     secrets: inherit
 
   publish:
@@ -87,7 +87,8 @@ jobs:
           } > notes.md
       - uses: actions/download-artifact@v7
         with:
-          name: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-win64
+          pattern: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-*
+          merge-multiple: true
       - uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.changes.outputs.tag }}
@@ -95,4 +96,4 @@ jobs:
           name: Playtest ${{ needs.changes.outputs.tag }}
           prerelease: true
           body_path: notes.md
-          files: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-win64.zip
+          files: PolishTanksRemaster-${{ needs.changes.outputs.tag }}-*.zip

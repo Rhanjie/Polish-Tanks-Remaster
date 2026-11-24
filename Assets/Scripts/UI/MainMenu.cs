@@ -6,7 +6,8 @@ namespace PolishTanks.UI
 {
     /// <summary>
     /// Temporary main menu until the real one: starts the tutorial mission or the sandbox, or quits the game.
-    /// The first button takes focus so a keyboard or gamepad works without a mouse.
+    /// The first button takes focus so a keyboard or gamepad works without a mouse. The web build hides Quit,
+    /// since a browser tab can't be closed by the game.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class MainMenu : MonoBehaviour
@@ -29,6 +30,8 @@ namespace PolishTanks.UI
             tutorial.clicked += StartTutorial;
             sandbox.clicked += StartSandbox;
             quit.clicked += Quit;
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+                quit.style.display = DisplayStyle.None;
             tutorial.Focus();
         }
 
