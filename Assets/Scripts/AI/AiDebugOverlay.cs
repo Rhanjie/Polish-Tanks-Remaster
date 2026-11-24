@@ -7,10 +7,10 @@ using UnityEngine.InputSystem;
 namespace PolishTanks.AI
 {
     /// <summary>
-    /// Development-build view of every AI unit in <see cref="AiAgents"/>, toggled in play with F3. Each one shows its sight
+    /// Debug view of every AI unit in <see cref="AiAgents"/>, toggled in play with F3. Each one shows its sight
     /// range as a circle (red while it has the player spotted), a line to where it thinks the player is, and a label with
     /// what it is doing, its current order, what it knows about the player and, for tanks, how its shells did per plate.
-    /// Created on its own in the editor and development builds, so scenes need no setup.
+    /// Created on its own in every build while the game is in public beta, so scenes need no setup.
     /// </summary>
     public class AiDebugOverlay : MonoBehaviour
     {
@@ -39,8 +39,6 @@ namespace PolishTanks.AI
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Create()
         {
-            if (!Debug.isDebugBuild)
-                return;
             var host = new GameObject("[AI Debug]");
             DontDestroyOnLoad(host);
             host.AddComponent<AiDebugOverlay>();

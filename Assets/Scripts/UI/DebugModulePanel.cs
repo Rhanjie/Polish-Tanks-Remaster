@@ -12,7 +12,7 @@ using UnityEngine.UIElements;
 namespace PolishTanks.UI
 {
     /// <summary>
-    /// Playtest panel for swapping the player's modules while the game runs (F1 by default, development builds only).
+    /// Playtest panel for swapping the player's modules while the game runs (F1 by default, in every build while the game is in public beta).
     /// Every slot gets a dropdown plus previous/next buttons that skip parts the hull can't carry; the search box
     /// narrows all slots at once, so a long module list stays usable. Presets load whole loadouts, Random rolls a valid
     /// build, Undo steps back through earlier builds. The stat table shows each stat with its change since the
@@ -72,12 +72,6 @@ namespace PolishTanks.UI
             Pause(open && pauseWhileOpen);
             if (open)
                 Refresh();
-        }
-
-        private void Awake()
-        {
-            if (!Debug.isDebugBuild)
-                enabled = false;
         }
 
         private void OnEnable()

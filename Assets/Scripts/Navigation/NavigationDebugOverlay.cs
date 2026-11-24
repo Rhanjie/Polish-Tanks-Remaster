@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 namespace PolishTanks.Navigation
 {
     /// <summary>
-    /// Development-build view of the scene's navigation, toggled in play (F2 steps Off, Grid, Clearance).
+    /// Debug view of the scene's navigation, toggled in play (F2 steps Off, Grid, Clearance).
     /// Grid paints blocked cells red, crates and barrels yellow, cells too tight for a tank orange, and the cells
     /// the last A* search expanded blue, so you can watch how far a search spread before it found its way.
     /// Clearance paints every open cell from red (against a wall) to green (wide open). Every tank driving with a
@@ -83,8 +83,6 @@ namespace PolishTanks.Navigation
         private void Awake()
         {
             source = GetComponent<NavigationGridSource>();
-            if (!Debug.isDebugBuild)
-                enabled = false;
         }
 
         private void OnDestroy()
