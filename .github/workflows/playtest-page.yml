@@ -1,5 +1,6 @@
 # Manual: build development for the web and put it on the playtest page, without a release.
-# Like the weekly playtest, GitHub lists it in Actions only once it is on the default branch (master).
+# GitHub lists it in Actions once it is on the default branch (master). After that it can also be
+# started from development ("Use workflow from"), to try workflow changes before a release.
 name: Playtest page
 
 on:
